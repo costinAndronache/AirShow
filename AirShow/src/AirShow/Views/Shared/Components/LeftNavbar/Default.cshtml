@@ -1,0 +1,23 @@
+﻿@model AirShow.Models.ViewModels.NavbarModel
+
+
+<div class="list-group">
+
+    @for (int i = 0; i < (int)Model.URLList.LongCount(); i++)
+    {
+        var item = Model.URLList.ElementAt((int)i);
+        var itemClass = "list-group-item";
+        if (Model.HighlightedIndex == i)
+        {
+            itemClass += " active";
+        }
+        else
+        {
+            itemClass += " list-group-item-action";
+        }
+
+        <a asp-controller=@item.Controller asp-action=@item.Action class=@itemClass>@item.Name</a>
+    }
+
+</div>
+
