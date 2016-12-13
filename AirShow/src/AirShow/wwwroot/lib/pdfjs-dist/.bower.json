@@ -1,0 +1,24 @@
+{
+  "name": "pdfjs-dist",
+  "version": "1.6.380",
+  "main": [
+    "build/pdf.js",
+    "build/pdf.worker.js"
+  ],
+  "ignore": [],
+  "keywords": [
+    "Mozilla",
+    "pdf",
+    "pdf.js"
+  ],
+  "homepage": "https://github.com/mozilla/pdfjs-dist",
+  "_release": "1.6.380",
+  "_resolution": {
+    "type": "version",
+    "tag": "v1.6.380",
+    "commit": "ddf6627893967a35fced24428768c3dbe64c5469"
+  },
+  "_source": "https://github.com/mozilla/pdfjs-dist.git",
+  "_target": "1.6.380",
+  "_originalSource": "pdfjs-dist"
+}

@@ -11,6 +11,10 @@ using AirShow.Models.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using AirShow.Models.EF;
+using AirShow.Models.Seeders;
+using AirShow.Models;
+using AirShow.Models.Interfaces;
+using AirShow.Models.FileRepositories;
 
 namespace AirShow
 {
@@ -36,6 +40,9 @@ namespace AirShow
             services.AddEntityFrameworkSqlite();
             services.AddDbContext<AirShowContext>(options => options.UseSqlite("Filename=./AirShowDB.db"));
             services.AddIdentity<User, IdentityRole>().AddEntityFrameworkStores<AirShowContext>();
+            services.AddScoped<BasicDBSeeder>();
+            services.AddSingleton<IAppRepository, EFRepository>();
+            services.AddSingleton<IPresentationFilesRepository, BasicFileRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -43,6 +50,9 @@ namespace AirShow
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
+
+            var seeder = app.ApplicationServices.GetService<BasicDBSeeder>();
+            seeder.Run();
 
             if (env.IsDevelopment())
             {
@@ -55,7 +65,6 @@ namespace AirShow
             }
 
             app.UseStaticFiles();
-
             app.UseIdentity();
 
             app.UseMvc(routes =>

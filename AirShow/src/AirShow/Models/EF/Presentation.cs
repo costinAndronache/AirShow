@@ -14,7 +14,15 @@ namespace AirShow.Models.EF
         [Required, MaxLength(80)]
         public string Name { get; set; }
 
-        [Required]
-        public string FilePath { get; set; }
+        [Required, MaxLength(255)]
+        public string Description { get; set; }
+
+        public int CategoryId { get; set; }
+        public Category Category { get; set; }
+
+        public ICollection<PresentationTag> PresentationTags { get; set; }
+
+        public string UserId { get; set; }
+        public User User { get; set; }
     }
 }

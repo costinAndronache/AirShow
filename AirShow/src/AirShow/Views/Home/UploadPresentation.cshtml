@@ -1,19 +1,52 @@
-﻿@{
-    ViewData["Title"] = "Contact";
+﻿@model UploadPresentationViewModel
+@{
+    ViewData["Title"] = "Upload";
     ViewData[ViewConstants.kNavbarActiveIndexKey] = NavbarModel.ActiveIndex.HomeUploadPresentation;
-
 }
-<h2>@ViewData["Title"].</h2>
-<h3>@ViewData["Message"]</h3>
 
-<address>
-    One Microsoft Way<br />
-    Redmond, WA 98052-6399<br />
-    <abbr title="Phone">P:</abbr>
-    425.555.0100
-</address>
+<div>
+    <div class="formContainer">
 
-<address>
-    <strong>Support:</strong> <a href="mailto:Support@example.com">Support@example.com</a><br />
-    <strong>Marketing:</strong> <a href="mailto:Marketing@example.com">Marketing@example.com</a>
-</address>
+        @if (Model.ViewInput.ErrorMessageIfAny != null)
+        {
+            <span class="text-danger">@Model.ViewInput.ErrorMessageIfAny</span>
+        }
+
+        <form enctype="multipart/form-data"  method="post">
+
+            <div class="form-group">
+                <label asp-for="ViewOutput.Name"></label>
+                <input asp-for="ViewOutput.Name" class="form-control" />
+                <span asp-validation-for="ViewOutput.Name"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="ViewOutput.Description"></label>
+                <textarea asp-for="ViewOutput.Description" class="form-control"></textarea>
+                <span asp-validation-for="ViewOutput.Description"></span>
+            </div>
+
+            <div class="form-group">
+                <label>Tags, separated by semicolon:</label>
+                <input asp-for="ViewOutput.TagsList" class="form-control" />
+            </div>
+
+            <div class="form-group">
+                <label>Category</label>
+                <select asp-for="ViewOutput.CategoryId" class="form-control" asp-items="@(new SelectList(Model.ViewInput.Categories, "Id", "Name"))"></select>
+                <span asp-validation-for="ViewOutput.CategoryId"></span>
+            </div>
+
+            <div class="form-group">
+                <label>File:</label>
+                <input asp-for="ViewOutput.File" class="form-control" />
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="Submit" />
+            </div>
+
+        </form>
+    </div>
+</div>
+

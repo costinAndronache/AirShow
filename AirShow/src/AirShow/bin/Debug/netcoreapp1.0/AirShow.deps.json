@@ -1,7 +1,7 @@
 {
   "runtimeTarget": {
     "name": ".NETCoreApp,Version=v1.0",
-    "signature": "f4d687e4afc0eac7dbb2a515e64cd0fa5223958e"
+    "signature": "82d1adfafebe57de1b7d65a366d960bba19bd7e3"
   },
   "compilationOptions": {
     "defines": [
@@ -34,6 +34,7 @@
           "Microsoft.Extensions.Logging.Console": "1.1.0",
           "Microsoft.Extensions.Logging.Debug": "1.1.0",
           "Microsoft.Extensions.Options.ConfigurationExtensions": "1.0.0",
+          "LiteDB.Core": "2.0.4",
           "Microsoft.NETCore.App": "1.0.1",
           "Microsoft.VisualStudio.Web.BrowserLink.Loader": "14.0.0"
         },
@@ -42,6 +43,16 @@
         },
         "compile": {
           "AirShow.dll": {}
+        }
+      },
+      "LiteDB.Core/2.0.4": {
+        "runtime": {
+          "lib/portable-net4+win8/LiteDB.Core.dll": {},
+          "lib/portable-net4+win8/LiteDB.Platform.dll": {}
+        },
+        "compile": {
+          "lib/portable-net4+win8/LiteDB.Core.dll": {},
+          "lib/portable-net4+win8/LiteDB.Platform.dll": {}
         }
       },
       "Microsoft.AspNetCore.Antiforgery/1.0.1": {
@@ -3670,6 +3681,11 @@
       "type": "project",
       "serviceable": false,
       "sha512": ""
+    },
+    "LiteDB.Core/2.0.4": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-3NuNkS9p7JHg9atdZtXYOTOK/dW71CZNM21+bT7pFYMIiWzy8i5SAWcZa6CKxGSbap/ZnUHqL0aNEvYrB64nBQ=="
     },
     "Microsoft.AspNetCore.Antiforgery/1.0.1": {
       "type": "package",

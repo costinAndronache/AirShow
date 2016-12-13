@@ -15,21 +15,67 @@ namespace AirShow.Migrations
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.1.0-rtm-22752");
 
+            modelBuilder.Entity("AirShow.Models.EF.Category", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Name");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Categories");
+                });
+
             modelBuilder.Entity("AirShow.Models.EF.Presentation", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<string>("FilePath")
-                        .IsRequired();
+                    b.Property<int>("CategoryId");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(255);
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(80);
 
+                    b.Property<string>("UserId");
+
                     b.HasKey("Id");
 
+                    b.HasIndex("CategoryId");
+
+                    b.HasIndex("UserId");
+
                     b.ToTable("Presentations");
+                });
+
+            modelBuilder.Entity("AirShow.Models.EF.PresentationTag", b =>
+                {
+                    b.Property<int>("PresentationId");
+
+                    b.Property<int>("TagId");
+
+                    b.HasKey("PresentationId", "TagId");
+
+                    b.HasIndex("TagId");
+
+                    b.ToTable("PresentationTag");
+                });
+
+            modelBuilder.Entity("AirShow.Models.EF.Tag", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Name");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Tags");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityRole", b =>
@@ -202,6 +248,31 @@ namespace AirShow.Migrations
                     b.ToTable("User");
 
                     b.HasDiscriminator().HasValue("User");
+                });
+
+            modelBuilder.Entity("AirShow.Models.EF.Presentation", b =>
+                {
+                    b.HasOne("AirShow.Models.EF.Category", "Category")
+                        .WithMany("Presentations")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("AirShow.Models.EF.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+                });
+
+            modelBuilder.Entity("AirShow.Models.EF.PresentationTag", b =>
+                {
+                    b.HasOne("AirShow.Models.EF.Presentation", "Presentation")
+                        .WithMany("PresentationTags")
+                        .HasForeignKey("PresentationId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("AirShow.Models.EF.Tag", "Tag")
+                        .WithMany("PresentationTags")
+                        .HasForeignKey("TagId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityRoleClaim<string>", b =>

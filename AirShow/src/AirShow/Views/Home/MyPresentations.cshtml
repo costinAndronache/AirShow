@@ -1,9 +1,31 @@
-﻿@{
-    ViewData["Title"] = "About";
+﻿@model MyPresentationsViewModel
+@{
+    ViewData["Title"] = "My Presentations";
     ViewData[ViewConstants.kNavbarActiveIndexKey] = NavbarModel.ActiveIndex.HomeMyPresentations;
-
 }
-<h2>@ViewData["Title"].</h2>
-<h3>@ViewData["Message"]</h3>
 
-<p>Use this area to provide additional information.</p>
+<div class="row">
+
+    @if (Model.Presentations.Count == 0)
+    {
+        <p>There doesn't seem to be anything here</p>
+    }
+
+    @foreach (var item in Model.Presentations)
+    {
+        <div class="col-sm-2 col-md-2">
+            <div class="thumbnail">
+                <img src="~/images/pdfIcon.png" alt="PDF icon" class="img-thumbnail">
+                <div class="caption">
+                    <p>@item.Name</p>
+                    <p>@item.Description</p>
+                    <p>
+                        <a href="#" class="btn btn-primary" role="button">Button</a> 
+                        <a href="#" class="btn btn-default" role="button">Button</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    }
+
+</div>

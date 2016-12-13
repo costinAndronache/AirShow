@@ -43,6 +43,17 @@
           }
         }
       },
+      "LiteDB.Core/2.0.4": {
+        "type": "package",
+        "compile": {
+          "lib/portable-net4+win8/LiteDB.Core.dll": {},
+          "lib/portable-net4+win8/LiteDB.Platform.dll": {}
+        },
+        "runtime": {
+          "lib/portable-net4+win8/LiteDB.Core.dll": {},
+          "lib/portable-net4+win8/LiteDB.Platform.dll": {}
+        }
+      },
       "Microsoft.AspNetCore.Antiforgery/1.0.1": {
         "type": "package",
         "dependencies": {
@@ -4208,6 +4219,29 @@
         "runtimes/win7-arm/native/libuv.dll",
         "runtimes/win7-x64/native/libuv.dll",
         "runtimes/win7-x86/native/libuv.dll"
+      ]
+    },
+    "LiteDB.Core/2.0.4": {
+      "sha512": "3NuNkS9p7JHg9atdZtXYOTOK/dW71CZNM21+bT7pFYMIiWzy8i5SAWcZa6CKxGSbap/ZnUHqL0aNEvYrB64nBQ==",
+      "type": "package",
+      "path": "LiteDB.Core/2.0.4",
+      "files": [
+        "LiteDB.Core.2.0.4.nupkg.sha512",
+        "LiteDB.Core.nuspec",
+        "lib/MonoAndroid/LiteDB.Core.dll",
+        "lib/MonoAndroid/LiteDB.Platform.dll",
+        "lib/Xamarin.iOS10/LiteDB.Core.dll",
+        "lib/Xamarin.iOS10/LiteDB.Core.dll.mdb",
+        "lib/Xamarin.iOS10/LiteDB.Platform.dll",
+        "lib/Xamarin.iOS10/LiteDB.Platform.dll.mdb",
+        "lib/net45/LiteDB.Core.dll",
+        "lib/net45/LiteDB.Platform.dll",
+        "lib/portable-net4+win8/LiteDB.Core.dll",
+        "lib/portable-net4+win8/LiteDB.Platform.dll",
+        "lib/portable-net4+win8/LiteDB.Platform.pri",
+        "lib/uap10.0/LiteDB.Core.dll",
+        "lib/uap10.0/LiteDB.Platform.dll",
+        "lib/uap10.0/LiteDB.Platform.pri"
       ]
     },
     "Microsoft.AspNetCore.Antiforgery/1.0.1": {
@@ -10746,6 +10780,7 @@
   },
   "projectFileDependencyGroups": {
     "": [
+      "LiteDB.Core >= 2.0.4",
       "Microsoft.AspNetCore.Diagnostics >= 1.0.0",
       "Microsoft.AspNetCore.Identity >= 1.1.0",
       "Microsoft.AspNetCore.Identity.EntityFrameworkCore >= 1.1.0",
