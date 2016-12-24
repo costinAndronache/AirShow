@@ -31,6 +31,10 @@ namespace AirShow.Models
             return _context.Presentations.Where(p => p.UserId == userId).ToList();
         }
 
+        public async Task<OperationResult> DownloadPresentation(string name, string userId, Stream inStream)
+        {
+            return await _filesRepository.GetFileForUser(name, userId, inStream);
+        }
 
         public async Task<OperationResult> UploadPresentationForUser(string name, string description, string userId, int categoryId, List<string> tags, Stream stream)
         {

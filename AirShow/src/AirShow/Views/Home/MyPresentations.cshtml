@@ -1,4 +1,4 @@
-﻿@model MyPresentationsViewModel
+﻿@model PresentationsViewModel
 @{
     ViewData["Title"] = "My Presentations";
     ViewData[ViewConstants.kNavbarActiveIndexKey] = NavbarModel.ActiveIndex.HomeMyPresentations;
@@ -19,10 +19,14 @@
                 <div class="caption">
                     <p>@item.Name</p>
                     <p>@item.Description</p>
-                    <p>
-                        <a href="#" class="btn btn-primary" role="button">Button</a> 
-                        <a href="#" class="btn btn-default" role="button">Button</a>
-                    </p>
+                    <div class="container-fluid">
+                        <a asp-controller="Presentations" 
+                           asp-action="@nameof(PresentationsController.ViewPresentation)" 
+                           asp-route-name="@item.Name" 
+                           class="btn btn-outline-primary" role="button">View</a> 
+                        <a asp-controller="Presentations" asp-action="DownloadPresentation" asp-route-name="@item.Name" 
+                           class="btn btn-primary" role="button">Download</a>
+                    </div>
                 </div>
             </div>
         </div>

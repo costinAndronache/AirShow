@@ -1,5 +1,46 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
+﻿@model ViewPresentationViewModel
+
+@{ 
+    ViewData[ViewConstants.kNavbarActiveIndexKey] = NavbarModel.ActiveIndex.HomeMyPresentations;
+}
+
+@section style {
+<link href="~/css/ViewPresentation.css" rel="stylesheet" />
+}
+
+<div class="col-md-6 offset-md-2">
+
+    <canvas id="pdfHost" class="">
+    </canvas>
+
+    <div class="pdfNavigationButtonsHost">
+        <button id="previousButton" class="btn btn-primary">Previous Page</button>
+        <button id="nextButton" class="btn btn-primary">Next Page</button>
+    </div>
+
+
+    <button id="activateButton" class="btn btn-primary">Activate</button>
+    
+    
+
+</div>
+
+
+@section scripts {
+@if (Model.PresentationURL != null)
+{
+    <script>
+        window.presentationURL = "@Model.PresentationURL";
+    </script>
+}
+
+@if (Model.ActivationRequestString != null)
+{
+    <script>
+        window.activationRequestString = "@Model.ActivationRequestString";
+    </script>
+}
+
+<script src="~/lib/pdfjs-dist/build/pdf.min.js"></script>
+<script src="~/js/ViewPresentation.js"></script>
 }

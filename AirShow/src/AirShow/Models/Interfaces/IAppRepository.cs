@@ -12,8 +12,9 @@ namespace AirShow.Models.Interfaces
     {
         Task<List<Presentation>> GetPresentationsForUser(string userId);
         Task<OperationResult> UploadPresentationForUser(string name, 
-            string description, 
-            string userId, int categoryId, List<string> tags, Stream stream);
+            string description, string userId, int categoryId, List<string> tags, Stream stream);
+
+        Task<OperationResult> DownloadPresentation(string name, string userId, Stream inStream);
         Task<List<Category>> GetCurrentCategories();
 
     }

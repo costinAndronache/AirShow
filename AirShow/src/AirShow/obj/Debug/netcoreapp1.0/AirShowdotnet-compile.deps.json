@@ -1,7 +1,7 @@
 {
   "runtimeTarget": {
     "name": ".NETCoreApp,Version=v1.0/",
-    "signature": "11807dd80907353aefabe3edfe70c8891ea53e98"
+    "signature": "337af2efd0a9b6947cbf2d138b079c66d3d5bd20"
   },
   "compilationOptions": {
     "defines": [
@@ -34,9 +34,10 @@
           "Microsoft.Extensions.Logging.Console": "1.1.0",
           "Microsoft.Extensions.Logging.Debug": "1.1.0",
           "Microsoft.Extensions.Options.ConfigurationExtensions": "1.0.0",
-          "LiteDB.Core": "2.0.4",
+          "Microsoft.AspNetCore.WebSockets": "1.0.0",
           "Microsoft.NETCore.App": "1.0.1",
-          "Microsoft.VisualStudio.Web.BrowserLink.Loader": "14.0.0"
+          "Microsoft.VisualStudio.Web.BrowserLink.Loader": "14.0.0",
+          "System.Collections.Concurrent": "4.3.0"
         },
         "compile": {
           "AirShow.dll": {}
@@ -45,12 +46,6 @@
       "Libuv/1.9.0": {
         "dependencies": {
           "Microsoft.NETCore.Platforms": "1.1.0"
-        }
-      },
-      "LiteDB.Core/2.0.4": {
-        "compile": {
-          "lib/portable-net4+win8/LiteDB.Core.dll": {},
-          "lib/portable-net4+win8/LiteDB.Platform.dll": {}
         }
       },
       "Microsoft.AspNetCore.Antiforgery/1.0.1": {
@@ -609,6 +604,16 @@
         },
         "compile": {
           "lib/netstandard1.3/Microsoft.AspNetCore.StaticFiles.dll": {}
+        }
+      },
+      "Microsoft.AspNetCore.WebSockets/1.0.0": {
+        "dependencies": {
+          "Microsoft.AspNetCore.Http.Extensions": "1.1.0",
+          "Microsoft.Extensions.Options": "1.1.0",
+          "NETStandard.Library": "1.6.1"
+        },
+        "compile": {
+          "lib/netstandard1.3/Microsoft.AspNetCore.WebSockets.dll": {}
         }
       },
       "Microsoft.AspNetCore.WebUtilities/1.1.0": {
@@ -2777,9 +2782,10 @@
           "Microsoft.Extensions.Logging.Console": "1.1.0",
           "Microsoft.Extensions.Logging.Debug": "1.1.0",
           "Microsoft.Extensions.Options.ConfigurationExtensions": "1.0.0",
-          "LiteDB.Core": "2.0.4",
+          "Microsoft.AspNetCore.WebSockets": "1.0.0",
           "Microsoft.NETCore.App": "1.0.1",
-          "Microsoft.VisualStudio.Web.BrowserLink.Loader": "14.0.0"
+          "Microsoft.VisualStudio.Web.BrowserLink.Loader": "14.0.0",
+          "System.Collections.Concurrent": "4.3.0"
         },
         "runtime": {
           "AirShow.dll": {}
@@ -2788,12 +2794,6 @@
       "Libuv/1.9.0": {
         "dependencies": {
           "Microsoft.NETCore.Platforms": "1.1.0"
-        }
-      },
-      "LiteDB.Core/2.0.4": {
-        "runtime": {
-          "lib/portable-net4+win8/LiteDB.Core.dll": {},
-          "lib/portable-net4+win8/LiteDB.Platform.dll": {}
         }
       },
       "Microsoft.AspNetCore.Antiforgery/1.0.1": {
@@ -3352,6 +3352,16 @@
         },
         "runtime": {
           "lib/netstandard1.3/Microsoft.AspNetCore.StaticFiles.dll": {}
+        }
+      },
+      "Microsoft.AspNetCore.WebSockets/1.0.0": {
+        "dependencies": {
+          "Microsoft.AspNetCore.Http.Extensions": "1.1.0",
+          "Microsoft.Extensions.Options": "1.1.0",
+          "NETStandard.Library": "1.6.1"
+        },
+        "runtime": {
+          "lib/netstandard1.3/Microsoft.AspNetCore.WebSockets.dll": {}
         }
       },
       "Microsoft.AspNetCore.WebUtilities/1.1.0": {
@@ -5424,11 +5434,6 @@
       "serviceable": true,
       "sha512": "sha512-9Q7AaqtQhS8JDSIvRBt6ODSLWDBI4c8YxNxyCQemWebBFUtBbc6M5Vi5Gz1ZyIUlTW3rZK9bIr5gnVyv0z7a2Q=="
     },
-    "LiteDB.Core/2.0.4": {
-      "type": "package",
-      "serviceable": true,
-      "sha512": "sha512-3NuNkS9p7JHg9atdZtXYOTOK/dW71CZNM21+bT7pFYMIiWzy8i5SAWcZa6CKxGSbap/ZnUHqL0aNEvYrB64nBQ=="
-    },
     "Microsoft.AspNetCore.Antiforgery/1.0.1": {
       "type": "package",
       "serviceable": true,
@@ -5643,6 +5648,11 @@
       "type": "package",
       "serviceable": true,
       "sha512": "sha512-pXiUBJtpO0fIlGEg/ESykhbIZ2+I+9Y+3qXzN19zZDDF+tD88eATg3A5MHMXu/VmqaROLfvpGJmJ6uOLUGsBVQ=="
+    },
+    "Microsoft.AspNetCore.WebSockets/1.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-vhA8iwDMjL+C/iNKubp9qBjkeh0b1bJyl3nOiL+B15yiUeEcnvx7vPXV2eyIX792dVCqn+hyYCatm/ST1Cg0Hg=="
     },
     "Microsoft.AspNetCore.WebUtilities/1.1.0": {
       "type": "package",

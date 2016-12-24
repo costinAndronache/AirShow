@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace AirShow.Models.ViewModels
 {
-    public class MyPresentationsViewModel
+    public class PresentationsViewModel
     {
         public List<Presentation> Presentations { get; set; }
     }

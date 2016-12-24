@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Identity;
 using AirShow.Models.EF;
 using AirShow.Models.Common;
 using Microsoft.AspNetCore.Http;
+using AirShow.WebSockets;
 
 namespace AirShow.Controllers
 {
@@ -19,11 +20,13 @@ namespace AirShow.Controllers
     {
         private IAppRepository _appRepository;
         private UserManager<User> _userManager;
+        private GlobalWebSocketServer _gwss;
 
-        public HomeController(IAppRepository appRepository, UserManager<User> userManager)
+        public HomeController(IAppRepository appRepository, UserManager<User> userManager, GlobalWebSocketServer gwss)
         {
             _userManager = userManager;
             _appRepository = appRepository;
+            _gwss = gwss;
         }
 
         public IActionResult Index()
@@ -31,15 +34,16 @@ namespace AirShow.Controllers
             return RedirectToAction("MyPresentations");
         }
 
-        public IActionResult MyActivePresentations()
+        public async Task<IActionResult> MyActivePresentations()
         {
-            return View();
+            var items = await _gwss.ActivePresentationsFor(_userManager.GetUserId(User));
+            return View(items);
         }
 
         public async Task<IActionResult> MyPresentations()
         {
             var userPresentations = await _appRepository.GetPresentationsForUser(_userManager.GetUserId(User));
-            var vm = new MyPresentationsViewModel
+            var vm = new PresentationsViewModel
             {
                 Presentations = userPresentations
             };

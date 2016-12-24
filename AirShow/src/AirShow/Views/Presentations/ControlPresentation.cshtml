@@ -1,0 +1,24 @@
+﻿@model string
+<div class="row">
+
+    <div class="col-md-3">
+
+        <div class="pdfNavigationButtonsHost">
+            <button id="previousButton" class="btn btn-primary">Previous Page</button>
+            <button id="nextButton" class="btn btn-primary">Next Page</button>
+        </div>
+
+    </div>
+
+</div>
+
+@section scripts {
+    @if (Model != null)
+    {
+        <script>
+            window.activationRequestString = "@Model";
+        </script>
+    }
+<script src="~/js/Common.js"></script>
+<script src="~/js/ControlPresentation.js"></script>
+}
