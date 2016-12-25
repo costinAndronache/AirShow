@@ -15,7 +15,7 @@ using AirShow.WebSockets;
 
 namespace AirShow.Controllers
 {
-    
+    [Authorize]
     public class HomeController : Controller
     {
         private IAppRepository _appRepository;
@@ -42,14 +42,10 @@ namespace AirShow.Controllers
 
         public async Task<IActionResult> MyPresentations()
         {
-            /*var userPresentations = await _appRepository.GetPresentationsForUser(_userManager.GetUserId(User));
+            var userPresentations = await _appRepository.GetPresentationsForUser(_userManager.GetUserId(User));
             var vm = new PresentationsViewModel
             {
                 Presentations = userPresentations
-            };*/
-            var vm = new PresentationsViewModel
-            {
-                Presentations = new List<Presentation>()
             };
             return View(vm);
         }
