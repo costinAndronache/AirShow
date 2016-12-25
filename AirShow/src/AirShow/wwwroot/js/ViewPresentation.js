@@ -23,8 +23,10 @@ var ViewPresentationHelper = (function () {
             var canvas = document.getElementById(self.canvasId);
             var context = canvas.getContext('2d');
             var viewport = page.getViewport(1);
-            var scale = canvas.clientHeight / viewport.height;
-            viewport = page.getViewport(scale);
+            var diff = window.screen.height - 2 * absoluteY(canvas);
+            var scale = (diff) / viewport.height;
+            console.log(diff + ", " + viewport.height + ", " + scale);
+            viewport = page.getViewport(0.7);
             canvas.height = viewport.height;
             canvas.width = viewport.width;
             var renderContext = {
@@ -76,7 +78,6 @@ var PresentationControllerHelper = (function () {
             alert("Again closed " + ev.code);
         };
         this.ws.onmessage = function (ev) {
-            alert('Did receive message ' + ev.data);
             var message = JSON.parse(ev.data);
             self.handleMessage(message);
         };

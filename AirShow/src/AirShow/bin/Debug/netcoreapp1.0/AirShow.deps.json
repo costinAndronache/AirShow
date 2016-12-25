@@ -1,7 +1,7 @@
 {
   "runtimeTarget": {
     "name": ".NETCoreApp,Version=v1.0",
-    "signature": "0c1285508a6907a6ad988b98ac86b43f3ed71c48"
+    "signature": "2ec7c8889fd680491438eec1685a550c7ccdafb4"
   },
   "compilationOptions": {
     "defines": [
@@ -37,7 +37,8 @@
           "Microsoft.AspNetCore.WebSockets": "1.0.0",
           "Microsoft.NETCore.App": "1.0.1",
           "Microsoft.VisualStudio.Web.BrowserLink.Loader": "14.0.0",
-          "System.Collections.Concurrent": "4.3.0"
+          "System.Collections.Concurrent": "4.3.0",
+          "Microsoft.Extensions.Configuration.CommandLine": "1.0.0"
         },
         "runtime": {
           "AirShow.dll": {}
@@ -1059,6 +1060,17 @@
         },
         "compile": {
           "lib/netstandard1.1/Microsoft.Extensions.Configuration.Binder.dll": {}
+        }
+      },
+      "Microsoft.Extensions.Configuration.CommandLine/1.0.0": {
+        "dependencies": {
+          "Microsoft.Extensions.Configuration": "1.0.0"
+        },
+        "runtime": {
+          "lib/netstandard1.1/Microsoft.Extensions.Configuration.CommandLine.dll": {}
+        },
+        "compile": {
+          "lib/netstandard1.1/Microsoft.Extensions.Configuration.CommandLine.dll": {}
         }
       },
       "Microsoft.Extensions.Configuration.EnvironmentVariables/1.0.0": {
@@ -4010,6 +4022,11 @@
       "type": "package",
       "serviceable": true,
       "sha512": "sha512-kK8QuBcPQtmKJCkC9enc1uMRFa++mPTuVNm2K5jDVXcAYKRBcFSbdEBvIe1JIgA6dEsAQeqjfHfKSaUJ8f5NFQ=="
+    },
+    "Microsoft.Extensions.Configuration.CommandLine/1.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-ofxSCmUb2phEzIF0J+ZZaMLvVEgSENjIQMghY/bLePXdAH2Q7Lpl1q2fMqkp5rYc6gnkUsup7a04VGfKqwnpsA=="
     },
     "Microsoft.Extensions.Configuration.EnvironmentVariables/1.0.0": {
       "type": "package",

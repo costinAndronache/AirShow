@@ -16,14 +16,13 @@
         <link rel="stylesheet" href="~/css/site.min.css" asp-append-version="true" />
     </environment>
 
-    @RenderSection("style", false);
+    @RenderSection("style", false)
 </head>
 <body>
     <div class="mainBodyDiv row">
-
         <div class="navbarDiv col-md-3">
               @Component.InvokeAsync("LeftNavbar", 
-             new { activeIndex = ViewData[ViewConstants.kNavbarActiveIndexKey] ?? NavbarModel.ActiveIndex.Undefined}).Result;
+             new { activeIndex = ViewData[ViewConstants.kNavbarActiveIndexKey] ?? NavbarModel.ActiveIndex.Undefined}).Result
         </div>
         <div class="container body-content col-md-9">
             @RenderBody()

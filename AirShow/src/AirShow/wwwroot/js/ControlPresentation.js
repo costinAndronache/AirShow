@@ -12,7 +12,6 @@ var ControlPresentationHelper = (function () {
         var self = this;
         this.ws.onopen = function (ev) {
             self.ws.send(self.connectionString);
-            return false;
         };
         this.ws.onmessage = function (ev) {
             return false;
@@ -46,7 +45,7 @@ var ControlPresentationHelper = (function () {
         obj[kActionTypeCodeKey] = ActionTypeCode.PageChangeAction;
         obj[kPageChangeActionTypeKey] = type;
         var request = JSON.stringify(obj);
-        this.ws.send("Hello world?");
+        this.ws.send(request);
     };
     return ControlPresentationHelper;
 }());

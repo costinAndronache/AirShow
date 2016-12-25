@@ -21,7 +21,6 @@ class ControlPresentationHelper {
 
         this.ws.onopen = function (ev: Event) {
             self.ws.send(self.connectionString);
-            return false;
         }
 
         this.ws.onmessage = function (ev: MessageEvent) {
@@ -66,7 +65,7 @@ class ControlPresentationHelper {
         obj[kPageChangeActionTypeKey] = type;
         var request = JSON.stringify(obj);
 
-        this.ws.send("Hello world?");
+        this.ws.send(request);
     }
 
 }

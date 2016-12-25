@@ -28,7 +28,8 @@
       "type": "platform"
     },
     "Microsoft.VisualStudio.Web.BrowserLink.Loader": "14.0.0",
-    "System.Collections.Concurrent": "4.3.0"
+    "System.Collections.Concurrent": "4.3.0",
+    "Microsoft.Extensions.Configuration.CommandLine": "1.0.0"
   },
 
   "tools": {
@@ -42,8 +43,7 @@
   "frameworks": {
     "netcoreapp1.0": {
       "imports": [
-        "dotnet5.6",
-        "portable-net45+win8"
+        "netstandard"
       ]
     }
   },
@@ -69,7 +69,5 @@
   },
 
   "scripts": {
-    "prepublish": [ "bower install", "dotnet bundle" ],
-    "postpublish": [ "dotnet publish-iis --publish-folder %publish:OutputPath% --framework %publish:FullTargetFramework%" ]
   }
 }

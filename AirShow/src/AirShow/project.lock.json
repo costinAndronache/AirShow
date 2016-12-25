@@ -1206,6 +1206,18 @@
           "lib/netstandard1.1/Microsoft.Extensions.Configuration.Binder.dll": {}
         }
       },
+      "Microsoft.Extensions.Configuration.CommandLine/1.0.0": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Extensions.Configuration": "1.0.0"
+        },
+        "compile": {
+          "lib/netstandard1.1/Microsoft.Extensions.Configuration.CommandLine.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard1.1/Microsoft.Extensions.Configuration.CommandLine.dll": {}
+        }
+      },
       "Microsoft.Extensions.Configuration.EnvironmentVariables/1.0.0": {
         "type": "package",
         "dependencies": {
@@ -2304,9 +2316,6 @@
         },
         "compile": {
           "ref/netstandard1.3/System.Collections.dll": {}
-        },
-        "runtime": {
-          "lib/portable-net45+win8+wp8+wpa81/_._": {}
         }
       },
       "System.Collections.Concurrent/4.3.0": {
@@ -2511,9 +2520,6 @@
         },
         "compile": {
           "ref/netstandard1.3/System.Diagnostics.Debug.dll": {}
-        },
-        "runtime": {
-          "lib/portable-net45+win8+wp8+wpa81/_._": {}
         }
       },
       "System.Diagnostics.DiagnosticSource/4.3.0": {
@@ -2628,9 +2634,6 @@
         },
         "compile": {
           "ref/netstandard1.0/System.Diagnostics.Tools.dll": {}
-        },
-        "runtime": {
-          "lib/portable-net45+win8+wp8+wpa81/_._": {}
         }
       },
       "System.Diagnostics.Tracing/4.3.0": {
@@ -2642,9 +2645,6 @@
         },
         "compile": {
           "ref/netstandard1.5/System.Diagnostics.Tracing.dll": {}
-        },
-        "runtime": {
-          "lib/portable-net45+win8+wpa81/_._": {}
         }
       },
       "System.Dynamic.Runtime/4.3.0": {
@@ -2681,9 +2681,6 @@
         },
         "compile": {
           "ref/netstandard1.3/System.Globalization.dll": {}
-        },
-        "runtime": {
-          "lib/portable-net45+win8+wp8+wpa81/_._": {}
         }
       },
       "System.Globalization.Calendars/4.3.0": {
@@ -2752,9 +2749,6 @@
         },
         "compile": {
           "ref/netstandard1.5/System.IO.dll": {}
-        },
-        "runtime": {
-          "lib/portable-net45+win8+wp8+wpa81/_._": {}
         }
       },
       "System.IO.Compression/4.3.0": {
@@ -2778,9 +2772,6 @@
         },
         "compile": {
           "ref/netstandard1.3/System.IO.Compression.dll": {}
-        },
-        "runtime": {
-          "lib/portable-net45+win8+wpa81/_._": {}
         },
         "runtimeTargets": {
           "runtimes/unix/lib/netstandard1.3/System.IO.Compression.dll": {
@@ -3045,9 +3036,6 @@
         "compile": {
           "ref/netstandard1.3/System.Net.Http.dll": {}
         },
-        "runtime": {
-          "lib/portable-net45+win8+wpa81/_._": {}
-        },
         "runtimeTargets": {
           "runtimes/unix/lib/netstandard1.6/System.Net.Http.dll": {
             "assetType": "runtime",
@@ -3101,9 +3089,6 @@
         },
         "compile": {
           "ref/netstandard1.3/System.Net.Primitives.dll": {}
-        },
-        "runtime": {
-          "lib/portable-net45+win8+wp8+wpa81/_._": {}
         }
       },
       "System.Net.Requests/4.0.11": {
@@ -3125,9 +3110,6 @@
         },
         "compile": {
           "ref/netstandard1.3/System.Net.Requests.dll": {}
-        },
-        "runtime": {
-          "lib/portable-net45+win8+wp8+wpa81/_._": {}
         },
         "runtimeTargets": {
           "runtimes/unix/lib/netstandard1.3/System.Net.Requests.dll": {
@@ -3272,9 +3254,6 @@
         },
         "compile": {
           "ref/netstandard1.5/System.Reflection.dll": {}
-        },
-        "runtime": {
-          "lib/portable-net45+win8+wp8+wpa81/_._": {}
         }
       },
       "System.Reflection.DispatchProxy/4.0.1": {
@@ -3353,9 +3332,6 @@
         },
         "compile": {
           "ref/netstandard1.0/System.Reflection.Extensions.dll": {}
-        },
-        "runtime": {
-          "lib/portable-net45+win8+wp8+wpa81/_._": {}
         }
       },
       "System.Reflection.Metadata/1.3.0": {
@@ -3393,9 +3369,6 @@
         },
         "compile": {
           "ref/netstandard1.0/System.Reflection.Primitives.dll": {}
-        },
-        "runtime": {
-          "lib/portable-net45+win8+wp8+wpa81/_._": {}
         }
       },
       "System.Reflection.TypeExtensions/4.3.0": {
@@ -3438,9 +3411,6 @@
         },
         "compile": {
           "ref/netstandard1.0/System.Resources.ResourceManager.dll": {}
-        },
-        "runtime": {
-          "lib/portable-net45+win8+wp8+wpa81/_._": {}
         }
       },
       "System.Runtime/4.3.0": {
@@ -3451,9 +3421,6 @@
         },
         "compile": {
           "ref/netstandard1.5/System.Runtime.dll": {}
-        },
-        "runtime": {
-          "lib/portable-net45+win8+wp80+wpa81/_._": {}
         }
       },
       "System.Runtime.CompilerServices.Unsafe/4.3.0": {
@@ -3477,9 +3444,6 @@
         },
         "compile": {
           "ref/netstandard1.5/System.Runtime.Extensions.dll": {}
-        },
-        "runtime": {
-          "lib/portable-net45+win8+wp8+wpa81/_._": {}
         }
       },
       "System.Runtime.Handles/4.3.0": {
@@ -3505,9 +3469,6 @@
         },
         "compile": {
           "ref/netstandard1.5/System.Runtime.InteropServices.dll": {}
-        },
-        "runtime": {
-          "lib/portable-net45+win8+wpa81/_._": {}
         }
       },
       "System.Runtime.InteropServices.RuntimeInformation/4.3.0": {
@@ -3868,9 +3829,6 @@
         },
         "compile": {
           "ref/netstandard1.3/System.Text.Encoding.dll": {}
-        },
-        "runtime": {
-          "lib/portable-net45+win8+wp8+wpa81/_._": {}
         }
       },
       "System.Text.Encoding.CodePages/4.0.1": {
@@ -3913,9 +3871,6 @@
         },
         "compile": {
           "ref/netstandard1.3/System.Text.Encoding.Extensions.dll": {}
-        },
-        "runtime": {
-          "lib/portable-net45+win8+wp8+wpa81/_._": {}
         }
       },
       "System.Text.Encodings.Web/4.3.0": {
@@ -3997,9 +3952,6 @@
         },
         "compile": {
           "ref/netstandard1.3/System.Threading.Tasks.dll": {}
-        },
-        "runtime": {
-          "lib/portable-net45+win8+wp8+wpa81/_._": {}
         }
       },
       "System.Threading.Tasks.Dataflow/4.6.0": {
@@ -5165,6 +5117,17 @@
         "Microsoft.Extensions.Configuration.Binder.nuspec",
         "lib/netstandard1.1/Microsoft.Extensions.Configuration.Binder.dll",
         "lib/netstandard1.1/Microsoft.Extensions.Configuration.Binder.xml"
+      ]
+    },
+    "Microsoft.Extensions.Configuration.CommandLine/1.0.0": {
+      "sha512": "ofxSCmUb2phEzIF0J+ZZaMLvVEgSENjIQMghY/bLePXdAH2Q7Lpl1q2fMqkp5rYc6gnkUsup7a04VGfKqwnpsA==",
+      "type": "package",
+      "path": "Microsoft.Extensions.Configuration.CommandLine/1.0.0",
+      "files": [
+        "Microsoft.Extensions.Configuration.CommandLine.1.0.0.nupkg.sha512",
+        "Microsoft.Extensions.Configuration.CommandLine.nuspec",
+        "lib/netstandard1.1/Microsoft.Extensions.Configuration.CommandLine.dll",
+        "lib/netstandard1.1/Microsoft.Extensions.Configuration.CommandLine.xml"
       ]
     },
     "Microsoft.Extensions.Configuration.EnvironmentVariables/1.0.0": {
@@ -10787,6 +10750,7 @@
       "Microsoft.EntityFrameworkCore.Sqlite >= 1.1.0",
       "Microsoft.EntityFrameworkCore.Sqlite.Design >= 1.1.0",
       "Microsoft.EntityFrameworkCore.Tools >= 1.1.0-preview4-final",
+      "Microsoft.Extensions.Configuration.CommandLine >= 1.0.0",
       "Microsoft.Extensions.Configuration.EnvironmentVariables >= 1.0.0",
       "Microsoft.Extensions.Configuration.Json >= 1.0.0",
       "Microsoft.Extensions.Logging >= 1.1.0",

@@ -20,13 +20,11 @@ namespace AirShow.WebSockets
         }
 
 
-        private async void RunInNewThread()
+        private void RunInNewThread()
         {
             while (_presentationSocket.State == WebSocketState.Open &&
                   _controllingSocket.State == WebSocketState.Open)
             {
-                Thread.Sleep(500);
-                continue;
 
                 var token = CancellationToken.None;
                 var buffer = new ArraySegment<Byte>(new Byte[4096]);
@@ -36,7 +34,7 @@ namespace AirShow.WebSockets
                     WebSocketReceiveResult result;
                     do
                     {
-                        result = await _controllingSocket.ReceiveAsync(buffer, CancellationToken.None);
+                        result = _controllingSocket.ReceiveAsync(buffer, CancellationToken.None).Result;
                         ms.Write(buffer.Array, buffer.Offset, result.Count);
                     }
                     while (!result.EndOfMessage);
@@ -47,39 +45,20 @@ namespace AirShow.WebSockets
                     {
                         using (var reader = new StreamReader(ms, Encoding.UTF8))
                         {
-                            var request = reader.ToString();
+                            var request = reader.ReadToEnd();
                             var type = WebSocketMessageType.Text;
                             var data = Encoding.UTF8.GetBytes(request);
                             buffer = new ArraySegment<Byte>(data);
-                            await _presentationSocket.SendAsync(buffer, type, true, token);
+                            _presentationSocket.SendAsync(buffer, type, true, token);
                         }
                     }
                 }
-
-
-                /*var received = await _controllingSocket.ReceiveAsync(buffer, token);
-
-                switch (received.MessageType)
-                {
-                    case WebSocketMessageType.Text:
-                        var request = Encoding.UTF8.GetString(buffer.Array,
-                                                buffer.Offset,
-                                                buffer.Count);
-                        var type = WebSocketMessageType.Text;
-                        var data = Encoding.UTF8.GetBytes(request);
-                        buffer = new ArraySegment<Byte>(data);
-                        await _presentationSocket.SendAsync(buffer, type, true, token);
-                        break;
-                } */
             }
         }
 
-        public async void Run()
+        public void Run()
         {
-            new Thread(delegate ()
-            {
-                this.RunInNewThread();
-            }).Start();
+            RunInNewThread();
         }
     }
 }

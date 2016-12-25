@@ -38,14 +38,9 @@ namespace AirShow.Controllers
 
                 if (loginResult.Succeeded)
                 {
-                    if (model.ReturnUrl != null && Url.IsLocalUrl(model.ReturnUrl))
-                    {
-                        return Redirect(model.ReturnUrl);
-                    }
-                    else
-                    {
+
                         return RedirectToAction("Index", "Home");
-                    }
+                    
                 }
             }
 

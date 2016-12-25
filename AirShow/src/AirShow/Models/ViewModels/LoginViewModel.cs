@@ -16,7 +16,5 @@ namespace AirShow.Models.ViewModels
 
         [Required]
         public bool RememberMe { get; set; }
-
-        public string ReturnUrl { get; set; }
     }
 }

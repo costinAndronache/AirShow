@@ -75,6 +75,7 @@
 -r:"C:\Users\Costi\.nuget\packages\Microsoft.Extensions.Configuration\1.0.0\lib\netstandard1.1\Microsoft.Extensions.Configuration.dll"
 -r:"C:\Users\Costi\.nuget\packages\Microsoft.Extensions.Configuration.Abstractions\1.1.0\lib\netstandard1.0\Microsoft.Extensions.Configuration.Abstractions.dll"
 -r:"C:\Users\Costi\.nuget\packages\Microsoft.Extensions.Configuration.Binder\1.0.0\lib\netstandard1.1\Microsoft.Extensions.Configuration.Binder.dll"
+-r:"C:\Users\Costi\.nuget\packages\Microsoft.Extensions.Configuration.CommandLine\1.0.0\lib\netstandard1.1\Microsoft.Extensions.Configuration.CommandLine.dll"
 -r:"C:\Users\Costi\.nuget\packages\Microsoft.Extensions.Configuration.EnvironmentVariables\1.0.0\lib\netstandard1.3\Microsoft.Extensions.Configuration.EnvironmentVariables.dll"
 -r:"C:\Users\Costi\.nuget\packages\Microsoft.Extensions.Configuration.FileExtensions\1.0.0\lib\netstandard1.3\Microsoft.Extensions.Configuration.FileExtensions.dll"
 -r:"C:\Users\Costi\.nuget\packages\Microsoft.Extensions.Configuration.Json\1.0.0\lib\netstandard1.3\Microsoft.Extensions.Configuration.Json.dll"
