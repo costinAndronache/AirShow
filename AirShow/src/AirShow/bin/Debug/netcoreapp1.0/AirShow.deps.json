@@ -1,7 +1,7 @@
 {
   "runtimeTarget": {
     "name": ".NETCoreApp,Version=v1.0",
-    "signature": "2ec7c8889fd680491438eec1685a550c7ccdafb4"
+    "signature": "98d17bbfb8c0c7fa55c1a46d59bfd454f12a0a06"
   },
   "compilationOptions": {
     "defines": [
@@ -38,7 +38,8 @@
           "Microsoft.NETCore.App": "1.1.0",
           "Microsoft.VisualStudio.Web.BrowserLink.Loader": "14.0.0",
           "System.Collections.Concurrent": "4.3.0",
-          "Microsoft.Extensions.Configuration.CommandLine": "1.0.0"
+          "Microsoft.Extensions.Configuration.CommandLine": "1.0.0",
+          "jquery.TypeScript.DefinitelyTyped": "3.1.2"
         },
         "runtime": {
           "AirShow.dll": {}
@@ -47,6 +48,7 @@
           "AirShow.dll": {}
         }
       },
+      "jquery.TypeScript.DefinitelyTyped/3.1.2": {},
       "Microsoft.AspNetCore.Antiforgery/1.0.1": {
         "dependencies": {
           "Microsoft.AspNetCore.DataProtection": "1.1.0",
@@ -3697,6 +3699,11 @@
       "type": "project",
       "serviceable": false,
       "sha512": ""
+    },
+    "jquery.TypeScript.DefinitelyTyped/3.1.2": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-km6S6ElHdLPBxNf1qj5vQjkw1rpRe5Hwf/1aFo5TZtl3ZSfc//lcdsVTfPZz78o+/dkhEC+ZJcRONNlVDAJg6A=="
     },
     "Microsoft.AspNetCore.Antiforgery/1.0.1": {
       "type": "package",

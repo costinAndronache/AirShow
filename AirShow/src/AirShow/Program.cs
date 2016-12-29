@@ -17,7 +17,7 @@ namespace AirShow
                 .UseKestrel()
                 .UseConfiguration(config)
                 .UseContentRoot(Directory.GetCurrentDirectory())
-                .UseUrls("http://0.0.0.0:80")
+                .UseUrls("http://0.0.0.0:80", "http://localhost:5000")
                 .UseStartup<Startup>()
                 .Build();
 

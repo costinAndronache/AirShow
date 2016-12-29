@@ -1,0 +1,14 @@
+﻿@model TagsViewModel
+
+@if (Model.TagsList != null)
+{
+    <div class="row tagsView">
+
+        @foreach (var item in Model.TagsList)
+        {
+            <a href="#" class="post-tag">@item</a>
+        }
+
+    </div>
+}
+

@@ -4,32 +4,21 @@
     ViewData[ViewConstants.kNavbarActiveIndexKey] = NavbarModel.ActiveIndex.HomeMyPresentations;
 }
 
+@section style {
+<link href="~/css/Tags.css" rel="stylesheet" />
+<link href="~/css/UploadPresentation.css" rel="stylesheet" />
+}
+
 <div class="row">
 
     @if (Model.Presentations.Count == 0)
     {
-        <p>There doesn't seem to be anything here</p>
+        <p>You don't have any presentations. Start uploading some</p>
     }
 
     @foreach (var item in Model.Presentations)
     {
-        <div class="col-sm-2 col-md-2">
-            <div class="thumbnail">
-                <img src="~/images/pdfIcon.png" alt="PDF icon" class="img-thumbnail">
-                <div class="caption">
-                    <p>@item.Name</p>
-                    <p>@item.Description</p>
-                    <div class="container-fluid">
-                        <a asp-controller="Presentations" 
-                           asp-action="@nameof(PresentationsController.ViewPresentation)" 
-                           asp-route-name="@item.Name" 
-                           class="btn btn-outline-primary" role="button">View</a> 
-                        <a asp-controller="Presentations" asp-action="DownloadPresentation" asp-route-name="@item.Name" 
-                           class="btn btn-primary" role="button">Download</a>
-                    </div>
-                </div>
-            </div>
-        </div>
+        @Component.InvokeAsync(nameof(MyPresentationCard), new { model = item }).Result
     }
 
 </div>

@@ -16,6 +16,8 @@ namespace AirShow.Models.Interfaces
 
         Task<OperationResult> DownloadPresentation(string name, string userId, Stream inStream);
         Task<List<Category>> GetCurrentCategories();
+        Task<OperationResult> DeletePresentation(string presentationName, string userId);
 
+       
     }
 }

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AirShow.Models.ViewModels;
 
-namespace AirShow.ViewComponents.LeftNavbarViewComponent
+namespace AirShow.Views.Shared.Components
 {
     public class LeftNavbar: ViewComponent
     {

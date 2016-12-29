@@ -37,5 +37,6 @@ namespace AirShow.Models.Contexts
         public DbSet<Presentation> Presentations { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<Tag> Tags { get; set;}
+        public DbSet<PresentationTag> PresentationTags { get; set; }
     }
 }

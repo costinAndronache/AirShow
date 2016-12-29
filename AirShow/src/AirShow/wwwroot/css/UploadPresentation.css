@@ -1,0 +1,15 @@
+﻿
+.tag {
+    background-color: steelblue
+}
+
+.bootstrap-tagsinput{
+    height: 50px;
+    overflow: auto;
+    display: block;
+}
+
+.tagsView {
+    height: 68px;
+    overflow: auto;
+}

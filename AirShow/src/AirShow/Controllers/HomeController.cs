@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using AirShow.ViewComponents;
 using AirShow.Models.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using AirShow.Models.Interfaces;
@@ -43,9 +42,17 @@ namespace AirShow.Controllers
         public async Task<IActionResult> MyPresentations()
         {
             var userPresentations = await _appRepository.GetPresentationsForUser(_userManager.GetUserId(User));
+            var presentations = new List<MyPresentationCardModel>();
+            foreach (var item in userPresentations)
+            {
+                presentations.Add(new MyPresentationCardModel()
+                {
+                    Presentation = item
+                });
+            }
             var vm = new PresentationsViewModel
             {
-                Presentations = userPresentations
+                Presentations = presentations
             };
             return View(vm);
         }

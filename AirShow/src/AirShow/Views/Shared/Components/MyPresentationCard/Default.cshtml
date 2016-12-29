@@ -1,0 +1,31 @@
+﻿@model MyPresentationCardModel
+    <div class="card col-md-5 col-sm-4 cardFixed">
+        <img src="~/images/pdfIcon.png" alt="PDF icon" class="card-img-top">
+        <div class="card-block">
+            <h6 class="card-title">@Model.Presentation.Name</h6>
+            <p class="card-text">@Model.Presentation.Description thats cute darling vocally you couldnt find the right key in a rooom full of locked doors poppy </p>
+        </div>
+
+       
+
+        <ul class="list-group list-group-flush">
+
+            <li class="list-group-item">
+                @Component.InvokeAsync(nameof(TagsView), new { model = TagsViewModel.DummyModel }).Result
+            </li>
+
+            <li class="list-group-item">
+                <a asp-controller="Presentations"
+                   asp-action="@nameof(PresentationsController.ViewPresentation)"
+                   asp-route-name="@Model.Presentation.Name"
+                   class="btn btn-primary" role="button">View</a>
+
+                <a asp-controller="@nameof(AirShow.Controllers.PresentationsController).WithoutControllerPart()"
+                   asp-action="@nameof(AirShow.Controllers.PresentationsController.DownloadPresentation)"
+                   asp-route-name="@Model.Presentation.Name"
+                   class="btn btn-primary" role="button">Download</a>
+
+            </li>
+        </ul>
+    </div>
+

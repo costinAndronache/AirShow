@@ -8,6 +8,6 @@ namespace AirShow.Models.ViewModels
 {
     public class PresentationsViewModel
     {
-        public List<Presentation> Presentations { get; set; }
+        public List<MyPresentationCardModel> Presentations { get; set; }
     }
 }

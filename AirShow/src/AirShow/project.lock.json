@@ -3,6 +3,9 @@
   "version": 2,
   "targets": {
     ".NETCoreApp,Version=v1.0": {
+      "jquery.TypeScript.DefinitelyTyped/3.1.2": {
+        "type": "package"
+      },
       "Libuv/1.9.1": {
         "type": "package",
         "dependencies": {
@@ -4158,6 +4161,16 @@
     }
   },
   "libraries": {
+    "jquery.TypeScript.DefinitelyTyped/3.1.2": {
+      "sha512": "km6S6ElHdLPBxNf1qj5vQjkw1rpRe5Hwf/1aFo5TZtl3ZSfc//lcdsVTfPZz78o+/dkhEC+ZJcRONNlVDAJg6A==",
+      "type": "package",
+      "path": "jquery.TypeScript.DefinitelyTyped/3.1.2",
+      "files": [
+        "Content/Scripts/typings/jquery/jquery.d.ts",
+        "jquery.TypeScript.DefinitelyTyped.3.1.2.nupkg.sha512",
+        "jquery.TypeScript.DefinitelyTyped.nuspec"
+      ]
+    },
     "Libuv/1.9.1": {
       "sha512": "uqX2Frwf9PW8MaY7PRNY6HM5BpW1D8oj1EdqzrmbEFD5nH63Yat3aEjN/tws6Tw6Fk7LwmLBvtUh32tTeTaHiA==",
       "type": "package",
@@ -10759,7 +10772,8 @@
       "Microsoft.Extensions.Options.ConfigurationExtensions >= 1.0.0",
       "Microsoft.NETCore.App >= 1.1.0",
       "Microsoft.VisualStudio.Web.BrowserLink.Loader >= 14.0.0",
-      "System.Collections.Concurrent >= 4.3.0"
+      "System.Collections.Concurrent >= 4.3.0",
+      "jquery.TypeScript.DefinitelyTyped >= 3.1.2"
     ],
     ".NETCoreApp,Version=v1.0": []
   },

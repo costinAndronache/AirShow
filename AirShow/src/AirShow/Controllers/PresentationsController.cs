@@ -75,5 +75,11 @@ namespace AirShow.Controllers
             };
             return View("ControlPresentation", JsonConvert.SerializeObject(vm));
         }
+
+        [HttpPost]
+        public async Task<IActionResult> DeletePresentation(string name)
+        {
+            return View();
+        }
     }
 }

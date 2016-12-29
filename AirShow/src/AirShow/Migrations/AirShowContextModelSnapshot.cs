@@ -63,7 +63,7 @@ namespace AirShow.Migrations
 
                     b.HasIndex("TagId");
 
-                    b.ToTable("PresentationTag");
+                    b.ToTable("PresentationTags");
                 });
 
             modelBuilder.Entity("AirShow.Models.EF.Tag", b =>

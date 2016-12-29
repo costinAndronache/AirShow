@@ -1,0 +1,15 @@
+﻿.noPadding {
+    padding-left: 0;
+    padding-right: 0;
+    margin-left: 0;
+    margin-right: 0;
+}
+
+.cardFixed {
+
+}
+
+.card-text {
+    height: 75px;
+    overflow: auto;
+}

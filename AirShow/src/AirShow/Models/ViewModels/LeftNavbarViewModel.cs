@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AirShow.Utils;
 
 namespace AirShow.Models.ViewModels
 {
@@ -19,6 +20,7 @@ namespace AirShow.Models.ViewModels
             HomeMyPresentations = 0,
             HomeMyActivePresentations = 1,
             HomeUploadPresentation = 2,
+            Search = 3,
             AccountLogin = 0,
             AccountRegister = 1
         }
@@ -39,7 +41,8 @@ namespace AirShow.Models.ViewModels
             {
                 URLList = new List<NavbarURL> { NavbarURL.HomeMyPresentations,
                                                 NavbarURL.HomeMyActivePresentations,
-                                                NavbarURL.HomeUploadPresentation},
+                                                NavbarURL.HomeUploadPresentation,
+                                                NavbarURL.AccountLogout},
                 HighlightedIndex = activeItemIndex,
                 DisabledIndexes = disabledIndexes
             };
@@ -53,38 +56,47 @@ namespace AirShow.Models.ViewModels
 
             internal static NavbarURL HomeMyPresentations = new NavbarURL
             {
-                Controller = "Home",
-                Action = "MyPresentations",
+                Controller = nameof(Controllers.HomeController).WithoutControllerPart(),
+                Action = nameof(Controllers.HomeController.MyPresentations),
                 Name = "My presentations"
             };
 
             internal static NavbarURL HomeMyActivePresentations = new NavbarURL
             {
-                Controller = "Home",
-                Action = "MyActivePresentations",
+                Controller = nameof(Controllers.HomeController).WithoutControllerPart(),
+                Action = nameof(Controllers.HomeController.MyActivePresentations),
                 Name = "My active presentation"
             };
 
             internal static NavbarURL HomeUploadPresentation = new NavbarURL
             {
-                Controller = "Home",
-                Action = "UploadPresentation",
+                Controller = nameof(Controllers.HomeController).WithoutControllerPart(),
+                Action = nameof(Controllers.HomeController.UploadPresentation),
                 Name = "Upload new presentation"
             };
 
             internal static NavbarURL AccountLogin = new NavbarURL
             {
-                Controller = "Account",
-                Action = "Login",
+                Controller = nameof(Controllers.AccountController).WithoutControllerPart(),
+                Action = nameof(Controllers.AccountController.Login),
                 Name = "Login"
             };
 
             internal static NavbarURL AccountRegister = new NavbarURL
             {
-                Controller = "Account",
-                Action = "Register",
+                Controller = nameof(Controllers.AccountController).WithoutControllerPart(),
+                Action = nameof(Controllers.AccountController.Register),
                 Name = "Register"
             };
+
+            internal static NavbarURL AccountLogout = new NavbarURL
+            {
+                Controller = nameof(Controllers.AccountController).WithoutControllerPart(),
+                Action = nameof(Controllers.AccountController.Logout),
+                Name = "Logout"
+            };
+
+           
         }
     }
 }

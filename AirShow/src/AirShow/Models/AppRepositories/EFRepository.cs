@@ -21,6 +21,25 @@ namespace AirShow.Models
             _filesRepository = filesRepository;
         }
 
+        public async Task<OperationResult> DeletePresentation(string presentationName, string userId)
+        {
+            var opResult = new OperationResult();
+
+            var list = _context.Presentations.Where(p => p.Name == presentationName && p.UserId == userId).ToList();
+            if (list.Count == 1)
+            {
+                var presentation = list.First();
+                var presentationTags = _context.PresentationTags.Where(pt => pt.PresentationId == presentation.Id).ToList();
+                _context.Presentations.Remove(presentation);
+                _context.PresentationTags.RemoveRange(presentationTags);
+                await _context.SaveChangesAsync();
+            } else
+            {
+                opResult.ErrorMessageIfAny = "Presentation not found";
+            }
+            return opResult;
+        }
+
         public async Task<List<Category>> GetCurrentCategories()
         {
             return _context.Categories.ToList();
@@ -103,7 +122,11 @@ namespace AirShow.Models
             {
                 if (!existentTags.Any(t => t.Name == item))
                 {
-                    var newTag = new Tag { Name = item };
+                    var newTag = new Tag
+                    {
+                        Name = item,
+                        PresentationTags = new List<PresentationTag>()
+                    };
                     _context.Tags.Add(newTag);
                     result.Add(newTag);
                 }
