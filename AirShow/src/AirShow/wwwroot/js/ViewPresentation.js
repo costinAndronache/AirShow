@@ -4,6 +4,7 @@ var ViewPresentationHelper = (function () {
         this.pdfURL = pdfURL;
         this.canvasId = canvasId;
         this.currentDisplayedPage = -1;
+        this.canvas = document.getElementById(this.canvasId);
     }
     ViewPresentationHelper.prototype.run = function () {
         var self = this;
@@ -20,15 +21,11 @@ var ViewPresentationHelper = (function () {
     ViewPresentationHelper.prototype.displayPage = function (index) {
         var self = this;
         this.pdfFile.getPage(index).then(function (page) {
-            var canvas = document.getElementById(self.canvasId);
-            var context = canvas.getContext('2d');
+            var context = self.canvas.getContext('2d');
             var viewport = page.getViewport(1);
-            var diff = window.screen.height - 2 * absoluteY(canvas);
-            var scale = (diff) / viewport.height;
-            console.log(diff + ", " + viewport.height + ", " + scale);
-            viewport = page.getViewport(0.7);
-            canvas.height = viewport.height;
-            canvas.width = viewport.width;
+            viewport = page.getViewport(1.0);
+            self.canvas.height = viewport.height;
+            self.canvas.width = viewport.width;
             var renderContext = {
                 canvasContext: context,
                 viewport: viewport
@@ -48,15 +45,45 @@ var ViewPresentationHelper = (function () {
         }
     };
     ViewPresentationHelper.prototype.setupControls = function () {
-        var previousButton = document.getElementById("previousButton");
-        var nextButton = document.getElementById("nextButton");
+        var fullScreenButton = document.getElementById("fullScreenButton");
         var self = this;
-        previousButton.onclick = function (ev) {
-            self.displayPreviousPage();
+        fullScreenButton.onclick = function (ev) {
+            if (document.fullscreenElement) {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
+            }
+            else {
+                if (!self.makeCanvasFullScreen())
+                    alert('This browser does not have full-screen capabilities');
+            }
         };
-        nextButton.onclick = function (ev) {
-            self.displayNextPage();
+        window.addEventListener('keydown', function (ev) {
+            if (ev.keyCode == 37) {
+                self.displayPreviousPage();
+            }
+            if (ev.keyCode == 39) {
+                self.displayNextPage();
+            }
+        });
+    };
+    ViewPresentationHelper.prototype.makeCanvasFullScreen = function () {
+        var cv = this.canvas;
+        var adjustWidthHeight = function () {
+            cv.style.height = "100%";
+            cv.style.width = "100%";
         };
+        if (cv.requestFullscreen) {
+            cv.requestFullscreen();
+            adjustWidthHeight();
+            return true;
+        }
+        if (cv.webkitRequestFullScreen) {
+            cv.webkitRequestFullScreen();
+            adjustWidthHeight();
+            return true;
+        }
+        return false;
     };
     return ViewPresentationHelper;
 }());

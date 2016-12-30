@@ -18,14 +18,31 @@ namespace AirShow.Models.FileRepositories
             _env = env;
         }
 
-        public async Task<OperationResult> GetFileForUser(string filename, string userId, Stream inStream)
+        public async Task<OperationStatus> DeleteFileForUser(string filename, string userId)
+        {
+            var res = new OperationStatus();
+            var path = BuildPathFor(userId, filename);
+            if (!File.Exists(path))
+            {
+                res.ErrorMessageIfAny = "The file does not exist or it has been deleted already.";
+            }
+            else
+            {
+                File.Delete(path);
+            }
+
+            return res;
+
+        }
+
+        public async Task<OperationStatus> GetFileForUser(string filename, string userId, Stream inStream)
         {
             var path = BuildPathFor(userId, filename);
             if (!File.Exists(path))
             {
-                return new OperationResult
+                return new OperationStatus
                 {
-                    ErrorMessageIfAny = OperationResult.kUnknownError
+                    ErrorMessageIfAny = OperationStatus.kUnknownError
                 };
             }
 
@@ -34,10 +51,10 @@ namespace AirShow.Models.FileRepositories
                 await fs.CopyToAsync(inStream);
             }
 
-            return new OperationResult();
+            return new OperationStatus();
         }
 
-        public async Task<OperationResult> SaveFileForUser(Stream fileStream, string filename, string userId)
+        public async Task<OperationStatus> SaveFileForUser(Stream fileStream, string filename, string userId)
         {
             var directoryExistsOrCreatedResult = ConfirmDirectoryExistsOrCreate(userId);
             if (directoryExistsOrCreatedResult != null)
@@ -49,15 +66,15 @@ namespace AirShow.Models.FileRepositories
             var fs = CreateFileToWriteAtPath(filePath);
             if (fs == null)
             {
-                return new OperationResult
+                return new OperationStatus
                 {
-                    ErrorMessageIfAny = OperationResult.kInvalidFileNameOrAlreadyExists
+                    ErrorMessageIfAny = OperationStatus.kInvalidFileNameOrAlreadyExists
                 };
             }
 
             await fileStream.CopyToAsync(fs);
             fs.Dispose();
-            return new OperationResult();
+            return new OperationStatus();
         }
 
 
@@ -71,7 +88,7 @@ namespace AirShow.Models.FileRepositories
             return BuildDirectoryPathFor(userId) + Path.DirectorySeparatorChar + filename;
         }
 
-        private OperationResult ConfirmDirectoryExistsOrCreate(string userId)
+        private OperationStatus ConfirmDirectoryExistsOrCreate(string userId)
         {
             var directoryPath = BuildDirectoryPathFor(userId);
             
@@ -83,12 +100,12 @@ namespace AirShow.Models.FileRepositories
                 }
                 catch (Exception e)
                 {
-                    var message = OperationResult.kUnknownError;
+                    var message = OperationStatus.kUnknownError;
                     if (_env.IsDevelopment())
                     {
                         message = e.InnerException.ToString();
                     }
-                    return new OperationResult
+                    return new OperationStatus
                     {
                         ErrorMessageIfAny = message
                     };

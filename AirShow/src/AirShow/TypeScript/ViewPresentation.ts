@@ -5,12 +5,14 @@ class ViewPresentationHelper {
 
     pdfURL: string;
     canvasId: string;
+    canvas: HTMLCanvasElement;
     pdfFile: PDFDocumentProxy;
     currentDisplayedPage: number;
     constructor(pdfURL: string, canvasId: string) {
         this.pdfURL = pdfURL;
         this.canvasId = canvasId;
         this.currentDisplayedPage = -1;
+        this.canvas = document.getElementById(this.canvasId) as HTMLCanvasElement;
     }
 
 
@@ -35,18 +37,15 @@ class ViewPresentationHelper {
     private displayPage(index: number) {
         var self = this;
         this.pdfFile.getPage(index).then(function (page: PDFPageProxy) {
-            
-            var canvas: HTMLCanvasElement = document.getElementById(self.canvasId) as HTMLCanvasElement;
-            var context = canvas.getContext('2d');
-
+   
+            var context = self.canvas.getContext('2d');
+   
             var viewport = page.getViewport(1);
-            var diff = window.screen.height - 2 * absoluteY(canvas);
-            var scale = (diff) / viewport.height;
-            console.log(diff + ", " + viewport.height + ", " + scale);
-            viewport = page.getViewport(0.7);
 
-            canvas.height = viewport.height;
-            canvas.width = viewport.width;
+            viewport = page.getViewport(1.0);
+
+            self.canvas.height = viewport.height;
+            self.canvas.width = viewport.width;
 
             var renderContext = {
                 canvasContext: context,
@@ -70,18 +69,58 @@ class ViewPresentationHelper {
     }
 
     private setupControls() {
-        var previousButton = document.getElementById("previousButton") as HTMLButtonElement;
-        var nextButton = document.getElementById("nextButton") as HTMLButtonElement;
-        var self = this;
-        previousButton.onclick = function (ev: Event) {
-            self.displayPreviousPage();
-        };
+        var fullScreenButton = document.getElementById("fullScreenButton") as HTMLButtonElement;
 
-        nextButton.onclick = function (ev: Event) {
-            self.displayNextPage();
+        var self = this;
+
+        fullScreenButton.onclick = function (ev: Event) {
+            if (document.fullscreenElement) {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
+            } else {
+                if (!self.makeCanvasFullScreen())
+                    alert('This browser does not have full-screen capabilities');
+            }
         }
+
+        window.addEventListener('keydown', function (ev: KeyboardEvent) {
+            if (ev.keyCode == 37) { // left arrow 
+                self.displayPreviousPage();
+            }
+
+            if (ev.keyCode == 39) { // right arrow
+                self.displayNextPage();
+            }
+
+        });
     }
 
+
+
+    private makeCanvasFullScreen(): boolean {
+        var cv = this.canvas;
+
+        var adjustWidthHeight = function () {
+            cv.style.height = "100%";
+            cv.style.width = "100%";
+        }
+        if (cv.requestFullscreen) {
+            cv.requestFullscreen();
+            adjustWidthHeight();
+            return true
+        }
+
+        if (cv.webkitRequestFullScreen) {
+            cv.webkitRequestFullScreen();
+            adjustWidthHeight();
+            return true
+        }
+
+
+        return false;
+
+    }
 }
 
 class PresentationControllerHelper {

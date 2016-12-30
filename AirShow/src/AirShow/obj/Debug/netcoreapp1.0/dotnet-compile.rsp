@@ -215,11 +215,12 @@ E:\Git\AirShow\AirShow\src\AirShow\Controllers\AccountController.cs
 E:\Git\AirShow\AirShow\src\AirShow\Controllers\HomeController.cs
 E:\Git\AirShow\AirShow\src\AirShow\Controllers\PresentationsController.cs
 E:\Git\AirShow\AirShow\src\AirShow\Controllers\SearchController.cs
-E:\Git\AirShow\AirShow\src\AirShow\Migrations\20161226091025_ReInitialMigration.cs
-E:\Git\AirShow\AirShow\src\AirShow\Migrations\20161226091025_ReInitialMigration.Designer.cs
+E:\Git\AirShow\AirShow\src\AirShow\Migrations\20161230200611_ReInitialMigration.cs
+E:\Git\AirShow\AirShow\src\AirShow\Migrations\20161230200611_ReInitialMigration.Designer.cs
 E:\Git\AirShow\AirShow\src\AirShow\Migrations\AirShowContextModelSnapshot.cs
 E:\Git\AirShow\AirShow\src\AirShow\Models\AppRepositories\EFRepository.cs
 E:\Git\AirShow\AirShow\src\AirShow\Models\Common\OperationResult.cs
+E:\Git\AirShow\AirShow\src\AirShow\Models\Common\OperationStatus.cs
 E:\Git\AirShow\AirShow\src\AirShow\Models\Contexts\AirShowContext.cs
 E:\Git\AirShow\AirShow\src\AirShow\Models\EF\Category.cs
 E:\Git\AirShow\AirShow\src\AirShow\Models\EF\Presentation.cs

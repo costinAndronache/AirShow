@@ -41,13 +41,15 @@ namespace AirShow.Controllers
 
         public async Task<IActionResult> MyPresentations()
         {
-            var userPresentations = await _appRepository.GetPresentationsForUser(_userManager.GetUserId(User));
+            var userPresentationsResult = await _appRepository.GetPresentationsForUser(_userManager.GetUserId(User));
             var presentations = new List<MyPresentationCardModel>();
-            foreach (var item in userPresentations)
+            foreach (var item in userPresentationsResult.Value)
             {
+                var tagsResult = await _appRepository.GetTagsForPresentation(item);
                 presentations.Add(new MyPresentationCardModel()
                 {
-                    Presentation = item
+                    Presentation = item,
+                    Tags = tagsResult.Value.Select(t => t.Name).ToList()
                 });
             }
             var vm = new PresentationsViewModel
@@ -59,12 +61,12 @@ namespace AirShow.Controllers
 
         public async Task<IActionResult> UploadPresentation()
         {
-            var categories = await _appRepository.GetCurrentCategories();
+            var categoriesResult = await _appRepository.GetCurrentCategories();
             var vm = new UploadPresentationViewModel
             {
                 ViewInput = new UploadPresentationViewModel.Input
                 {
-                    Categories = categories
+                    Categories = categoriesResult.Value
                 }
             };
             return View(vm);
@@ -76,7 +78,8 @@ namespace AirShow.Controllers
             Action<UploadPresentationViewModel> populateVMWithCategories = async (UploadPresentationViewModel m) =>
             {
                 m.ViewInput = new UploadPresentationViewModel.Input();
-                m.ViewInput.Categories = await _appRepository.GetCurrentCategories();
+                var result = await _appRepository.GetCurrentCategories();
+                m.ViewInput.Categories = result.Value;
             };
 
             if (!ModelState.IsValid)
@@ -108,9 +111,9 @@ namespace AirShow.Controllers
         }
 
 
-        private static OperationResult CheckFileForMimeTypes(IFormFile fileForm)
+        private static OperationStatus CheckFileForMimeTypes(IFormFile fileForm)
         {
-            var opResult = new OperationResult();
+            var opResult = new OperationStatus();
 
             var availableContentTypes = new string[] { "application/pdf" };
 

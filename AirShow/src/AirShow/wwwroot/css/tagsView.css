@@ -1,0 +1,8 @@
+﻿.tagsView {
+    max-height: 68px;
+    overflow: auto;
+}
+
+.tag {
+    background-color: steelblue
+}

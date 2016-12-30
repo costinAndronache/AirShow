@@ -11,6 +11,7 @@ using System.IO;
 using AirShow.Models.ViewModels;
 using AirShow.WebSockets;
 using Newtonsoft.Json;
+using AirShow.Utils;
 
 // For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -76,10 +77,17 @@ namespace AirShow.Controllers
             return View("ControlPresentation", JsonConvert.SerializeObject(vm));
         }
 
-        [HttpPost]
+        [HttpDelete]
         public async Task<IActionResult> DeletePresentation(string name)
         {
-            return View();
+            var userID = _userManager.GetUserId(User);
+            var result = await _appRepository.DeletePresentation(name, userID);
+            if (result.ErrorMessageIfAny != null)
+            {
+                return StatusCode(302);
+            }
+
+            return StatusCode(200);
         }
     }
 }

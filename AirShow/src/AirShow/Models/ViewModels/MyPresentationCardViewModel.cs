@@ -9,6 +9,7 @@ namespace AirShow.Models.ViewModels
     public class MyPresentationCardModel
     {
         public Presentation Presentation { get; set; }
+        public List<string> Tags { get; set; }
         public string ThumbnailURL { get; set; }
     }
 }

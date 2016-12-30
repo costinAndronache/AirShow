@@ -10,14 +10,14 @@ namespace AirShow.Models.Interfaces
 {
     public interface IAppRepository
     {
-        Task<List<Presentation>> GetPresentationsForUser(string userId);
-        Task<OperationResult> UploadPresentationForUser(string name, 
+        Task<OperationResult<List<Presentation>>> GetPresentationsForUser(string userId);
+        Task<OperationStatus> UploadPresentationForUser(string name, 
             string description, string userId, int categoryId, List<string> tags, Stream stream);
 
-        Task<OperationResult> DownloadPresentation(string name, string userId, Stream inStream);
-        Task<List<Category>> GetCurrentCategories();
-        Task<OperationResult> DeletePresentation(string presentationName, string userId);
+        Task<OperationStatus> DownloadPresentation(string name, string userId, Stream inStream);
+        Task<OperationResult<List<Category>>> GetCurrentCategories();
+        Task<OperationStatus> DeletePresentation(string presentationName, string userId);
 
-       
+        Task<OperationResult<List<Tag>>> GetTagsForPresentation(Presentation p);
     }
 }

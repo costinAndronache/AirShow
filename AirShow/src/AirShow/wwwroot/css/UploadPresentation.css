@@ -1,7 +1,6 @@
-﻿
-.tag {
-    background-color: steelblue
-}
+﻿@import url('tagsview.css');
+
+
 
 .bootstrap-tagsinput{
     height: 50px;
@@ -9,7 +8,4 @@
     display: block;
 }
 
-.tagsView {
-    height: 68px;
-    overflow: auto;
-}
+
