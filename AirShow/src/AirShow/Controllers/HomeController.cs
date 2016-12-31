@@ -41,7 +41,7 @@ namespace AirShow.Controllers
 
         public async Task<IActionResult> MyPresentations()
         {
-            var userPresentationsResult = await _appRepository.GetPresentationsForUser(_userManager.GetUserId(User));
+            var userPresentationsResult = await _appRepository.GetPresentationsForUser(_userManager.GetUserId(User), PagingOptions.FirstPageAllItems);
             var presentations = new List<MyPresentationCardModel>();
             foreach (var item in userPresentationsResult.Value)
             {
