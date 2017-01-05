@@ -7,6 +7,7 @@ using AirShow.Models.Contexts;
 using AirShow.Models.EF;
 using AirShow.Models.Common;
 using System.IO;
+using Microsoft.EntityFrameworkCore;
 
 namespace AirShow.Models.AppRepositories
 {
@@ -123,6 +124,55 @@ namespace AirShow.Models.AppRepositories
             return new OperationStatus() { ErrorMessageIfAny = OperationStatus.kUnknownError };
         }
 
+        public async Task<PagedOperationResult<List<Presentation>>> GetUserPresentationsFromCategory(string categoryName, string userId, PagingOptions options)
+        {
+
+            var list = await _context.Presentations.Include(pt => pt.Category).Where(p => p.Category.Name == categoryName && p.UserId == userId)
+                .Skip((options.PageIndex - 1) * options.ItemsPerPage).Take(options.ItemsPerPage).ToListAsync();
+
+            return new PagedOperationResult<List<Presentation>>
+            {
+                Value = list,
+                ItemsPerPage = options.ItemsPerPage
+            };
+        }
+
+        public async Task<PagedOperationResult<List<Presentation>>> GetUserPresentationsFromTag(string tag, string userId, PagingOptions options)
+        {
+            var listOfAllPresentations = await _context.Presentations.Include(p => p.PresentationTags)
+                .Where(p => p.PresentationTags.Any(pt => pt.Tag.Name == tag) && p.UserId == userId).ToListAsync();
+
+            var filteredList = listOfAllPresentations
+                .Skip((options.PageIndex - 1) * options.ItemsPerPage).Take(options.ItemsPerPage);
+
+            return new PagedOperationResult<List<Presentation>>
+            {
+                Value = filteredList.ToList(),
+                ItemsPerPage = options.ItemsPerPage
+            };
+        }
+
+        public async Task<OperationResult<int>> GetNumberOfUserPresentationsInCategory(string categoryName, string userId)
+        {
+            var numOfItems = _context.Presentations.Include(p => p.Category).Count(pt => pt.UserId == userId && pt.Category.Name == categoryName);
+            var result = new OperationResult<int>
+            {
+                Value = numOfItems
+            };
+
+            return result;
+        }
+
+        public async Task<OperationResult<int>> GetNumberOfUserPresentationsWithTag(string tag, string userId)
+        {
+            var numOfItems = _context.Presentations.Include(p => p.PresentationTags).Count(
+                p => p.PresentationTags.Any(pt => pt.Tag.Name == tag) && p.UserId == userId);
+
+            return new OperationResult<int>
+            {
+                Value = numOfItems
+            };
+        }
     }
        
 }

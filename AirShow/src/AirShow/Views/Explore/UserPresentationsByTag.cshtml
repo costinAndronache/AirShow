@@ -1,0 +1,28 @@
+﻿@model PresentationsViewModel
+@{
+    ViewData["Title"] = "My Presentations";
+    ViewData[ViewConstants.kNavbarActiveIndexKey] = NavbarModel.ActiveIndex.HomeMyPresentations;
+}
+
+@section style {
+    <link href="~/css/PresentationTag.css" rel="stylesheet" />
+    <link href="~/css/tagsView.css" rel="stylesheet" />
+}
+
+@section scripts {
+    <script src="~/js/MyPresentations.js"></script>
+}
+
+<div class="row">
+
+    @if (Model.Presentations.Count == 0)
+    {
+        <p>You don't have any presentations. Start uploading some</p>
+    }
+
+    @foreach (var item in Model.Presentations)
+    {
+        @Component.InvokeAsync(nameof(MyPresentationCard), new { model = item }).Result
+    }
+
+</div>

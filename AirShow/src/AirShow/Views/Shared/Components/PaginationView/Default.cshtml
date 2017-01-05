@@ -1,0 +1,17 @@
+﻿@model PaginationViewModel
+
+<ul class="pagination">
+    @for(int i=0; i<Model.Hrefs.Count; i++)
+            {
+                string liClassValue = "";
+                string text = (i + 1) + "";
+                if (Model.ActiveIndex == i)
+                {
+                    liClassValue = "active";
+                }
+
+        <li class="@liClassValue">
+            <a href="@Model.Hrefs.ElementAt(i)">@text</a>
+        </li>
+    }
+</ul>

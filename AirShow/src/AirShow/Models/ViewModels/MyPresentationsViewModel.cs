@@ -9,5 +9,6 @@ namespace AirShow.Models.ViewModels
     public class PresentationsViewModel
     {
         public List<MyPresentationCardModel> Presentations { get; set; }
+        public PaginationViewModel PaginationModel { get; set; }
     }
 }

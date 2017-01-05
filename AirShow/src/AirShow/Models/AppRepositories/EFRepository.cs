@@ -55,6 +55,16 @@ namespace AirShow.Models.AppRepositories
             return await _presentationsRepository.GetNumberOfPresentationsForUser(userId);
         }
 
+        public async Task<OperationResult<int>> GetNumberOfUserPresentationsInCategory(string categoryName, string userId)
+        {
+            return await _presentationsRepository.GetNumberOfUserPresentationsInCategory(categoryName, userId);
+        }
+
+        public async Task<OperationResult<int>> GetNumberOfUserPresentationsWithTag(string tag, string userId)
+        {
+            return await _presentationsRepository.GetNumberOfUserPresentationsWithTag(tag, userId);
+        }
+
         public async Task<PagedOperationResult<List<Presentation>>> GetPresentationsForUser(string userId, PagingOptions options)
         {
             return await _presentationsRepository.GetPresentationsForUser(userId, options);
@@ -63,6 +73,16 @@ namespace AirShow.Models.AppRepositories
         public async Task<OperationResult<List<Tag>>> GetTagsForPresentation(Presentation p)
         {
             return await _tagsRepository.GetTagsForPresentation(p);
+        }
+
+        public async Task<PagedOperationResult<List<Presentation>>> GetUserPresentationsFromCategory(string categoryName, string userId, PagingOptions options)
+        {
+            return await _presentationsRepository.GetUserPresentationsFromCategory(categoryName, userId, options);
+        }
+
+        public async Task<PagedOperationResult<List<Presentation>>> GetUserPresentationsFromTag(string tag, string userId, PagingOptions options)
+        {
+            return await _presentationsRepository.GetUserPresentationsFromTag(tag, userId, options);
         }
 
         public async Task<OperationStatus> RemoveTagFromPresentation(string tag, Presentation p)
