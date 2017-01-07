@@ -7,6 +7,10 @@ namespace AirShow.Models.ViewModels
 {
     public class PaginationViewModel
     {
+        public string LeftArrowHrefIfAny { get; set; }
+        public string RightArrowHrefIfAny { get; set; }
+        public int DisplayOffset { get; set; }
+
         public List<string> Hrefs { get; set; }
         public int ActiveIndex { get; set; }
     }

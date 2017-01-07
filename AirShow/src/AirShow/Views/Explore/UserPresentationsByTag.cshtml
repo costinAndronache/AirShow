@@ -7,6 +7,7 @@
 @section style {
     <link href="~/css/PresentationTag.css" rel="stylesheet" />
     <link href="~/css/tagsView.css" rel="stylesheet" />
+    <link href="~/css/PaginationViewStyle.css" rel="stylesheet" />
 }
 
 @section scripts {
@@ -26,3 +27,8 @@
     }
 
 </div>
+
+@if (Model.PaginationModel != null)
+{
+    @Component.InvokeAsync(nameof(PaginationView), new { model = Model.PaginationModel }).Result
+}

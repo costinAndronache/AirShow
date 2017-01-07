@@ -1,0 +1,7 @@
+﻿.paginationDiv {
+text-align:center;
+}
+
+.paginationDiv ul li{
+    display: inline;
+}

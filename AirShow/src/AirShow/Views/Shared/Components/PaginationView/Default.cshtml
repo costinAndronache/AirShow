@@ -1,17 +1,37 @@
 ﻿@model PaginationViewModel
 
-<ul class="pagination">
-    @for(int i=0; i<Model.Hrefs.Count; i++)
+<div class="paginationDiv">
+    <ul class="pagination">
+
+        @if (Model.LeftArrowHrefIfAny != null)
+        {
+            <li><a href="@Model.LeftArrowHrefIfAny"><<</a></li>
+        }
+
+        @if (Model.Hrefs != null)
+        {
+            for (int i = 0; i < Model.Hrefs.Count; i++)
             {
-                string liClassValue = "";
-                string text = (i + 1) + "";
+                string liClassValue = "page-item";
+                string text = (i + Model.DisplayOffset) + "";
                 if (Model.ActiveIndex == i)
                 {
-                    liClassValue = "active";
+                    liClassValue += " active";
                 }
 
-        <li class="@liClassValue">
-            <a href="@Model.Hrefs.ElementAt(i)">@text</a>
-        </li>
-    }
-</ul>
+                <li class="@liClassValue">
+                    <a class="page-link" href="@Model.Hrefs.ElementAt(i)">@text</a>
+                </li>
+            }
+        }
+
+
+        @if (Model.RightArrowHrefIfAny != null)
+        {
+            <li><a href="@Model.RightArrowHrefIfAny">>></a></li>
+
+        }
+
+
+    </ul>
+</div>

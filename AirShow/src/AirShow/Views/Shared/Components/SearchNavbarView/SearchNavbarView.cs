@@ -3,15 +3,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using AirShow.Models.ViewModels;
 
 namespace AirShow.Views.Shared.Components
 {
-    public class PaginationView: ViewComponent
+    public class SearchNavbarView: ViewComponent
     {
-       public async Task<IViewComponentResult> InvokeAsync(PaginationViewModel model)
+        public async Task<IViewComponentResult> InvokeAsync()
         {
-            return View(model);
+            return View();
         }
     }
 }

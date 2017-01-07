@@ -245,6 +245,7 @@ E:\Git\AirShow\AirShow\src\AirShow\Models\ViewModels\LeftNavbarViewModel.cs
 E:\Git\AirShow\AirShow\src\AirShow\Models\ViewModels\LoginViewModel.cs
 E:\Git\AirShow\AirShow\src\AirShow\Models\ViewModels\MyPresentationCardViewModel.cs
 E:\Git\AirShow\AirShow\src\AirShow\Models\ViewModels\MyPresentationsViewModel.cs
+E:\Git\AirShow\AirShow\src\AirShow\Models\ViewModels\PaginationViewModel.cs
 E:\Git\AirShow\AirShow\src\AirShow\Models\ViewModels\RegisterViewModel.cs
 E:\Git\AirShow\AirShow\src\AirShow\Models\ViewModels\TagsViewModel.cs
 E:\Git\AirShow\AirShow\src\AirShow\Models\ViewModels\UploadPresentationViewModel.cs
@@ -254,6 +255,8 @@ E:\Git\AirShow\AirShow\src\AirShow\Utils\StringExtensions.cs
 E:\Git\AirShow\AirShow\src\AirShow\Utils\Utils.cs
 E:\Git\AirShow\AirShow\src\AirShow\Views\Shared\Components\LeftNavbar\LeftNavbar.cs
 E:\Git\AirShow\AirShow\src\AirShow\Views\Shared\Components\MyPresentationCard\MyPresentationCard.cs
+E:\Git\AirShow\AirShow\src\AirShow\Views\Shared\Components\PaginationView\PaginationView.cs
+E:\Git\AirShow\AirShow\src\AirShow\Views\Shared\Components\SearcvNavbarView\SearchNavbarView.cs
 E:\Git\AirShow\AirShow\src\AirShow\Views\Shared\Components\TagsView\TagsView.cs
 E:\Git\AirShow\AirShow\src\AirShow\Views\Shared\Components\TopNavbar\TopNavbar.cs
 E:\Git\AirShow\AirShow\src\AirShow\WebSockets\GlobalWebSocketServer.cs

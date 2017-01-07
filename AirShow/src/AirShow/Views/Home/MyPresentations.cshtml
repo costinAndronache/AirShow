@@ -26,3 +26,8 @@
     }
 
 </div>
+
+@if (Model.PaginationModel != null)
+{
+    @Component.InvokeAsync(nameof(TagsView), new { model = Model.PaginationModel }).Result
+}
