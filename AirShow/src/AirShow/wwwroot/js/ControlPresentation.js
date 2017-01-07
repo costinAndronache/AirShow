@@ -49,9 +49,9 @@ var ControlPresentationHelper = (function () {
     };
     return ControlPresentationHelper;
 }());
-window.onload = function (ev) {
+window.addEventListener("load", function () {
     var helper = new ControlPresentationHelper(window["activationRequestString"]);
     window["helper"] = helper;
     helper.run();
-};
+});
 //# sourceMappingURL=ControlPresentation.js.map

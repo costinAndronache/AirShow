@@ -35,8 +35,8 @@ var MyPresentationsHelper = (function () {
     };
     return MyPresentationsHelper;
 }());
-window.onload = function (ev) {
+window.addEventListener("load", function () {
     var helper = new MyPresentationsHelper();
     helper.run();
-};
+});
 //# sourceMappingURL=MyPresentations.js.map

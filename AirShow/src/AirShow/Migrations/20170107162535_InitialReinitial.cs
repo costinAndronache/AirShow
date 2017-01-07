@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace AirShow.Migrations
 {
-    public partial class ReInitialMigration : Migration
+    public partial class InitialReinitial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -117,7 +117,9 @@ namespace AirShow.Migrations
                         .Annotation("Sqlite:Autoincrement", true),
                     CategoryId = table.Column<int>(nullable: false),
                     Description = table.Column<string>(maxLength: 255, nullable: false),
+                    IsPublic = table.Column<bool>(nullable: false),
                     Name = table.Column<string>(maxLength: 80, nullable: false),
+                    UploadedDate = table.Column<DateTime>(nullable: false),
                     UserId = table.Column<string>(nullable: true)
                 },
                 constraints: table =>

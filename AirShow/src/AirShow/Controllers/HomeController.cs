@@ -92,8 +92,17 @@ namespace AirShow.Controllers
             var tags = vm.ViewOutput.TagsList != null ? vm.ViewOutput.TagsList.Split(new char[] { ',', ' ' }) : new string[] { };
             var tagsList = new List<string>(tags);
 
-            var opResult = await _appRepository.UploadPresentationForUser(vm.ViewOutput.Name, vm.ViewOutput.Description, 
-                userId, vm.ViewOutput.CategoryId, tagsList, vm.ViewOutput.File.OpenReadStream());
+            var uploadModel = new UploadPresentationModel
+            {
+                CategoryId = vm.ViewOutput.CategoryId,
+                Name = vm.ViewOutput.Name,
+                Description = vm.ViewOutput.Description,
+                Tags = tagsList,
+                IsPublic = vm.ViewOutput.IsPublic,
+                SourceStream =  vm.ViewOutput.File.OpenReadStream()
+            };
+
+            var opResult = await _appRepository.UploadPresentationForUser(userId, uploadModel);
 
             if (opResult.ErrorMessageIfAny != null)
             {

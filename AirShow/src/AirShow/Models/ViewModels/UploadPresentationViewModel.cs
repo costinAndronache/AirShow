@@ -27,6 +27,9 @@ namespace AirShow.Models.ViewModels
             [Required, MaxLength(255)]
             public string Description { get; set; }
 
+            [Required]
+            public bool IsPublic { get; set; }
+
             public string TagsList { get; set; }
         }
 

@@ -17,6 +17,12 @@ namespace AirShow.Models.EF
         [Required, MaxLength(255)]
         public string Description { get; set; }
 
+        [Required]
+        public bool IsPublic { get; set; }
+
+        
+        public DateTime UploadedDate { get; set; }
+
         public int CategoryId { get; set; }
         public Category Category { get; set; }
 

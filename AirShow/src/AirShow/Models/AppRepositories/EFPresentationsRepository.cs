@@ -72,19 +72,19 @@ namespace AirShow.Models.AppRepositories
             return await _filesRepository.GetFileForUser(name, userId, inStream);
         }
 
-        public async Task<OperationStatus> UploadPresentationForUser(string name, string description, string userId, int categoryId, List<string> tags, Stream stream)
+        public async Task<OperationStatus> UploadPresentationForUser(string userId, UploadPresentationModel model)
         {
-            if (_context.Presentations.Any(p => p.UserId == userId && p.Name == name))
+            if (_context.Presentations.Any(p => p.UserId == userId && p.Name == model.Name))
             {
                 return new OperationStatus { ErrorMessageIfAny = OperationStatus.kPresentationWithSameNameExists };
             }
 
-            if (!_context.Categories.Any(c => c.Id == categoryId))
+            if (!_context.Categories.Any(c => c.Id == model.CategoryId))
             {
                 return new OperationStatus { ErrorMessageIfAny = OperationStatus.kNoSuchCategoryWithId };
             }
 
-            var tagsForPresentationResult = await _tagsRepository.CreateOrGetTags(tags);
+            var tagsForPresentationResult = await _tagsRepository.CreateOrGetTags(model.Tags);
             if (tagsForPresentationResult.ErrorMessageIfAny != null)
             {
                 return tagsForPresentationResult;
@@ -93,11 +93,13 @@ namespace AirShow.Models.AppRepositories
 
             var currentPresentation = new Presentation
             {
-                Name = name,
-                Description = description,
+                Name = model.Name,
+                Description = model.Description,
                 UserId = userId,
-                CategoryId = categoryId,
-                PresentationTags = new List<PresentationTag>()
+                CategoryId = model.CategoryId,
+                PresentationTags = new List<PresentationTag>(),
+                UploadedDate = DateTime.Now,
+                IsPublic = model.IsPublic
             };
 
             await _context.Presentations.AddAsync(currentPresentation);
@@ -118,7 +120,7 @@ namespace AirShow.Models.AppRepositories
             int rows = await _context.SaveChangesAsync();
             if (rows > 0)
             {
-                return await _filesRepository.SaveFileForUser(stream, name, userId);
+                return await _filesRepository.SaveFileForUser(model.SourceStream, model.Name, userId);
             }
 
             return new OperationStatus() { ErrorMessageIfAny = OperationStatus.kUnknownError };
@@ -173,6 +175,36 @@ namespace AirShow.Models.AppRepositories
                 Value = numOfItems
             };
         }
+
+        public async Task<PagedOperationResult<List<Presentation>>> SearchUserPresentations(List<string> keywords, string userId, PagingOptions options,
+                                                                       PresentationSearchType searchType)
+        {
+            var presentationsResult = new List<Presentation>();
+            var userPresentations = _context.Presentations.Where(p => p.UserId == userId);
+
+            foreach (var word in keywords)
+            {
+                var lowerWord = word.ToLower();
+                var presentations = await userPresentations.Where(p => p.Name.ToLower().Contains(lowerWord)).ToListAsync();
+
+                foreach (var item in presentations)
+                {
+                    if (!presentationsResult.Any(p => p.Id == item.Id))
+                    {
+                        presentationsResult.Add(item);
+                    }
+                }
+            }
+
+            var numOfPages = presentationsResult.Count / options.ItemsPerPage;
+
+            return new PagedOperationResult<List<Presentation>>
+            {
+                Value = presentationsResult.Skip((options.PageIndex - 1) * options.ItemsPerPage).Take(options.ItemsPerPage).ToList(),
+                TotalPages = numOfPages
+            };
+        }
+
     }
-       
+
 }

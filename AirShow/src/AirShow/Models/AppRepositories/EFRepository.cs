@@ -90,9 +90,15 @@ namespace AirShow.Models.AppRepositories
             return await _tagsRepository.RemoveTagFromPresentation(tag, p);
         }
 
-        public async Task<OperationStatus> UploadPresentationForUser(string name, string description, string userId, int categoryId, List<string> tags, Stream stream)
+        public async Task<OperationStatus> UploadPresentationForUser(string userId, UploadPresentationModel model)
         {
-            return await _presentationsRepository.UploadPresentationForUser(name, description, userId, categoryId, tags, stream);
+            return await _presentationsRepository.UploadPresentationForUser(userId, model);
+        }
+
+        public async Task<PagedOperationResult<List<Presentation>>> SearchUserPresentations(List<string> keywords, string userId, PagingOptions options,
+                                                                       PresentationSearchType searchType)
+        {
+            return await _presentationsRepository.SearchUserPresentations(keywords, userId, options, searchType);
         }
     }
 }

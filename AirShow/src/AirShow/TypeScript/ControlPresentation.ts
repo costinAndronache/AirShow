@@ -70,9 +70,8 @@ class ControlPresentationHelper {
 
 }
 
-
-window.onload = function (ev: Event) {
+window.addEventListener("load", function () {
     var helper = new ControlPresentationHelper(window["activationRequestString"]);
     window["helper"] = helper;
     helper.run();
-}
+});

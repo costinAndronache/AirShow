@@ -9,6 +9,7 @@ using AirShow.Models.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using AirShow.Models.EF;
 using AirShow.Models.Common;
+using System.Net;
 
 // For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -17,6 +18,13 @@ namespace AirShow.Controllers
     [Authorize]
     public class ExploreController : Controller
     {
+        private static Dictionary<string, PresentationSearchType> searchTypesPerWhereValues = 
+            new Dictionary<string, PresentationSearchType>()
+        {
+                { "name", PresentationSearchType.Name},
+                { "description", PresentationSearchType.Description },
+                { "tags", PresentationSearchType.Tags }
+        };
         private IAppRepository _appRepository;
         private UserManager<User> _userManager;
 
@@ -29,6 +37,49 @@ namespace AirShow.Controllers
         public IActionResult Index()
         {
             return View();
+        }
+
+
+        public async Task<IActionResult> SearchPresentations(string keywords, string where, int? page, int? itemsPerPage)
+        {
+            var pageIndex = page.HasValue ? page.Value : 1;
+            var numOfItems = itemsPerPage.HasValue ? itemsPerPage.Value : 1;
+            var id = _userManager.GetUserId(User);
+            var list = new List<MyPresentationCardModel>();
+            var pagingOptions = new PagingOptions { PageIndex = pageIndex, ItemsPerPage = numOfItems };
+            var keywrodsList = keywords.Split(new char[] {' ', ','}).ToList();
+            var indexOfEmpty = keywrodsList.FindIndex(item => item.Length == 0);
+            if (indexOfEmpty >= 0 && indexOfEmpty < keywrodsList.Count)
+            {
+                keywrodsList.RemoveAt(indexOfEmpty);
+            }
+
+            PresentationSearchType searchType = PresentationSearchType.None;
+            var whereList = WebUtility.UrlDecode(where).Split(new char[] {',', ' '});
+            foreach (var item in whereList)
+            {
+                if (searchTypesPerWhereValues.ContainsKey(item.ToLower()))
+                {
+                    searchType |= searchTypesPerWhereValues[item.ToLower()];
+                }
+            }
+
+            PagedOperationResult<List<Presentation>> presentations = await _appRepository.SearchUserPresentations(keywrodsList,
+                id, pagingOptions, searchType);
+
+            var vmList = new List<MyPresentationCardModel>();
+            foreach (var item in presentations.Value)
+            {
+                var tagsResult = await _appRepository.GetTagsForPresentation(item);
+
+                vmList.Add(new MyPresentationCardModel { Presentation = item, Tags = tagsResult.Value.Select(t => t.Name).ToList()});
+            }
+
+            return View(new PresentationsViewModel
+            {
+                Presentations = vmList,
+                PaginationModel = await CreateSearchPaginationModel(keywrodsList, searchType, presentations.TotalPages, pagingOptions)
+            });
         }
 
         public async Task<IActionResult> UserPresentationsByTag(string tag, int? page, int? itemsPerPage)
@@ -63,49 +114,39 @@ namespace AirShow.Controllers
             var numOfItems = await _appRepository.GetNumberOfUserPresentationsWithTag(tag, userId);
             var numOfPages = numOfItems.Value / options.ItemsPerPage;
 
-            var minPagesDisplayed = 3;
-            var itemsLeftAndRight = (int)Math.Floor(minPagesDisplayed / 2.0);
-            var activeItemIndex = itemsLeftAndRight; // the active item index is zero numbered
+            return PaginationViewModel.BuildModelWith(numOfPages, options, index =>
+            "/Explore/UserPresentationsByTag?tag=" + tag + "&page=" + index + "&itemsPerPage=" + options.ItemsPerPage);
+        }
 
-            var leftMostPage = options.PageIndex - itemsLeftAndRight;
-            if (leftMostPage <= 0)
+
+        private async Task<PaginationViewModel> CreateSearchPaginationModel(List<string> keywordsList,
+                                                                            PresentationSearchType searchType,
+                                                                            int numOfPages, PagingOptions currentPagingOptions)
+        {
+            var keywordsInOneString = "";
+            keywordsList.ForEach(item => keywordsInOneString += item + ",");
+            keywordsInOneString = WebUtility.UrlEncode(keywordsInOneString);
+
+            var searchTypeString = "";
+            if ((searchType & PresentationSearchType.Name) != 0)
             {
-                activeItemIndex = 0;
-                leftMostPage = 1;
+                searchTypeString += "name,"; 
             }
-            var rightMostPage = options.PageIndex + itemsLeftAndRight;
-
-            if (rightMostPage > numOfPages)
+            if ((searchType & PresentationSearchType.Tags) != 0)
             {
-                rightMostPage = numOfPages;
-                activeItemIndex = options.PageIndex - 1;
+                searchTypeString += "tags,";
             }
-
-            if (rightMostPage - leftMostPage + 1 < minPagesDisplayed)
+            if ((searchType & PresentationSearchType.Description) != 0)
             {
-                if (leftMostPage == 1)
-                {
-                    rightMostPage += 1;
-                }
-                else if (rightMostPage == numOfPages)
-                {
-                    leftMostPage -= 1;
-                }
+                searchTypeString += "description,";
             }
+            searchTypeString = WebUtility.UrlEncode(searchTypeString);
 
-            List<string> hrefs = new List<string>();
-            for(int i = leftMostPage; i <= rightMostPage; i++)
+            return PaginationViewModel.BuildModelWith(numOfPages, currentPagingOptions, index =>
             {
-                var href = "/Explore/UserPresentationsByTag?tag=" + tag + "&page=" + i + "&itemsPerPage=" + options.ItemsPerPage;
-                hrefs.Add(href);
-            }
-
-            return new PaginationViewModel
-            {
-                Hrefs = hrefs,
-                DisplayOffset = leftMostPage,
-                ActiveIndex = activeItemIndex
-            };
+                return "/Explore/SearchPresentations?keywords=" + keywordsInOneString + "&where=" + searchTypeString 
+                + "&page=" + index + "&itemsPerPage=" + currentPagingOptions.ItemsPerPage;
+            });
         }
     }
 }

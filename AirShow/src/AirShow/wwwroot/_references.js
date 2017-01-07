@@ -2,6 +2,7 @@
 /// <reference path="js/common.js" />
 /// <reference path="js/controlpresentation.js" />
 /// <reference path="js/mypresentations.js" />
+/// <reference path="js/searchbarview.js" />
 /// <reference path="js/site.js" />
 /// <reference path="js/uploadpresentation.js" />
 /// <reference path="js/viewpresentation.js" />

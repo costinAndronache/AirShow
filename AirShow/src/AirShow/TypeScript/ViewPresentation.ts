@@ -197,11 +197,11 @@ class ActivationHelper {
     }
 }
 
-window.onload = function (ev: Event) {
+window.addEventListener("load", function () {
     let greeter = new ViewPresentationHelper(window["presentationURL"], "pdfHost");
     let activationHelper = new ActivationHelper(greeter);
     greeter.run();
     activationHelper.run();
     window["activationHelper"] = activationHelper;
+});
 
-};

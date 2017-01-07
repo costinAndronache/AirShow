@@ -2,6 +2,15 @@
     <div class="card col-md-5 col-sm-4 cardFixed">
         <img src="~/images/pdfIcon.png" alt="PDF icon" class="card-img-top">
         <div class="card-block">
+            @if (Model.Presentation.IsPublic)
+            {
+                <i class="fa fa-eye"></i>
+            }
+            else
+            {
+                <i class="fa fa-eye-slash"></i>
+            }
+
             <h6 class="card-title">@Model.Presentation.Name</h6>
             <p class="card-text">@Model.Presentation.Description </p>
         </div>

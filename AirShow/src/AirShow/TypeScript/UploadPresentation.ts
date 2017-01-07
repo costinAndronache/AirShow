@@ -13,7 +13,7 @@ class UploadPresentationHelper {
 
 }
 
-window.onload = function () {
+window.addEventListener("load", function () {
     var helper = new UploadPresentationHelper();
     helper.start();
-}
+});

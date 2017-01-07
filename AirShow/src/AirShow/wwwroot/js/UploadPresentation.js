@@ -6,8 +6,8 @@ var UploadPresentationHelper = (function () {
     };
     return UploadPresentationHelper;
 }());
-window.onload = function () {
+window.addEventListener("load", function () {
     var helper = new UploadPresentationHelper();
     helper.start();
-};
+});
 //# sourceMappingURL=UploadPresentation.js.map

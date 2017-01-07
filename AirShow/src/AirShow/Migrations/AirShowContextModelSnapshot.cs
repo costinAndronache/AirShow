@@ -38,9 +38,13 @@ namespace AirShow.Migrations
                         .IsRequired()
                         .HasMaxLength(255);
 
+                    b.Property<bool>("IsPublic");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(80);
+
+                    b.Property<DateTime>("UploadedDate");
 
                     b.Property<string>("UserId");
 

@@ -141,11 +141,11 @@ var ActivationHelper = (function () {
     };
     return ActivationHelper;
 }());
-window.onload = function (ev) {
+window.addEventListener("load", function () {
     var greeter = new ViewPresentationHelper(window["presentationURL"], "pdfHost");
     var activationHelper = new ActivationHelper(greeter);
     greeter.run();
     activationHelper.run();
     window["activationHelper"] = activationHelper;
-};
+});
 //# sourceMappingURL=ViewPresentation.js.map

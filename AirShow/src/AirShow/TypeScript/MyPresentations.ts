@@ -40,8 +40,7 @@ class MyPresentationsHelper {
 }
 
 
-
-window.onload = function (ev: Event) {
+window.addEventListener("load", function () {
     var helper = new MyPresentationsHelper();
     helper.run();
-}
+});

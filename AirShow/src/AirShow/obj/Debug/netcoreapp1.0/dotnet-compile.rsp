@@ -216,8 +216,8 @@ E:\Git\AirShow\AirShow\src\AirShow\Controllers\ExploreController.cs
 E:\Git\AirShow\AirShow\src\AirShow\Controllers\HomeController.cs
 E:\Git\AirShow\AirShow\src\AirShow\Controllers\PresentationsController.cs
 E:\Git\AirShow\AirShow\src\AirShow\Controllers\SearchController.cs
-E:\Git\AirShow\AirShow\src\AirShow\Migrations\20161230200611_ReInitialMigration.cs
-E:\Git\AirShow\AirShow\src\AirShow\Migrations\20161230200611_ReInitialMigration.Designer.cs
+E:\Git\AirShow\AirShow\src\AirShow\Migrations\20170107162535_InitialReinitial.cs
+E:\Git\AirShow\AirShow\src\AirShow\Migrations\20170107162535_InitialReinitial.Designer.cs
 E:\Git\AirShow\AirShow\src\AirShow\Migrations\AirShowContextModelSnapshot.cs
 E:\Git\AirShow\AirShow\src\AirShow\Models\AppRepositories\EFCategoriesRepository.cs
 E:\Git\AirShow\AirShow\src\AirShow\Models\AppRepositories\EFPresentationsRepository.cs
@@ -256,7 +256,7 @@ E:\Git\AirShow\AirShow\src\AirShow\Utils\Utils.cs
 E:\Git\AirShow\AirShow\src\AirShow\Views\Shared\Components\LeftNavbar\LeftNavbar.cs
 E:\Git\AirShow\AirShow\src\AirShow\Views\Shared\Components\MyPresentationCard\MyPresentationCard.cs
 E:\Git\AirShow\AirShow\src\AirShow\Views\Shared\Components\PaginationView\PaginationView.cs
-E:\Git\AirShow\AirShow\src\AirShow\Views\Shared\Components\SearcvNavbarView\SearchNavbarView.cs
+E:\Git\AirShow\AirShow\src\AirShow\Views\Shared\Components\SearchNavbarView\SearchNavbarView.cs
 E:\Git\AirShow\AirShow\src\AirShow\Views\Shared\Components\TagsView\TagsView.cs
 E:\Git\AirShow\AirShow\src\AirShow\Views\Shared\Components\TopNavbar\TopNavbar.cs
 E:\Git\AirShow\AirShow\src\AirShow\WebSockets\GlobalWebSocketServer.cs
