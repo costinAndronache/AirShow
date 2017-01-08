@@ -17,7 +17,8 @@
 
     @if (Model.Presentations.Count == 0)
     {
-        <p>You don't have any presentations. Start uploading some</p>
+        <p>You don't have any presentations.  <a asp-controller="@nameof(HomeController).WithoutControllerPart()" 
+                                                 asp-action="@nameof(HomeController.UploadPresentation)">Start uploading some</a></p>
     }
 
     @foreach (var item in Model.Presentations)

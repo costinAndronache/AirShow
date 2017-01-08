@@ -36,7 +36,7 @@ namespace AirShow.Migrations
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasMaxLength(255);
+                        .HasMaxLength(10000);
 
                     b.Property<bool>("IsPublic");
 

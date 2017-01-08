@@ -46,8 +46,10 @@ namespace AirShow.Controllers
             foreach (var item in userPresentationsResult.Value)
             {
                 var tagsResult = await _appRepository.GetTagsForPresentation(item);
+                var categoryResult = await _appRepository.GetCategoryForPresentation(item);
                 presentations.Add(new MyPresentationCardModel()
                 {
+                    Category = categoryResult.Value,
                     Presentation = item,
                     Tags = tagsResult.Value.Select(t => t.Name).ToList()
                 });
@@ -103,6 +105,7 @@ namespace AirShow.Controllers
             };
 
             var opResult = await _appRepository.UploadPresentationForUser(userId, uploadModel);
+            
 
             if (opResult.ErrorMessageIfAny != null)
             {

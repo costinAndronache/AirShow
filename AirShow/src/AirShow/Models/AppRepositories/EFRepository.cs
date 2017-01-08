@@ -16,13 +16,17 @@ namespace AirShow.Models.AppRepositories
         private EFCategoriesRepository _categoriesRepository;
         private EFPresentationsRepository _presentationsRepository;
         private EFTagsRepository _tagsRepository;
+        private ThumbnailRepository _thumbnailRepository;
 
         public EFRepository(AirShowContext context,
                                 IPresentationFilesRepository filesRepository)
         {
             _categoriesRepository = new EFCategoriesRepository(context);
             _tagsRepository = new EFTagsRepository(context);
-            _presentationsRepository = new EFPresentationsRepository(context, filesRepository, _tagsRepository);    
+            _thumbnailRepository = new ThumbnailRepository();
+
+            _presentationsRepository = new EFPresentationsRepository(context, filesRepository, _tagsRepository, _thumbnailRepository);
+               
         }
 
         public async Task<OperationStatus> AddTagsForPresentation(List<string> tags, Presentation p)
@@ -99,6 +103,21 @@ namespace AirShow.Models.AppRepositories
                                                                        PresentationSearchType searchType)
         {
             return await _presentationsRepository.SearchUserPresentations(keywords, userId, options, searchType);
+        }
+
+        public async Task<OperationStatus> AddThumbnailFor(Presentation p, Stream fileStream)
+        {
+            return await _thumbnailRepository.AddThumbnailFor(p, fileStream);
+        }
+
+        public async Task<OperationResult<string>> GetThumbnailURLFor(Presentation p)
+        {
+            return await _thumbnailRepository.GetThumbnailURLFor(p);
+        }
+
+        public async Task<OperationResult<Category>> GetCategoryForPresentation(Presentation p)
+        {
+            return await _categoriesRepository.GetCategoryForPresentation(p);
         }
     }
 }

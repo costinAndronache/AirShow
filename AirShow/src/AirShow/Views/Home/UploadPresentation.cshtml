@@ -37,7 +37,7 @@
             </div>
 
             <div class="form-group">
-                <label>Tags, separated by semicolon:</label>
+                <label>Tags, separated by comma:</label>
                 <input asp-for="ViewOutput.TagsList" class="form-control bootstrap-tagsinput" id="tagsInput" data-role="tagsinput"/>
             </div>
 
@@ -48,9 +48,7 @@
             </div>
 
             <div class="form-group">
-                    <p>Public:</p>
-                    <label>(Others can see it)  <input asp-for="ViewOutput.IsPublic"/></label>
-                
+                    <label>Public (Others can see it <i class="fa fa-eye" ></i>)  <input asp-for="ViewOutput.IsPublic" class="checkbox"/></label>
              </div>
 
             <div class="form-group">

@@ -29,7 +29,9 @@
     },
     "Microsoft.VisualStudio.Web.BrowserLink.Loader": "14.0.0",
     "System.Collections.Concurrent": "4.3.0",
-    "Microsoft.Extensions.Configuration.CommandLine": "1.0.0"  },
+    "Microsoft.Extensions.Configuration.CommandLine": "1.0.0",
+    "Microsoft.AspNetCore.Mvc.Core": "1.0.1"  
+  },
 
   "tools": {
     "BundlerMinifier.Core": "2.0.238",

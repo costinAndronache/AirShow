@@ -1,25 +1,33 @@
-﻿<div class="mainNavbarContainer">
-
-    <div class="fullWidthFixedToTop" id="gb" role="banner">
-
-        <div class="fullWidthRelativeTable">
-            <div class="tableCellContainer">
-                <div class="relativeInlineBlock">
+﻿ <div class="mainNavbarContainer row">
+            
+                <div class="col-sm-1 col-md-1" style="padding:10px;" >
                     <a class="" href="#"><span class="searchBarTitle">AirShow</span></a>
                 </div>
-            </div>
-            <div class="tableCellContainer fullWidth">
-                <div class="searchFormDiv">
-                    <form class="searchForm" aria-expanded="false" method="get">
 
-                        <button id="searchButton" style="height:48px;color:white;">
-                            <i class="fa fa-search"></i>
-                        </button>
-                        <input id="searchInput" class="searchInput" type="text" placeholder="Search" value="" autocomplete="off">
+              <div class="col-md-7" style="">
+                <div class="searchForm input-group">
+                    <span><button id="searchButton" class="fullWidth searchNavbarHeight" style="color:white;">
+                        <i class="fa fa-search"></i>
+                    </button></span>
+                    <span><input id="searchInput" class="searchInput fullWidth" type="text" placeholder="Search" value="" autocomplete="off"></span>
 
-                    </form>
+                </div>                
+              </div>
+
+
+            <div class="searchNavbarHeight col-md-4">
+                <div class="btn-group" data-toggle="buttons" style="display:inline">
+                    <label class="btn btn-primary active checkboxLabel">
+                        <input type="checkbox" id="checkboxName" checked autocomplete="off">In name
+                    </label>
+                    <label class="btn btn-primary checkboxLabel">
+                        <input type="checkbox" id="checkboxDescription" autocomplete="off">In description
+                    </label>
+                    <label class="btn btn-primary checkboxLabel">
+                        <input type="checkbox" id="checkboxTags" autocomplete="off">In tags
+                    </label>
                 </div>
+                
             </div>
-        </div>
-    </div>
+               
 </div>

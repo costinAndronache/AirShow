@@ -24,7 +24,7 @@ namespace AirShow.Models.ViewModels
             public IFormFile File { get; set; }
             [Required]
             public int CategoryId { get; set; }
-            [Required, MaxLength(255)]
+            [Required, MaxLength(10000)]
             public string Description { get; set; }
 
             [Required]

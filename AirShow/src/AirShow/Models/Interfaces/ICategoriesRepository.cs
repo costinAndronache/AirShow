@@ -10,5 +10,6 @@ namespace AirShow.Models.Interfaces
     public interface ICategoriesRepository
     {
         Task<OperationResult<List<Category>>> GetCurrentCategories();
+        Task<OperationResult<Category>> GetCategoryForPresentation(Presentation p);
     }
 }

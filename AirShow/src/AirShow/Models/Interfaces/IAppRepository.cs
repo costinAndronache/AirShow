@@ -10,7 +10,8 @@ namespace AirShow.Models.Interfaces
 {
     public interface IAppRepository: IPresentationsRepository, 
                                      ITagsRepository, 
-                                     ICategoriesRepository
+                                     ICategoriesRepository,
+                                     IPresentationThumbnailRepository
     {
         //Presentations related
     }

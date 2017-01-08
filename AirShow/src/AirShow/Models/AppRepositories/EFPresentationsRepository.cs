@@ -16,14 +16,17 @@ namespace AirShow.Models.AppRepositories
         private AirShowContext _context;
         private IPresentationFilesRepository _filesRepository;
         private ITagsRepository _tagsRepository;
+        private IPresentationThumbnailRepository _thumbnailRepository;
 
         public EFPresentationsRepository(AirShowContext context,
                                          IPresentationFilesRepository filesRepository,
-                                         ITagsRepository tagsRepository)
+                                         ITagsRepository tagsRepository, 
+                                         IPresentationThumbnailRepository thumbnailRepository)
         {
             _context = context;
             _filesRepository = filesRepository;
             _tagsRepository = tagsRepository;
+            _thumbnailRepository = thumbnailRepository;
         }
 
         public async Task<OperationStatus> DeletePresentation(string presentationName, string userId)
@@ -120,7 +123,19 @@ namespace AirShow.Models.AppRepositories
             int rows = await _context.SaveChangesAsync();
             if (rows > 0)
             {
-                return await _filesRepository.SaveFileForUser(model.SourceStream, model.Name, userId);
+                var saveResult =  await _filesRepository.SaveFileForUser(model.SourceStream, model.Name, userId);
+                if (saveResult.ErrorMessageIfAny != null)
+                {
+                    return saveResult;
+                }
+
+                var thumbnailResult = await _thumbnailRepository.AddThumbnailFor(currentPresentation, model.SourceStream);
+                if (thumbnailResult.ErrorMessageIfAny != null)
+                {
+                    return thumbnailResult;
+                }
+
+                return new OperationStatus();
             }
 
             return new OperationStatus() { ErrorMessageIfAny = OperationStatus.kUnknownError };
@@ -185,7 +200,26 @@ namespace AirShow.Models.AppRepositories
             foreach (var word in keywords)
             {
                 var lowerWord = word.ToLower();
-                var presentations = await userPresentations.Where(p => p.Name.ToLower().Contains(lowerWord)).ToListAsync();
+
+                IQueryable<Presentation> presentationsSearch = userPresentations;
+
+                if ((searchType & PresentationSearchType.Name) > 0)
+                {
+                    presentationsSearch = presentationsSearch.Where(p => p.Name.ToLower().Contains(lowerWord));
+                }
+                
+                if ((searchType & PresentationSearchType.Description) > 0 )
+                {
+                    presentationsSearch = presentationsSearch.Where(p => p.Description.ToLower().Contains(lowerWord));
+                }
+
+                if ((searchType & PresentationSearchType.Tags) > 0 )
+                {
+                    presentationsSearch = presentationsSearch.Include(p => p.PresentationTags).
+                        Where(p => p.PresentationTags.Any(pt => pt.Tag.Name.ToLower().Contains(lowerWord)));
+                }
+
+                var presentations = await presentationsSearch.ToListAsync();
 
                 foreach (var item in presentations)
                 {

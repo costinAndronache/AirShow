@@ -8,8 +8,8 @@ using AirShow.Models.Contexts;
 namespace AirShow.Migrations
 {
     [DbContext(typeof(AirShowContext))]
-    [Migration("20170107162535_InitialReinitial")]
-    partial class InitialReinitial
+    [Migration("20170108212159_ReinitialInitial")]
+    partial class ReinitialInitial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -37,7 +37,7 @@ namespace AirShow.Migrations
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasMaxLength(255);
+                        .HasMaxLength(10000);
 
                     b.Property<bool>("IsPublic");
 

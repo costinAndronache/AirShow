@@ -14,7 +14,7 @@ namespace AirShow.Models.EF
         [Required, MaxLength(80)]
         public string Name { get; set; }
 
-        [Required, MaxLength(255)]
+        [Required, MaxLength(10000)]
         public string Description { get; set; }
 
         [Required]
