@@ -51,7 +51,6 @@ var SearchBarViewHelper = (function () {
     SearchBarViewHelper.prototype.requestSearchAfterKeywords = function (keywords, where) {
         var url = window.location.origin + "/Explore/SearchPresentations?keywords=" + encodeURI(keywords) +
             "&where=" + where + "&page=1&itemsPerPage=1";
-        alert(url);
         window.location.href = url;
     };
     return SearchBarViewHelper;

@@ -71,8 +71,9 @@ namespace AirShow.Controllers
             foreach (var item in presentations.Value)
             {
                 var tagsResult = await _appRepository.GetTagsForPresentation(item);
-
-                vmList.Add(new MyPresentationCardModel { Presentation = item, Tags = tagsResult.Value.Select(t => t.Name).ToList()});
+                var categoryResult = await _appRepository.GetCategoryForPresentation(item);
+                vmList.Add(new MyPresentationCardModel { Category = categoryResult.Value,
+                    Presentation = item, Tags = tagsResult.Value.Select(t => t.Name).ToList()});
             }
 
             return View(new PresentationsViewModel
@@ -94,8 +95,10 @@ namespace AirShow.Controllers
             foreach (var p in presentations.Value)
             {
                 var tagsResult = await _appRepository.GetTagsForPresentation(p);
+                var categoryResult = await _appRepository.GetCategoryForPresentation(p);
                 list.Add(new MyPresentationCardModel
                 {
+                    Category = categoryResult.Value,
                     Presentation = p,
                     Tags = tagsResult.Value.Select(t => t.Name).ToList()
                 });

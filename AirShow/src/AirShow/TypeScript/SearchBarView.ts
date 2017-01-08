@@ -70,7 +70,6 @@ class SearchBarViewHelper {
         var url = window.location.origin + "/Explore/SearchPresentations?keywords=" + encodeURI(keywords) +
             "&where=" + where + "&page=1&itemsPerPage=1";
 
-        alert(url);
         window.location.href = url;
     }
 }
