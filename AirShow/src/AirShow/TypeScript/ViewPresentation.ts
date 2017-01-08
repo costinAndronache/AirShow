@@ -140,6 +140,7 @@ class PresentationControllerHelper {
         this.ws = new WebSocket("ws://" + location.host);
         this.ws.onopen = function (ev: Event) {
             self.ws.send(window["activationRequestString"]);
+            alert('Now you can login on your remote device and control this presentation by going to \"My active presentations\". Do not close this page');
         };
 
         this.ws.onerror = function (ev: Event) {
@@ -147,7 +148,7 @@ class PresentationControllerHelper {
         };
 
         this.ws.onclose = function (ev: CloseEvent) {
-            alert("Again closed " + ev.code);
+            alert("closed " + ev.code);
         }
 
         this.ws.onmessage = function (ev: MessageEvent) {

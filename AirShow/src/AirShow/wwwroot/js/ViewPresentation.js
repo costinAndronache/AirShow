@@ -97,12 +97,13 @@ var PresentationControllerHelper = (function () {
         this.ws = new WebSocket("ws://" + location.host);
         this.ws.onopen = function (ev) {
             self.ws.send(window["activationRequestString"]);
+            alert('Now you can login on your remote device and control this presentation by going to \"My active presentations\". Do not close this page');
         };
         this.ws.onerror = function (ev) {
             alert("There was an error though");
         };
         this.ws.onclose = function (ev) {
-            alert("Again closed " + ev.code);
+            alert("closed " + ev.code);
         };
         this.ws.onmessage = function (ev) {
             var message = JSON.parse(ev.data);
