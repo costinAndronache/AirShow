@@ -14,21 +14,29 @@
     <script src="~/js/MyPresentations.js"></script>
 }
 
-<div class="row">
-
-    @if (Model.Presentations.Count == 0)
-    {
-        <p>You don't have any presentations. Start uploading some</p>
-    }
-
-    @foreach (var item in Model.Presentations)
-    {
-        @Component.InvokeAsync(nameof(MyPresentationCard), new { model = item }).Result
-    }
-
-</div>
-
-@if (Model.PaginationModel != null)
+@if (Model.ErrorMessage != null)
 {
-    @Component.InvokeAsync(nameof(PaginationView), new { model = Model.PaginationModel }).Result
+    <h5 class="text-danger">@Model.ErrorMessage</h5>
 }
+else
+{
+    <div class="row">
+
+        @if (Model.Presentations.Count == 0)
+        {
+            <p>You don't have any presentations that match the search criteria</p>
+        }
+
+        @foreach (var item in Model.Presentations)
+        {
+            @Component.InvokeAsync(nameof(MyPresentationCard), new { model = item }).Result
+        }
+
+    </div>
+
+    @if (Model.PaginationModel != null)
+    {
+        @Component.InvokeAsync(nameof(PaginationView), new { model = Model.PaginationModel }).Result
+    }
+}
+

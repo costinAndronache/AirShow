@@ -6,12 +6,16 @@
 
         @foreach (var item in Model.TagsList)
         {
-            <a asp-controller="@nameof(ExploreController).WithoutControllerPart()" 
-               asp-action="@nameof(ExploreController.UserPresentationsByTag)"
-               asp-route-tag="@item"
-               asp-route-page="1"
-               asp-route-itemsPerPage="1"
-               class="post-tag">@item</a>
+            if (item.Length > 0 && !item.Equals(" "))
+            {
+                <a asp-controller="@nameof(ExploreController).WithoutControllerPart()"
+                   asp-action="@nameof(ExploreController.UserPresentationsByTag)"
+                   asp-route-tag="@item"
+                   asp-route-page="1"
+                   asp-route-itemsPerPage="1"
+                   class="post-tag">@item</a>
+            }
+
         }
 
     </div>

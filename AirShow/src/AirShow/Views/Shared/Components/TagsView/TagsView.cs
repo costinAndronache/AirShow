@@ -11,6 +11,7 @@ namespace AirShow.Views.Shared.Components
     {
         public async Task<IViewComponentResult> InvokeAsync(TagsViewModel model)
         {
+            
             return View(model);
         }
     }

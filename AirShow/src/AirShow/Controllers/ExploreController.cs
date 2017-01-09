@@ -42,6 +42,19 @@ namespace AirShow.Controllers
 
         public async Task<IActionResult> SearchPresentations(string keywords, string where, int? page, int? itemsPerPage)
         {
+            if (keywords == null || keywords.Length == 0)
+            {
+                return View(new PresentationsViewModel
+                {
+                    ErrorMessage = "Please provide at least a keyword in your search criteria"
+                });
+            }
+
+            if (where == null || where.Length == 0)
+            {
+                where = "name";
+            }
+
             var pageIndex = page.HasValue ? page.Value : 1;
             var numOfItems = itemsPerPage.HasValue ? itemsPerPage.Value : 1;
             var id = _userManager.GetUserId(User);
@@ -85,6 +98,14 @@ namespace AirShow.Controllers
 
         public async Task<IActionResult> UserPresentationsByTag(string tag, int? page, int? itemsPerPage)
         {
+            if (tag == null || tag.Length == 0)
+            {
+                return View(new PresentationsViewModel
+                {
+                    ErrorMessage = "Please provide a tag for your search"
+                });
+            }
+
             var pageIndex = page.HasValue ? page.Value : 1;
             var numOfItems = itemsPerPage.HasValue ? itemsPerPage.Value : 20;
             var id =  _userManager.GetUserId(User);

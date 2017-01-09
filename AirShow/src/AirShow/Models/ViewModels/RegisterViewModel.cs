@@ -8,7 +8,7 @@ namespace AirShow.Models.ViewModels
 {
     public class RegisterViewModel
     {
-        [Required, MaxLength(20), DataType(DataType.EmailAddress)]
+        [Required, MaxLength(80, ErrorMessage = "The email must have a maximum length of 80 characters"), DataType(DataType.EmailAddress)]
         public string Email { get; set; }
 
         [Required, DataType(DataType.Password)]

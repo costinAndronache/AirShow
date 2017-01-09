@@ -24,6 +24,10 @@ var SearchBarViewHelper = (function () {
     };
     SearchBarViewHelper.prototype.beginNewSearch = function () {
         var value = this.textInput.value.replace("\n", "");
+        if (value.length == 0) {
+            alert("Please insert at least one keyword for your search. Thank you");
+            return;
+        }
         this.requestSearchAfterKeywords(value, this.buildWhereString());
     };
     SearchBarViewHelper.prototype.buildWhereString = function () {
