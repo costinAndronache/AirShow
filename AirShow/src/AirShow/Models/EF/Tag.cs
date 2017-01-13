@@ -10,6 +10,8 @@ namespace AirShow.Models.EF
     {
         [Key]
         public int Id { get; set; }
+
+        [MaxLength(30)]
         public string Name { get; set; }
 
         public ICollection<PresentationTag> PresentationTags { get; set; }

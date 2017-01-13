@@ -39,6 +39,45 @@ namespace AirShow.Controllers
             return View();
         }
 
+        [AllowAnonymous]
+        public async Task<IActionResult> PublicPresentations(int? page, int? itemsPerPage)
+        {
+            var pageIndex = page.HasValue ? page.Value : 1;
+            var countPerPage = itemsPerPage.HasValue ? itemsPerPage.Value : 1;
+            string excludedUserId = null;
+            if (this.User != null)
+            {
+                excludedUserId = _userManager.GetUserId(this.User);
+            }
+
+            var pagingOptions = new PagingOptions { PageIndex = pageIndex, ItemsPerPage = countPerPage };
+            var presentations = await _appRepository.PublicPresentations(pagingOptions, excludedUserId);
+
+            var pagingVM = PaginationViewModel.BuildModelWith(presentations.TotalPages, pagingOptions,
+                index => "/PublicPresentations?page=" + index + "&itemsPerPage=" + countPerPage);
+
+            var vmList = new List<PresentationCardModel>();
+            foreach (var item in presentations.Value)
+            {
+                var tagsResult = await _appRepository.GetTagsForPresentation(item);
+                var categoryResult = await _appRepository.GetCategoryForPresentation(item);
+                vmList.Add(new PresentationCardModel
+                {
+                    Presentation = item,
+                    Category = categoryResult.Value,
+                    Tags = tagsResult.Value.Select(t => t.Name).ToList()
+                });
+            }
+
+            var vm = new PresentationsViewModel
+            {
+                Presentations = vmList,
+                PaginationModel = pagingVM
+            };
+
+            return View(vm);
+        }
+
 
         public async Task<IActionResult> SearchPresentations(string keywords, string where, int? page, int? itemsPerPage)
         {
@@ -58,7 +97,7 @@ namespace AirShow.Controllers
             var pageIndex = page.HasValue ? page.Value : 1;
             var numOfItems = itemsPerPage.HasValue ? itemsPerPage.Value : 1;
             var id = _userManager.GetUserId(User);
-            var list = new List<MyPresentationCardModel>();
+            var list = new List<PresentationCardModel>();
             var pagingOptions = new PagingOptions { PageIndex = pageIndex, ItemsPerPage = numOfItems };
             var keywrodsList = keywords.Split(new char[] {' ', ','}).ToList();
             var indexOfEmpty = keywrodsList.FindIndex(item => item.Length == 0);
@@ -80,12 +119,12 @@ namespace AirShow.Controllers
             PagedOperationResult<List<Presentation>> presentations = await _appRepository.SearchUserPresentations(keywrodsList,
                 id, pagingOptions, searchType);
 
-            var vmList = new List<MyPresentationCardModel>();
+            var vmList = new List<PresentationCardModel>();
             foreach (var item in presentations.Value)
             {
                 var tagsResult = await _appRepository.GetTagsForPresentation(item);
                 var categoryResult = await _appRepository.GetCategoryForPresentation(item);
-                vmList.Add(new MyPresentationCardModel { Category = categoryResult.Value,
+                vmList.Add(new PresentationCardModel { Category = categoryResult.Value,
                     Presentation = item, Tags = tagsResult.Value.Select(t => t.Name).ToList()});
             }
 
@@ -109,7 +148,7 @@ namespace AirShow.Controllers
             var pageIndex = page.HasValue ? page.Value : 1;
             var numOfItems = itemsPerPage.HasValue ? itemsPerPage.Value : 20;
             var id =  _userManager.GetUserId(User);
-            var list = new List<MyPresentationCardModel>();
+            var list = new List<PresentationCardModel>();
             var pagingOptions = new PagingOptions { PageIndex = pageIndex, ItemsPerPage = numOfItems };
             var presentations = await _appRepository.GetUserPresentationsFromTag(tag, id, pagingOptions);
 
@@ -117,7 +156,7 @@ namespace AirShow.Controllers
             {
                 var tagsResult = await _appRepository.GetTagsForPresentation(p);
                 var categoryResult = await _appRepository.GetCategoryForPresentation(p);
-                list.Add(new MyPresentationCardModel
+                list.Add(new PresentationCardModel
                 {
                     Category = categoryResult.Value,
                     Presentation = p,

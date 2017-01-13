@@ -1,6 +1,6 @@
 ﻿@model LoginViewModel
 @{ 
-    ViewData[ViewConstants.kNavbarActiveIndexKey] = NavbarModel.ActiveIndex.AccountLogin;
+    ViewData[ViewConstants.kNavbarIndexPairKey] = new LeftNavbar.IndexPair { IndexWhenUserAnonymus = NavbarModel.NonAuthorizableItemsIndex.Login };
 }
 <div class="row">
     <div class="col-md-6 col-sm-9">

@@ -58,7 +58,7 @@ namespace AirShow.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = new User { UserName = model.Email };
+                var user = new User { UserName = model.Email, Name = model.Name };
                 var created = await _userManager.CreateAsync(user, model.Password);
                 if (created.Succeeded)
                 {

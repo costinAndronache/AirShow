@@ -9,18 +9,23 @@ namespace AirShow.Views.Shared.Components
 {
     public class LeftNavbar: ViewComponent
     {
+        public class IndexPair
+        {
+            public NavbarModel.AuthorizableItemsIndex IndexWhenUserAuthorized { get; set; }
+            public NavbarModel.NonAuthorizableItemsIndex IndexWhenUserAnonymus { get; set; }
+        }
 
-        public async Task<IViewComponentResult> InvokeAsync(NavbarModel.ActiveIndex activeIndex = NavbarModel.ActiveIndex.Undefined)
+        public async Task<IViewComponentResult> InvokeAsync(IndexPair indexPair)
         {
             NavbarModel model = null;
 
             if (User.Identity.IsAuthenticated)
             {
-                model = NavbarModel.DefaultItems((int)activeIndex);
+                model = NavbarModel.DefaultItems((int)indexPair.IndexWhenUserAuthorized);
             }
             else
             {
-                model = NavbarModel.AccountItems((int)activeIndex);
+                model = NavbarModel.NonAuthorizableItems((int)indexPair.IndexWhenUserAnonymus);
             }
 
             //debug

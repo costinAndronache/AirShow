@@ -1,0 +1,42 @@
+﻿@model PresentationsViewModel
+@{
+    ViewData["Title"] = "Public Presentations";
+    ViewData[ViewConstants.kNavbarIndexPairKey] = new LeftNavbar.IndexPair {
+        IndexWhenUserAuthorized = NavbarModel.AuthorizableItemsIndex.Explore,
+        IndexWhenUserAnonymus = NavbarModel.NonAuthorizableItemsIndex.Explore
+    };
+}
+
+@section style {
+    <link href="~/css/PresentationTag.css" rel="stylesheet" />
+    <link href="~/css/tagsView.css" rel="stylesheet" />
+}
+
+@section scripts {
+   
+<script src="~/js/PublicPresentations.js"></script>
+}
+
+<div class="row">
+
+    @if (Model.Presentations.Count == 0)
+    {
+        <p>
+            At the moment there are no public presentations available.
+        </p>
+    } else
+    {
+        <p>Public presentations uploaded by our users:</p>
+    }
+
+    @foreach (var item in Model.Presentations)
+    {
+        @Component.InvokeAsync(nameof(PublicPresentationCard), new { model = item }).Result
+    }
+
+</div>
+
+@if (Model.PaginationModel != null)
+{
+    @Component.InvokeAsync(nameof(PaginationView), new { model = Model.PaginationModel }).Result
+}

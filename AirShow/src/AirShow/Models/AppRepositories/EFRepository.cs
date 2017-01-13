@@ -119,5 +119,16 @@ namespace AirShow.Models.AppRepositories
         {
             return await _categoriesRepository.GetCategoryForPresentation(p);
         }
+
+        public async Task<PagedOperationResult<List<Presentation>>> PublicPresentations(PagingOptions options, string excludeUserIdIfAny)
+        {
+            return await _presentationsRepository.PublicPresentations(options, excludeUserIdIfAny);
+        }
+
+        public async Task<OperationStatus> AddPresentationToUser(int presentationId, string userId)
+        {
+            return await _presentationsRepository.AddPresentationToUser(presentationId, userId);
+        }
+
     }
 }

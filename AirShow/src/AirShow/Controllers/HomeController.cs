@@ -39,15 +39,30 @@ namespace AirShow.Controllers
             return View(items);
         }
 
+        [HttpPost]
+        public async Task<IActionResult> AddToMyPresentations(int presentationId)
+        {
+            var userId = _userManager.GetUserId(this.User);
+            var opResult = await _appRepository.AddPresentationToUser(presentationId, userId);
+
+            if (opResult.ErrorMessageIfAny != null)
+            {
+                HttpContext.Response.StatusCode = StatusCodes.Status404NotFound;
+                return new JsonResult(new { errorMessage = opResult.ErrorMessageIfAny });
+            }
+
+            return new StatusCodeResult(StatusCodes.Status200OK);
+        }
+
         public async Task<IActionResult> MyPresentations()
         {
             var userPresentationsResult = await _appRepository.GetPresentationsForUser(_userManager.GetUserId(User), PagingOptions.FirstPageAllItems);
-            var presentations = new List<MyPresentationCardModel>();
+            var presentations = new List<PresentationCardModel>();
             foreach (var item in userPresentationsResult.Value)
             {
                 var tagsResult = await _appRepository.GetTagsForPresentation(item);
                 var categoryResult = await _appRepository.GetCategoryForPresentation(item);
-                presentations.Add(new MyPresentationCardModel()
+                presentations.Add(new PresentationCardModel()
                 {
                     Category = categoryResult.Value,
                     Presentation = item,

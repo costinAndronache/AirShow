@@ -1,7 +1,7 @@
 ﻿@model UploadPresentationViewModel
 @{
     ViewData["Title"] = "Upload";
-    ViewData[ViewConstants.kNavbarActiveIndexKey] = NavbarModel.ActiveIndex.HomeUploadPresentation;
+    ViewData[ViewConstants.kNavbarIndexPairKey] = new LeftNavbar.IndexPair { IndexWhenUserAuthorized = NavbarModel.AuthorizableItemsIndex.HomeUploadPresentation };
 }
 
 @section scripts {

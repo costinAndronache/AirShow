@@ -7,6 +7,6 @@ namespace AirShow.Models.ViewModels
 {
     public class ViewConstants
     {
-         public const string kNavbarActiveIndexKey = "kNavbarActiveIndexKey";
+         public const string kNavbarIndexPairKey = "kNavbarIndexPairKey";
     }
 }

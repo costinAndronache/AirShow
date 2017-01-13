@@ -10,9 +10,17 @@ namespace AirShow.Models.Common
         public int PageIndex { get; set; }
         public int ItemsPerPage { get; set; }
 
+        public int ToSkip
+        {
+            get
+            {
+                return (this.PageIndex - 1) * this.ItemsPerPage;
+            }
+        }
+
         public static PagingOptions FirstPageAllItems = new PagingOptions
         {
-            PageIndex = 0,
+            PageIndex = 1,
             ItemsPerPage = int.MaxValue
         };
     }

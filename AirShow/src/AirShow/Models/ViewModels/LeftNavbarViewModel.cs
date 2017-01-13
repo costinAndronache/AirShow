@@ -14,22 +14,30 @@ namespace AirShow.Models.ViewModels
         public int[] DisabledIndexes { get; set; }
         public int HighlightedIndex { get; set; }
 
-        public enum ActiveIndex
+        public enum AuthorizableItemsIndex
         {
             Undefined = -1,
             HomeMyPresentations = 0,
             HomeMyActivePresentations = 1,
             HomeUploadPresentation = 2,
-            Search = 3,
-            AccountLogin = 0,
-            AccountRegister = 1
+            Explore = 3
         }
 
-        public static NavbarModel AccountItems(int activeItemIndex = 0)
+        public enum NonAuthorizableItemsIndex
+        {
+            Undefined = -1,
+            Explore = 0,
+            Login = 1,
+            Register = 2
+        }
+
+        public static NavbarModel NonAuthorizableItems(int activeItemIndex = 0)
         {
             return new NavbarModel
             {
-                URLList = new List<NavbarURL> { NavbarURL.AccountLogin, NavbarURL.AccountRegister},
+                URLList = new List<NavbarURL> { NavbarURL.ExplorePublicPresentations,
+                                                NavbarURL.AccountLogin,
+                                                NavbarURL.AccountRegister},
                 DisabledIndexes =  new int[0],
                 HighlightedIndex = activeItemIndex
             };
@@ -42,6 +50,7 @@ namespace AirShow.Models.ViewModels
                 URLList = new List<NavbarURL> { NavbarURL.HomeMyPresentations,
                                                 NavbarURL.HomeMyActivePresentations,
                                                 NavbarURL.HomeUploadPresentation,
+                                                NavbarURL.ExplorePublicPresentations,
                                                 NavbarURL.AccountLogout},
                 HighlightedIndex = activeItemIndex,
                 DisabledIndexes = disabledIndexes
@@ -96,7 +105,13 @@ namespace AirShow.Models.ViewModels
                 Name = "Logout"
             };
 
-           
+            internal static NavbarURL ExplorePublicPresentations = new NavbarURL
+            {
+                Controller = nameof(Controllers.ExploreController).WithoutControllerPart(),
+                Action  = nameof(Controllers.ExploreController.PublicPresentations),
+                Name = "Explore"
+            };
+
         }
     }
 }

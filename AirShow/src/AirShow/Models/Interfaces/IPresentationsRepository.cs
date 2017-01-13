@@ -43,5 +43,11 @@ namespace AirShow.Models.Interfaces
         Task<OperationStatus> UploadPresentationForUser(string userId, UploadPresentationModel model);
         Task<OperationStatus> DownloadPresentation(string name, string userId, Stream inStream);
         Task<OperationStatus> DeletePresentation(string presentationName, string userId);
+
+
+        Task<PagedOperationResult<List<Presentation>>> PublicPresentations(PagingOptions options, string excludeUserIdIfAny);
+
+        Task<OperationStatus> AddPresentationToUser(int presentationId, string userId);
+
     }
 }

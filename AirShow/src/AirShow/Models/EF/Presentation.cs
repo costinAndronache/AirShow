@@ -20,6 +20,8 @@ namespace AirShow.Models.EF
         [Required]
         public bool IsPublic { get; set; }
 
+        [Required, MaxLength(255)]
+        public string FileId { get; set; }
         
         public DateTime UploadedDate { get; set; }
 
@@ -27,8 +29,6 @@ namespace AirShow.Models.EF
         public Category Category { get; set; }
 
         public ICollection<PresentationTag> PresentationTags { get; set; }
-
-        public string UserId { get; set; }
-        public User User { get; set; }
+        public ICollection<UserPresentation> UserPresentations { get; set; }
     }
 }

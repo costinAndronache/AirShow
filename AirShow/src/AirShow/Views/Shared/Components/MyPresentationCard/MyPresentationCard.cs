@@ -10,7 +10,7 @@ namespace AirShow.Views.Shared.Components
 {
     public class MyPresentationCard: ViewComponent
     {
-        public async Task<IViewComponentResult> InvokeAsync(MyPresentationCardModel model)
+        public async Task<IViewComponentResult> InvokeAsync(PresentationCardModel model)
         {
             return View(model);
         }

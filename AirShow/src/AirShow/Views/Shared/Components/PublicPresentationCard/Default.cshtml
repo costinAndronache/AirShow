@@ -1,0 +1,39 @@
+﻿@model PresentationCardModel
+<div class="card col-md-5 col-sm-4 cardFixed">
+    <img src="~/images/pdfIcon.png" alt="PDF icon" class="card-img-top">
+    <div class="card-block">
+        <h5 class="card-title">@Model.Presentation.Name</h5>
+        <span>
+            @if (Model.Category != null)
+            {
+                <h6 style="display:inline"><a href="#">@Model.Category.Name</a></h6>
+            }
+        </span>
+
+        <p class="card-text">@Model.Presentation.Description </p>
+    </div>
+
+
+
+    <ul class="list-group list-group-flush">
+
+        <li class="list-group-item">
+            @Component.InvokeAsync(nameof(TagsView), new { model = new TagsViewModel { TagsList = Model.Tags } }).Result
+        </li>
+
+        <li class="list-group-item">
+            @if (this.User.Identity.IsAuthenticated)
+            {
+                <button data-presentationId="@Model.Presentation.Id"
+                        class="addToMyAccountButton btn btn-primary" role="button">
+                    Add to my account
+                </button>
+            } else
+            {
+                <p>To be able to add this presentation to your account, you need to login</p>
+
+            }
+
+        </li>
+    </ul>
+</div>

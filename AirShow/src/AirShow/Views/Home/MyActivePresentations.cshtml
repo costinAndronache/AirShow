@@ -1,7 +1,7 @@
 ﻿@model List<string>
 @{
     ViewData["Title"] = "Active presentations";
-    ViewData[ViewConstants.kNavbarActiveIndexKey] = NavbarModel.ActiveIndex.HomeMyActivePresentations;
+    ViewData[ViewConstants.kNavbarIndexPairKey] = new LeftNavbar.IndexPair { IndexWhenUserAuthorized = NavbarModel.AuthorizableItemsIndex.HomeMyActivePresentations };
 
 }
 

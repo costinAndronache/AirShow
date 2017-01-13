@@ -1,7 +1,7 @@
 ﻿@model ViewPresentationViewModel
 
 @{ 
-    ViewData[ViewConstants.kNavbarActiveIndexKey] = NavbarModel.ActiveIndex.HomeMyPresentations;
+    ViewData[ViewConstants.kNavbarIndexPairKey] = new LeftNavbar.IndexPair { IndexWhenUserAuthorized = NavbarModel.AuthorizableItemsIndex.HomeMyPresentations };
 }
 
 @section style {

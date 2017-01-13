@@ -22,7 +22,7 @@
     <div class="mainBodyDiv row">
         <div class="navbarDiv col-md-3">
               @Component.InvokeAsync(nameof(LeftNavbar), 
-             new { activeIndex = ViewData[ViewConstants.kNavbarActiveIndexKey] ?? NavbarModel.ActiveIndex.Undefined}).Result
+             new { indexPair = ViewData[ViewConstants.kNavbarIndexPairKey]}).Result
         </div>
         <div class="container body-content col-md-9">
             @RenderBody()

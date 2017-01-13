@@ -31,6 +31,21 @@ namespace AirShow.Models.Contexts
                 .HasOne(pt => pt.Tag)
                 .WithMany(t => t.PresentationTags)
                 .HasForeignKey(pt => pt.TagId);
+
+
+            modelBuilder.Entity<UserPresentation>().HasKey(up => new { up.PresentationId, up.UserId });
+
+            modelBuilder.Entity<UserPresentation>()
+                .HasOne(up => up.Presentation)
+                .WithMany(p => p.UserPresentations)
+                .HasForeignKey(up => up.PresentationId);
+
+            modelBuilder.Entity<UserPresentation>()
+                .HasOne(up => up.User)
+                .WithMany(u => u.UserPresentations)
+                .HasForeignKey(up => up.UserId);
+                
+
         }
 
         public DbSet<User> Users { get; set; }
@@ -38,5 +53,7 @@ namespace AirShow.Models.Contexts
         public DbSet<Category> Categories { get; set; }
         public DbSet<Tag> Tags { get; set;}
         public DbSet<PresentationTag> PresentationTags { get; set; }
+        public DbSet<UserPresentation> UserPresentations { get; set; }
+        public DbSet<PresentationFile> PresentationFiles { get; set; }
     }
 }

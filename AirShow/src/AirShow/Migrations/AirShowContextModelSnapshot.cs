@@ -20,7 +20,8 @@ namespace AirShow.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<string>("Name");
+                    b.Property<string>("Name")
+                        .HasMaxLength(50);
 
                     b.HasKey("Id");
 
@@ -38,6 +39,10 @@ namespace AirShow.Migrations
                         .IsRequired()
                         .HasMaxLength(10000);
 
+                    b.Property<string>("FileId")
+                        .IsRequired()
+                        .HasMaxLength(255);
+
                     b.Property<bool>("IsPublic");
 
                     b.Property<string>("Name")
@@ -46,15 +51,23 @@ namespace AirShow.Migrations
 
                     b.Property<DateTime>("UploadedDate");
 
-                    b.Property<string>("UserId");
-
                     b.HasKey("Id");
 
                     b.HasIndex("CategoryId");
 
-                    b.HasIndex("UserId");
-
                     b.ToTable("Presentations");
+                });
+
+            modelBuilder.Entity("AirShow.Models.EF.PresentationFile", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<int>("ReferenceCount");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("PresentationFiles");
                 });
 
             modelBuilder.Entity("AirShow.Models.EF.PresentationTag", b =>
@@ -75,11 +88,25 @@ namespace AirShow.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<string>("Name");
+                    b.Property<string>("Name")
+                        .HasMaxLength(30);
 
                     b.HasKey("Id");
 
                     b.ToTable("Tags");
+                });
+
+            modelBuilder.Entity("AirShow.Models.EF.UserPresentation", b =>
+                {
+                    b.Property<int>("PresentationId");
+
+                    b.Property<string>("UserId");
+
+                    b.HasKey("PresentationId", "UserId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserPresentations");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityRole", b =>
@@ -248,6 +275,9 @@ namespace AirShow.Migrations
                 {
                     b.HasBaseType("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityUser");
 
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(120);
 
                     b.ToTable("User");
 
@@ -260,10 +290,6 @@ namespace AirShow.Migrations
                         .WithMany("Presentations")
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("AirShow.Models.EF.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("AirShow.Models.EF.PresentationTag", b =>
@@ -276,6 +302,19 @@ namespace AirShow.Migrations
                     b.HasOne("AirShow.Models.EF.Tag", "Tag")
                         .WithMany("PresentationTags")
                         .HasForeignKey("TagId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("AirShow.Models.EF.UserPresentation", b =>
+                {
+                    b.HasOne("AirShow.Models.EF.Presentation", "Presentation")
+                        .WithMany("UserPresentations")
+                        .HasForeignKey("PresentationId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("AirShow.Models.EF.User", "User")
+                        .WithMany("UserPresentations")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 

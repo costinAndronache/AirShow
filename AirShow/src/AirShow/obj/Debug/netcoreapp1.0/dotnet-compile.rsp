@@ -216,8 +216,8 @@ E:\Git\AirShow\AirShow\src\AirShow\Controllers\ExploreController.cs
 E:\Git\AirShow\AirShow\src\AirShow\Controllers\HomeController.cs
 E:\Git\AirShow\AirShow\src\AirShow\Controllers\PresentationsController.cs
 E:\Git\AirShow\AirShow\src\AirShow\Controllers\SearchController.cs
-E:\Git\AirShow\AirShow\src\AirShow\Migrations\20170108212159_ReinitialInitial.cs
-E:\Git\AirShow\AirShow\src\AirShow\Migrations\20170108212159_ReinitialInitial.Designer.cs
+E:\Git\AirShow\AirShow\src\AirShow\Migrations\20170113140146_ReInitialInitial.cs
+E:\Git\AirShow\AirShow\src\AirShow\Migrations\20170113140146_ReInitialInitial.Designer.cs
 E:\Git\AirShow\AirShow\src\AirShow\Migrations\AirShowContextModelSnapshot.cs
 E:\Git\AirShow\AirShow\src\AirShow\Models\AppRepositories\EFCategoriesRepository.cs
 E:\Git\AirShow\AirShow\src\AirShow\Models\AppRepositories\EFPresentationsRepository.cs
@@ -232,9 +232,11 @@ E:\Git\AirShow\AirShow\src\AirShow\Models\Common\PagingOptions.cs
 E:\Git\AirShow\AirShow\src\AirShow\Models\Contexts\AirShowContext.cs
 E:\Git\AirShow\AirShow\src\AirShow\Models\EF\Category.cs
 E:\Git\AirShow\AirShow\src\AirShow\Models\EF\Presentation.cs
+E:\Git\AirShow\AirShow\src\AirShow\Models\EF\PresentationFile.cs
 E:\Git\AirShow\AirShow\src\AirShow\Models\EF\PresentationTag.cs
 E:\Git\AirShow\AirShow\src\AirShow\Models\EF\Tag.cs
 E:\Git\AirShow\AirShow\src\AirShow\Models\EF\User.cs
+E:\Git\AirShow\AirShow\src\AirShow\Models\EF\UserPresentation.cs
 E:\Git\AirShow\AirShow\src\AirShow\Models\FileRepositories\BasicFileRepository.cs
 E:\Git\AirShow\AirShow\src\AirShow\Models\Interfaces\IAppRepository.cs
 E:\Git\AirShow\AirShow\src\AirShow\Models\Interfaces\ICategoriesRepository.cs
@@ -259,6 +261,7 @@ E:\Git\AirShow\AirShow\src\AirShow\Utils\Utils.cs
 E:\Git\AirShow\AirShow\src\AirShow\Views\Shared\Components\LeftNavbar\LeftNavbar.cs
 E:\Git\AirShow\AirShow\src\AirShow\Views\Shared\Components\MyPresentationCard\MyPresentationCard.cs
 E:\Git\AirShow\AirShow\src\AirShow\Views\Shared\Components\PaginationView\PaginationView.cs
+E:\Git\AirShow\AirShow\src\AirShow\Views\Shared\Components\PublicPresentationCard\PublicPresentationCard.cs
 E:\Git\AirShow\AirShow\src\AirShow\Views\Shared\Components\SearchNavbarView\SearchNavbarView.cs
 E:\Git\AirShow\AirShow\src\AirShow\Views\Shared\Components\TagsView\TagsView.cs
 E:\Git\AirShow\AirShow\src\AirShow\Views\Shared\Components\TopNavbar\TopNavbar.cs
