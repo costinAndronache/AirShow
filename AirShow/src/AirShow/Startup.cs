@@ -111,9 +111,5 @@ namespace AirShow
         }
 
 
-        public static void HandleWebSocket(WebSocket webSocket)
-        {
-
-        }
     }
 }

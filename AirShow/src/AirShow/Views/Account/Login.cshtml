@@ -1,7 +1,11 @@
 ﻿@model LoginViewModel
 @{ 
-    ViewData[ViewConstants.kNavbarIndexPairKey] = new LeftNavbar.IndexPair { IndexWhenUserAnonymus = NavbarModel.NonAuthorizableItemsIndex.Login };
+    ViewData["Title"] = "Login";
+    ViewData[ViewConstants.kNavbarIndexPairKey] =
+        new LeftNavbar.IndexPair
+        { IndexWhenUserAnonymus = NavbarModel.NonAuthorizableItemsIndex.Login };
 }
+
 <div class="row">
     <div class="col-md-6 col-sm-9">
         <h5>You must login before continuing</h5>
