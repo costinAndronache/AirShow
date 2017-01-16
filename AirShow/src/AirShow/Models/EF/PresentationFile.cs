@@ -10,7 +10,5 @@ namespace AirShow.Models.EF
     {
         [Key]
         public int Id { get; set; }
-
-        public int ReferenceCount { get; set; }
     }
 }

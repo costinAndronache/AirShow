@@ -15,6 +15,14 @@ namespace AirShow.Models.Contexts
 
         }
 
+        public DbSet<User> Users { get; set; }
+        public DbSet<Presentation> Presentations { get; set; }
+        public DbSet<Category> Categories { get; set; }
+        public DbSet<Tag> Tags { get; set; }
+        public DbSet<PresentationTag> PresentationTags { get; set; }
+        public DbSet<UserPresentation> UserPresentations { get; set; }
+        public DbSet<PresentationFile> PresentationFiles { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -47,13 +55,5 @@ namespace AirShow.Models.Contexts
                 
 
         }
-
-        public DbSet<User> Users { get; set; }
-        public DbSet<Presentation> Presentations { get; set; }
-        public DbSet<Category> Categories { get; set; }
-        public DbSet<Tag> Tags { get; set;}
-        public DbSet<PresentationTag> PresentationTags { get; set; }
-        public DbSet<UserPresentation> UserPresentations { get; set; }
-        public DbSet<PresentationFile> PresentationFiles { get; set; }
     }
 }

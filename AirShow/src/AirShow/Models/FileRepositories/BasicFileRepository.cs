@@ -107,9 +107,9 @@ namespace AirShow.Models.FileRepositories
             }
         }
 
-        public async Task<OperationStatus> GetFileForId(string id, Stream inStream)
+        public async Task<OperationStatus> GetFileForId(int id, Stream inStream)
         {
-            var pathResult = CreatePathFor(id);
+            var pathResult = CreatePathFor(id + "");
             if (pathResult.ErrorMessageIfAny != null)
             {
                 return pathResult;
@@ -131,12 +131,9 @@ namespace AirShow.Models.FileRepositories
             return new OperationStatus();
         }
 
-        public async Task<OperationResult<string>> SaveFile(Stream fileStream)
+        public async Task<OperationResult<int>> SaveFile(Stream fileStream)
         {
-            var newFile = new PresentationFile
-            {
-                ReferenceCount = 1
-            };
+            var newFile = new PresentationFile();
 
             await _context.PresentationFiles.AddAsync(newFile);
             await _context.SaveChangesAsync();
@@ -147,13 +144,16 @@ namespace AirShow.Models.FileRepositories
 
             if (filePathResult.ErrorMessageIfAny != null)
             {
-                return filePathResult;
+                return new OperationResult<int>
+                {
+                    ErrorMessageIfAny = filePathResult.ErrorMessageIfAny
+                };
             }
 
             var fs = CreateFileToWriteAtPath(filePathResult.Value);
             if (fs == null)
             {
-                return new OperationResult<string>
+                return new OperationResult<int>
                 {
                     ErrorMessageIfAny = OperationStatus.kInvalidFileNameOrAlreadyExists
                 };
@@ -161,24 +161,17 @@ namespace AirShow.Models.FileRepositories
             fileStream.Seek(0, SeekOrigin.Begin);
             await fileStream.CopyToAsync(fs);
             fs.Dispose();
-            return new OperationResult<string>
+            return new OperationResult<int>
             {
-                Value = fileId
+                Value = newFile.Id
             };
         }
 
-        public async Task<OperationStatus> DeleteFileWithId(string id)
+        public async Task<OperationStatus> DeleteFileWithId(int id)
         {
             int intId;
-            if (!int.TryParse(id, out intId))
-            {
-                return new OperationStatus
-                {
-                    ErrorMessageIfAny = "The file id provided is not a valid one"
-                };
-            }
 
-            var fileFoundList = await _context.PresentationFiles.Where(pf => pf.Id == intId).ToListAsync();
+            var fileFoundList = await _context.PresentationFiles.Where(pf => pf.Id == id).ToListAsync();
             if (fileFoundList.Count != 1)
             {
                 return new OperationStatus
@@ -188,14 +181,15 @@ namespace AirShow.Models.FileRepositories
             }
 
             var file = fileFoundList.First();
-            file.ReferenceCount -= 1;
+            
+
             var res = new OperationStatus();
 
-            if (file.ReferenceCount == 0)
+            if (!_context.Presentations.Any(p => p.FileId == id))
             {
                 _context.PresentationFiles.Remove(file);
                 
-                var pathResult = CreatePathFor(id);
+                var pathResult = CreatePathFor(id + "");
                 if (pathResult.ErrorMessageIfAny != null)
                 {
                     return pathResult;
