@@ -48,7 +48,14 @@ namespace AirShow
             services.AddDbContext<AirShowContext>(options => options.UseSqlite("Filename=./AirShowDB.db"));
             services.AddIdentity<User, IdentityRole>().AddEntityFrameworkStores<AirShowContext>();
             services.AddScoped<BasicDBSeeder>();
+            services.AddScoped<IPresentationsRepository, EFPresentationsRepository>();
+            services.AddScoped<IPresentationFilesRepository, BasicFileRepository>();
+            services.AddScoped<IPresentationThumbnailRepository, ThumbnailRepository>();
+            services.AddScoped<ICategoriesRepository, EFCategoriesRepository>();
+            services.AddScoped<ITagsRepository, EFTagsRepository>();
+
             services.AddSingleton<IAppRepository, EFRepository>();
+
             services.AddSingleton<IPresentationFilesRepository, BasicFileRepository>();
             services.AddSingleton<GlobalWebSocketServer>();
         }

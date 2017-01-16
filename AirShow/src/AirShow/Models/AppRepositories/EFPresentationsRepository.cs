@@ -90,18 +90,15 @@ namespace AirShow.Models.AppRepositories
 
 
 
-        public async Task<OperationResult<int>> GetNumberOfPresentationsForUser(string userId)
-        {
-            return new OperationResult<int>
-            {
-                Value = _context.UserPresentations.Count(up => up.UserId == userId)
-            };
-        }
+
 
         public async Task<PagedOperationResult<List<Presentation>>> GetPresentationsForUser(string userId, PagingOptions options)
         {
             var toSkip = (options.PageIndex - 1) * options.ItemsPerPage;
             var toTake = options.ItemsPerPage;
+
+            var count = _context.UserPresentations.Count(up => up.UserId == userId);
+            var totalPages = options.ItemsPerPage / (count > 0 ? count : options.ItemsPerPage);
 
             var upList = await _context.UserPresentations.Where(up => up.UserId == userId).Include(up => up.Presentation)
                 .Select(up => up.Presentation).Skip(toSkip).Take(toTake).ToListAsync();
@@ -109,7 +106,9 @@ namespace AirShow.Models.AppRepositories
 
             return new PagedOperationResult<List<Presentation>>
             {
-                Value = upList
+                Value = upList,
+                TotalPages = totalPages,
+                ItemsPerPage = options.ItemsPerPage
             };
         }
 

@@ -11,39 +11,28 @@ using AirShow.Models.EF;
 using AirShow.Models.Common;
 using Microsoft.AspNetCore.Http;
 using AirShow.WebSockets;
+using AirShow.Models.Interfaces;
 
 namespace AirShow.Controllers
 {
     [Authorize]
-    public class HomeController : Controller
+    public class HomeController : PresentationsListController
     {
-        private IAppRepository _appRepository;
-        private UserManager<User> _userManager;
-        private GlobalWebSocketServer _gwss;
+        
 
-        public HomeController(IAppRepository appRepository, UserManager<User> userManager, GlobalWebSocketServer gwss)
-        {
-            _userManager = userManager;
-            _appRepository = appRepository;
-            _gwss = gwss;
-        }
 
         public IActionResult Index()
         {
             return RedirectToAction("MyPresentations");
         }
 
-        public async Task<IActionResult> MyActivePresentations()
-        {
-            var items = await _gwss.ActivePresentationsFor(_userManager.GetUserId(User));
-            return View(items);
-        }
+        
 
         [HttpPost]
         public async Task<IActionResult> AddToMyPresentations(int presentationId)
         {
             var userId = _userManager.GetUserId(this.User);
-            var opResult = await _appRepository.AddPresentationToUser(presentationId, userId);
+            var opResult = await _presentationsRepository.AddPresentationToUser(presentationId, userId);
 
             if (opResult.ErrorMessageIfAny != null)
             {
@@ -54,31 +43,36 @@ namespace AirShow.Controllers
             return new StatusCodeResult(StatusCodes.Status200OK);
         }
 
-        public async Task<IActionResult> MyPresentations()
+        public async Task<IActionResult> MyPresentations(int? page, int? itemsPerPage)
         {
-            var userPresentationsResult = await _appRepository.GetPresentationsForUser(_userManager.GetUserId(User), PagingOptions.FirstPageAllItems);
-            var presentations = new List<PresentationCardModel>();
-            foreach (var item in userPresentationsResult.Value)
+            var vm = new PresentationsViewModel();
+            var pagingOptions = PagingOptions.CreateWithTheseOrDefaults(page, itemsPerPage);
+
+            var userPresentationsResult = await _presentationsRepository.GetPresentationsForUser(_userManager.GetUserId(User), 
+                pagingOptions);
+
+            if (userPresentationsResult.ErrorMessageIfAny != null)
             {
-                var tagsResult = await _appRepository.GetTagsForPresentation(item);
-                var categoryResult = await _appRepository.GetCategoryForPresentation(item);
-                presentations.Add(new PresentationCardModel()
-                {
-                    Category = categoryResult.Value,
-                    Presentation = item,
-                    Tags = tagsResult.Value.Select(t => t.Name).ToList()
-                });
+                vm.ErrorMessage = userPresentationsResult.ErrorMessageIfAny;
+                return base.DisplayListPage(vm);
             }
-            var vm = new PresentationsViewModel
+            if (userPresentationsResult.Value.Count == 0)
             {
-                Presentations = presentations
-            };
-            return View(vm);
+                vm.TopMessage = "You do not have any presentations. Start uploading some";
+                vm.TopMessageHref = "/Home/UploadPresentation";
+                return base.DisplayListPage(vm);
+            }
+
+            vm.Presentations = await base.CreateCardsModel(userPresentationsResult.Value);
+            vm.PaginationModel = PaginationViewModel.BuildModelWith(userPresentationsResult.TotalPages,
+                pagingOptions, index => "/Home/MyPresentations?page=" + index + "&itemsPerPage=" + pagingOptions.ItemsPerPage);
+
+            return base.DisplayListPage(vm);
         }
 
         public async Task<IActionResult> UploadPresentation()
         {
-            var categoriesResult = await _appRepository.GetCurrentCategories();
+            var categoriesResult = await _categoriesRepository.GetCurrentCategories();
             var vm = new UploadPresentationViewModel
             {
                 ViewInput = new UploadPresentationViewModel.Input
@@ -95,7 +89,7 @@ namespace AirShow.Controllers
             Action<UploadPresentationViewModel> populateVMWithCategories = async (UploadPresentationViewModel m) =>
             {
                 m.ViewInput = new UploadPresentationViewModel.Input();
-                var result = await _appRepository.GetCurrentCategories();
+                var result = await _categoriesRepository.GetCurrentCategories();
                 m.ViewInput.Categories = result.Value;
             };
 
@@ -119,7 +113,7 @@ namespace AirShow.Controllers
                 SourceStream =  vm.ViewOutput.File.OpenReadStream()
             };
 
-            var opResult = await _appRepository.UploadPresentationForUser(userId, uploadModel);
+            var opResult = await _presentationsRepository.UploadPresentationForUser(userId, uploadModel);
             
 
             if (opResult.ErrorMessageIfAny != null)

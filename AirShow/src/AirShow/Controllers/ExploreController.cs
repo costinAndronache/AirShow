@@ -10,13 +10,14 @@ using Microsoft.AspNetCore.Identity;
 using AirShow.Models.EF;
 using AirShow.Models.Common;
 using System.Net;
+using AirShow.Utils;
 
 // For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace AirShow.Controllers
 {
     [Authorize]
-    public class ExploreController : Controller
+    public class ExploreController : PresentationsListController
     {
         private static Dictionary<string, PresentationSearchType> searchTypesPerWhereValues = 
             new Dictionary<string, PresentationSearchType>()
@@ -25,14 +26,10 @@ namespace AirShow.Controllers
                 { "description", PresentationSearchType.Description },
                 { "tags", PresentationSearchType.Tags }
         };
-        private IAppRepository _appRepository;
+
         private UserManager<User> _userManager;
 
-       public ExploreController(IAppRepository appRepository, UserManager<User> userManager)
-        {
-            _userManager = userManager;
-            _appRepository = appRepository;
-        }
+       
 
         public IActionResult Index()
         {
@@ -42,38 +39,33 @@ namespace AirShow.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> PublicPresentations(int? page, int? itemsPerPage)
         {
-            var pageIndex = page.HasValue ? page.Value : 1;
-            var countPerPage = itemsPerPage.HasValue ? itemsPerPage.Value : 1;
+            var pagingOptions = PagingOptions.CreateWithTheseOrDefaults(page, itemsPerPage);
+            var vm = new PresentationsViewModel();
+
             string excludedUserId = null;
             if (this.User != null)
             {
                 excludedUserId = _userManager.GetUserId(this.User);
             }
-
-            var pagingOptions = new PagingOptions { PageIndex = pageIndex, ItemsPerPage = countPerPage };
-            var presentations = await _appRepository.PublicPresentations(pagingOptions, excludedUserId);
-
-            var pagingVM = PaginationViewModel.BuildModelWith(presentations.TotalPages, pagingOptions,
-                index => "/PublicPresentations?page=" + index + "&itemsPerPage=" + countPerPage);
-
-            var vmList = new List<PresentationCardModel>();
-            foreach (var item in presentations.Value)
+            var presentations = await _presentationsRepository.PublicPresentations(pagingOptions, excludedUserId);
+            if (presentations.ErrorMessageIfAny != null)
             {
-                var tagsResult = await _appRepository.GetTagsForPresentation(item);
-                var categoryResult = await _appRepository.GetCategoryForPresentation(item);
-                vmList.Add(new PresentationCardModel
-                {
-                    Presentation = item,
-                    Category = categoryResult.Value,
-                    Tags = tagsResult.Value.Select(t => t.Name).ToList()
-                });
+                vm.ErrorMessage = presentations.ErrorMessageIfAny;
+                return base.DisplayListPage(vm);
             }
 
-            var vm = new PresentationsViewModel
+            if (presentations.Value.Count == 0)
             {
-                Presentations = vmList,
-                PaginationModel = pagingVM
-            };
+                vm.TopMessage = "There are no public presentations at the moment. Be the first to upload a public presentation";
+                vm.TopMessageHref = "/" + nameof(HomeController).WithoutControllerPart() + "/" + nameof(HomeController.UploadPresentation);
+                return base.DisplayListPage(vm);
+            }
+
+            vm.PaginationModel = PaginationViewModel.BuildModelWith(presentations.TotalPages, pagingOptions,
+                index => "/" + nameof(ExploreController).WithoutControllerPart() + "/" + nameof(ExploreController.PublicPresentations) +  
+                 "?page=" + index + "&itemsPerPage=" + pagingOptions.ItemsPerPage);
+
+            vm.Presentations = await base.CreateCardsModel(presentations.Value);
 
             return View(vm);
         }
@@ -81,33 +73,48 @@ namespace AirShow.Controllers
 
         public async Task<IActionResult> SearchPresentations(string keywords, string where, int? page, int? itemsPerPage)
         {
+            var vm = new PresentationsViewModel();
             if (keywords == null || keywords.Length == 0)
             {
-                return View(new PresentationsViewModel
-                {
-                    ErrorMessage = "Please provide at least a keyword in your search criteria"
-                });
+                vm.TopMessage = "You provided no keywords to search with";
+                return base.DisplayListPage(vm);
             }
 
+            var id = _userManager.GetUserId(User);
+            var pagingOptions = PagingOptions.CreateWithTheseOrDefaults(page, itemsPerPage);
+            var searchType = CreateSearchType(where);
+            var keywordsList = CreateKeywordsList(keywords);
+
+            PagedOperationResult<List<Presentation>> presentations = await _presentationsRepository.
+                SearchUserPresentations(keywordsList, id, pagingOptions, searchType);
+
+            if (presentations.ErrorMessageIfAny != null)
+            {
+                vm.ErrorMessage = presentations.ErrorMessageIfAny;
+                return base.DisplayListPage(vm);
+            }
+
+            if (presentations.Value.Count == 0)
+            {
+                vm.TopMessage = "The search returned no results for the keywords " + keywords;
+                return base.DisplayListPage(vm);
+            }
+
+            vm.Presentations = await base.CreateCardsModel(presentations.Value);
+            vm.PaginationModel = await CreateSearchPaginationModel(keywordsList, searchType, presentations.TotalPages, pagingOptions);
+            return base.DisplayListPage(vm);
+        }
+
+
+        public static PresentationSearchType CreateSearchType(string where)
+        {
             if (where == null || where.Length == 0)
             {
                 where = "name";
             }
 
-            var pageIndex = page.HasValue ? page.Value : 1;
-            var numOfItems = itemsPerPage.HasValue ? itemsPerPage.Value : 1;
-            var id = _userManager.GetUserId(User);
-            var list = new List<PresentationCardModel>();
-            var pagingOptions = new PagingOptions { PageIndex = pageIndex, ItemsPerPage = numOfItems };
-            var keywrodsList = keywords.Split(new char[] {' ', ','}).ToList();
-            var indexOfEmpty = keywrodsList.FindIndex(item => item.Length == 0);
-            if (indexOfEmpty >= 0 && indexOfEmpty < keywrodsList.Count)
-            {
-                keywrodsList.RemoveAt(indexOfEmpty);
-            }
-
             PresentationSearchType searchType = PresentationSearchType.None;
-            var whereList = WebUtility.UrlDecode(where).Split(new char[] {',', ' '});
+            var whereList = WebUtility.UrlDecode(where).Split(new char[] { ',', ' ' });
             foreach (var item in whereList)
             {
                 if (searchTypesPerWhereValues.ContainsKey(item.ToLower()))
@@ -116,68 +123,54 @@ namespace AirShow.Controllers
                 }
             }
 
-            PagedOperationResult<List<Presentation>> presentations = await _appRepository.SearchUserPresentations(keywrodsList,
-                id, pagingOptions, searchType);
+            return searchType;
+        }
 
-            var vmList = new List<PresentationCardModel>();
-            foreach (var item in presentations.Value)
+        public static List<string> CreateKeywordsList(string keywords)
+        {
+            var keywrodsList = keywords.Split(new char[] { ' ', ',' }).ToList();
+            var indexOfEmpty = keywrodsList.FindIndex(item => item.Length == 0);
+            if (indexOfEmpty >= 0 && indexOfEmpty < keywrodsList.Count)
             {
-                var tagsResult = await _appRepository.GetTagsForPresentation(item);
-                var categoryResult = await _appRepository.GetCategoryForPresentation(item);
-                vmList.Add(new PresentationCardModel { Category = categoryResult.Value,
-                    Presentation = item, Tags = tagsResult.Value.Select(t => t.Name).ToList()});
+                keywrodsList.RemoveAt(indexOfEmpty);
             }
-
-            return View(new PresentationsViewModel
-            {
-                Presentations = vmList,
-                PaginationModel = await CreateSearchPaginationModel(keywrodsList, searchType, presentations.TotalPages, pagingOptions)
-            });
+            return keywrodsList;
         }
 
         public async Task<IActionResult> UserPresentationsByTag(string tag, int? page, int? itemsPerPage)
         {
+            var vm = new PresentationsViewModel();
             if (tag == null || tag.Length == 0)
             {
-                return View(new PresentationsViewModel
-                {
-                    ErrorMessage = "Please provide a tag for your search"
-                });
+                vm.ErrorMessage = "You have not provided any tag to search for.";
+                return base.DisplayListPage(vm);
             }
 
-            var pageIndex = page.HasValue ? page.Value : 1;
-            var numOfItems = itemsPerPage.HasValue ? itemsPerPage.Value : 20;
+            var pagingOptions = PagingOptions.CreateWithTheseOrDefaults(page, itemsPerPage);
             var id =  _userManager.GetUserId(User);
-            var list = new List<PresentationCardModel>();
-            var pagingOptions = new PagingOptions { PageIndex = pageIndex, ItemsPerPage = numOfItems };
-            var presentations = await _appRepository.GetUserPresentationsFromTag(tag, id, pagingOptions);
+            var presentations = await _presentationsRepository.GetUserPresentationsFromTag(tag, id, pagingOptions);
 
-            foreach (var p in presentations.Value)
+            if (presentations.ErrorMessageIfAny != null)
             {
-                var tagsResult = await _appRepository.GetTagsForPresentation(p);
-                var categoryResult = await _appRepository.GetCategoryForPresentation(p);
-                list.Add(new PresentationCardModel
-                {
-                    Category = categoryResult.Value,
-                    Presentation = p,
-                    Tags = tagsResult.Value.Select(t => t.Name).ToList()
-                });
+                vm.ErrorMessage = presentations.ErrorMessageIfAny;
+                return base.DisplayListPage(vm);
             }
 
-            return View(new PresentationsViewModel {
-                Presentations = list,
-                PaginationModel = await CreateTagPaginationModel(tag, pagingOptions)
-            });
+            if (presentations.Value.Count == 0)
+            {
+                vm.TopMessage = "There are no presentations containing the tag \"" + tag + "\"";
+                return base.DisplayListPage(vm);
+            }
+
+            vm.Presentations = await base.CreateCardsModel(presentations.Value);
+            vm.PaginationModel = await CreateTagPaginationModel(tag, pagingOptions, presentations.TotalPages);
+            return base.DisplayListPage(vm);
         }
 
 
-        private async Task<PaginationViewModel> CreateTagPaginationModel(string tag, PagingOptions options)
+        private async Task<PaginationViewModel> CreateTagPaginationModel(string tag, PagingOptions options, int totalPages)
         {
-            var userId = _userManager.GetUserId(User);
-            var numOfItems = await _appRepository.GetNumberOfUserPresentationsWithTag(tag, userId);
-            var numOfPages = numOfItems.Value / options.ItemsPerPage;
-
-            return PaginationViewModel.BuildModelWith(numOfPages, options, index =>
+            return PaginationViewModel.BuildModelWith(totalPages, options, index =>
             "/Explore/UserPresentationsByTag?tag=" + tag + "&page=" + index + "&itemsPerPage=" + options.ItemsPerPage);
         }
 

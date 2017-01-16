@@ -23,5 +23,15 @@ namespace AirShow.Models.Common
             PageIndex = 1,
             ItemsPerPage = int.MaxValue
         };
+
+
+        public static PagingOptions CreateWithTheseOrDefaults(int? page, int? itemsPerPage)
+        {
+            return new PagingOptions
+            {
+                PageIndex = page.HasValue ? page.Value : 1,
+                ItemsPerPage = itemsPerPage.HasValue ? itemsPerPage.Value : 1
+            };
+        }
     }
 }
