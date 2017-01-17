@@ -67,17 +67,6 @@ namespace AirShow.Controllers
             };
         }
 
-
-        public async Task<IActionResult> ControlPresentation(string name)
-        {
-            var vm = new ActivationMessage
-            {
-                PresentationName = name,
-                UserId = _userManager.GetUserId(User)
-            };
-            return View("ControlPresentation", JsonConvert.SerializeObject(vm));
-        }
-
         [HttpDelete]
         public async Task<IActionResult> DeletePresentation(string name)
         {

@@ -67,8 +67,8 @@ namespace AirShow.Controllers
 
             if (presentations.Value.Count == 0)
             {
-                vm.TopMessage = "There are no public presentations at the moment. Be the first to upload a public presentation";
-                vm.TopMessageHref = "/" + nameof(HomeController).WithoutControllerPart() + "/" + nameof(HomeController.UploadPresentation);
+                vm.TopMessage = "There are no other public presentations. Click here to view your own public presentations";
+                vm.TopMessageHref = "/" + nameof(HomeController).WithoutControllerPart() + "/" + nameof(HomeController.MyPresentations);
                 return base.DisplayListPage(vm);
             }
 

@@ -1,4 +1,11 @@
 ﻿@model string
+@{ 
+    ViewData["Title"] = "Control Presentation";
+    ViewData[ViewConstants.kNavbarIndexPairKey] = 
+        new LeftNavbar.IndexPair { IndexWhenUserAnonymus = NavbarModel.NonAuthorizableItemsIndex.Explore,
+                                    IndexWhenUserAuthorized = NavbarModel.AuthorizableItemsIndex.HomeMyPresentations
+                                                };
+}
 <div class="row">
 
     <div class="col-md-3">

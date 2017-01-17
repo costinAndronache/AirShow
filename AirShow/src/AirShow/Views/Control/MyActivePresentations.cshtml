@@ -20,7 +20,7 @@
                 <div class="caption">
                     <p>@item</p>
                     <div class="container-fluid">
-                        <a asp-controller="Presentations" asp-action="ControlPresentation" asp-route-name="@item"
+                        <a asp-controller="@nameof(ControlController).WithoutControllerPart()" asp-action="@nameof(ControlController.ControlPresentation)" asp-route-name="@item"
                            class="btn btn-primary">Control</a>
                     </div>
                 </div>
