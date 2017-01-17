@@ -34,7 +34,7 @@ namespace AirShow.Models.AppRepositories
             var opResult = new OperationStatus();
 
             var upList = _context.UserPresentations.Where(up => up.UserId == userId);
-            var singledOutUP = await upList.Where(up => _context.Presentations.Any(p => p.Id == up.PresentationId))
+            var singledOutUP = await upList.Where(up => _context.Presentations.Any(p => p.Id == up.PresentationId && p.Name == presentationName))
                 .Include(up => up.Presentation).ToListAsync();
 
             if (singledOutUP.Count == 1)
@@ -98,7 +98,7 @@ namespace AirShow.Models.AppRepositories
             var toTake = options.ItemsPerPage;
 
             var count = _context.UserPresentations.Count(up => up.UserId == userId);
-            var totalPages = options.ItemsPerPage / (count > 0 ? count : options.ItemsPerPage);
+            var totalPages = count / (options.ItemsPerPage > 0 ? options.ItemsPerPage : 1);
 
             var upList = await _context.UserPresentations.Where(up => up.UserId == userId).Include(up => up.Presentation)
                 .Select(up => up.Presentation).Skip(toSkip).Take(toTake).ToListAsync();

@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using AirShow.WebSockets;
+using Microsoft.AspNetCore.Identity;
+using AirShow.Models.EF;
 
 // For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -14,9 +16,11 @@ namespace AirShow.Controllers
     public class ControlController : Controller
     {
         private GlobalWebSocketServer _gwss;
+        private UserManager<User> _userManager;
 
-        public ControlController(GlobalWebSocketServer gwss)
+        public ControlController(GlobalWebSocketServer gwss, UserManager<User> userManager)
         {
+            _userManager = userManager;
             _gwss = gwss;
         }
        

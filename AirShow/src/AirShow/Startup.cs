@@ -54,7 +54,6 @@ namespace AirShow
             services.AddScoped<ICategoriesRepository, EFCategoriesRepository>();
             services.AddScoped<ITagsRepository, EFTagsRepository>();
 
-            services.AddSingleton<IAppRepository, EFRepository>();
 
             services.AddSingleton<IPresentationFilesRepository, BasicFileRepository>();
             services.AddSingleton<GlobalWebSocketServer>();

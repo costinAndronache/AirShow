@@ -52,7 +52,7 @@ namespace AirShow.Controllers
 
         protected IActionResult DisplayListPage(PresentationsViewModel vm)
         {
-            return View(vm);
+            return View("DisplayListPage", vm);
         }
     }
 }

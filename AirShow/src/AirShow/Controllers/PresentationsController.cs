@@ -20,15 +20,16 @@ namespace AirShow.Controllers
     [Authorize]
     public class PresentationsController : Controller
     {
-        private IAppRepository _appRepository;
         private UserManager<User> _userManager;
+        private IPresentationsRepository _presentationsRepository;
 
         public PresentationsController(UserManager<User> userManager, 
-                                       IAppRepository appRepository
+                                        IPresentationsRepository presentationsRepository
                                        )
         {
+            _presentationsRepository = presentationsRepository;
             _userManager = userManager;
-            _appRepository = appRepository;
+
         }
         // GET: /<controller>/
         
@@ -54,7 +55,7 @@ namespace AirShow.Controllers
             using (MemoryStream stream = new MemoryStream())
             {
                 var userId = _userManager.GetUserId(User);
-                var result = await _appRepository.DownloadPresentation(name, userId, stream);
+                var result = await _presentationsRepository.DownloadPresentation(name, userId, stream);
                 if (result.ErrorMessageIfAny != null)
                 {
                     return NotFound();
@@ -81,7 +82,7 @@ namespace AirShow.Controllers
         public async Task<IActionResult> DeletePresentation(string name)
         {
             var userID = _userManager.GetUserId(User);
-            var result = await _appRepository.DeletePresentation(name, userID);
+            var result = await _presentationsRepository.DeletePresentation(name, userID);
             if (result.ErrorMessageIfAny != null)
             {
                 return StatusCode(302);

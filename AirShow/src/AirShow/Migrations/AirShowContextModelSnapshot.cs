@@ -39,8 +39,7 @@ namespace AirShow.Migrations
                         .IsRequired()
                         .HasMaxLength(10000);
 
-                    b.Property<string>("FileId")
-                        .IsRequired()
+                    b.Property<int>("FileId")
                         .HasMaxLength(255);
 
                     b.Property<bool>("IsPublic");
@@ -62,8 +61,6 @@ namespace AirShow.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
-
-                    b.Property<int>("ReferenceCount");
 
                     b.HasKey("Id");
 

@@ -72,8 +72,8 @@ namespace AirShow.Models.ViewModels
 
             internal static NavbarURL HomeMyActivePresentations = new NavbarURL
             {
-                Controller = nameof(Controllers.HomeController).WithoutControllerPart(),
-                Action = nameof(Controllers.HomeController.MyActivePresentations),
+                Controller = nameof(Controllers.ControlController).WithoutControllerPart(),
+                Action = nameof(Controllers.ControlController.MyActivePresentations),
                 Name = "My active presentation"
             };
 

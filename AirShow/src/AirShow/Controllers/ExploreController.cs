@@ -11,6 +11,8 @@ using AirShow.Models.EF;
 using AirShow.Models.Common;
 using System.Net;
 using AirShow.Utils;
+using AirShow.Models.ViewModels;
+using AirShow.Views.Shared.Components;
 
 // For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -27,10 +29,14 @@ namespace AirShow.Controllers
                 { "tags", PresentationSearchType.Tags }
         };
 
-        private UserManager<User> _userManager;
+        public ExploreController(IPresentationsRepository presentationsRepository,
+                              ITagsRepository tagsRepository,
+                              ICategoriesRepository categoriesRepository,
+                              UserManager<User> userManager): base(presentationsRepository, tagsRepository,categoriesRepository,userManager)
+        {
 
-       
-
+        }
+      
         public IActionResult Index()
         {
             return View();
@@ -41,6 +47,11 @@ namespace AirShow.Controllers
         {
             var pagingOptions = PagingOptions.CreateWithTheseOrDefaults(page, itemsPerPage);
             var vm = new PresentationsViewModel();
+            vm.NavbarIndexPair = new LeftNavbar.IndexPair
+            {
+                IndexWhenUserAnonymus = NavbarModel.NonAuthorizableItemsIndex.Explore,
+                IndexWhenUserAuthorized = NavbarModel.AuthorizableItemsIndex.Explore
+            };
 
             string excludedUserId = null;
             if (this.User != null)
@@ -66,14 +77,19 @@ namespace AirShow.Controllers
                  "?page=" + index + "&itemsPerPage=" + pagingOptions.ItemsPerPage);
 
             vm.Presentations = await base.CreateCardsModel(presentations.Value);
+            vm.Title = "Public Presentations";
 
-            return View(vm);
+            return base.DisplayListPage(vm);
         }
 
 
         public async Task<IActionResult> SearchPresentations(string keywords, string where, int? page, int? itemsPerPage)
         {
             var vm = new PresentationsViewModel();
+            vm.NavbarIndexPair = new LeftNavbar.IndexPair
+            {
+                IndexWhenUserAuthorized = NavbarModel.AuthorizableItemsIndex.Explore
+            };
             if (keywords == null || keywords.Length == 0)
             {
                 vm.TopMessage = "You provided no keywords to search with";
@@ -140,6 +156,12 @@ namespace AirShow.Controllers
         public async Task<IActionResult> UserPresentationsByTag(string tag, int? page, int? itemsPerPage)
         {
             var vm = new PresentationsViewModel();
+            vm.NavbarIndexPair = new LeftNavbar.IndexPair
+            {
+                IndexWhenUserAnonymus = NavbarModel.NonAuthorizableItemsIndex.Explore,
+                IndexWhenUserAuthorized = NavbarModel.AuthorizableItemsIndex.Explore
+            };
+
             if (tag == null || tag.Length == 0)
             {
                 vm.ErrorMessage = "You have not provided any tag to search for.";

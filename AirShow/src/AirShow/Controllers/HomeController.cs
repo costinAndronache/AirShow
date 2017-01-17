@@ -11,15 +11,21 @@ using AirShow.Models.EF;
 using AirShow.Models.Common;
 using Microsoft.AspNetCore.Http;
 using AirShow.WebSockets;
-using AirShow.Models.Interfaces;
+using AirShow.Views.Shared.Components;
 
 namespace AirShow.Controllers
 {
     [Authorize]
     public class HomeController : PresentationsListController
     {
-        
 
+        public HomeController(IPresentationsRepository presentationsRepository,
+                              ITagsRepository tagsRepository,
+                              ICategoriesRepository categoriesRepository,
+                              UserManager<User> userManager): base(presentationsRepository, tagsRepository,categoriesRepository,userManager)
+        {
+            
+        }
 
         public IActionResult Index()
         {
@@ -46,6 +52,8 @@ namespace AirShow.Controllers
         public async Task<IActionResult> MyPresentations(int? page, int? itemsPerPage)
         {
             var vm = new PresentationsViewModel();
+            vm.NavbarIndexPair = new LeftNavbar.IndexPair
+                                { IndexWhenUserAuthorized = NavbarModel.AuthorizableItemsIndex.HomeMyPresentations };
             var pagingOptions = PagingOptions.CreateWithTheseOrDefaults(page, itemsPerPage);
 
             var userPresentationsResult = await _presentationsRepository.GetPresentationsForUser(_userManager.GetUserId(User), 

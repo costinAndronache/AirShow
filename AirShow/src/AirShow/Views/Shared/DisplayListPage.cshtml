@@ -1,0 +1,61 @@
+﻿@model PresentationsViewModel
+@{
+    if (Model.Title != null)
+    {
+        ViewData["Title"] = "My Presentations";
+    }
+
+    if (Model.NavbarIndexPair != null)
+    {
+        ViewData[ViewConstants.kNavbarIndexPairKey] = Model.NavbarIndexPair;
+    }
+
+
+}
+
+@section style {
+    <link href="~/css/PresentationTag.css" rel="stylesheet" />
+    <link href="~/css/tagsView.css" rel="stylesheet" />
+    <link href="~/css/PaginationViewStyle.css" rel="stylesheet" />
+}
+
+@section scripts {
+    <script src="~/js/MyPresentations.js"></script>
+}
+
+@if (Model.ErrorMessage != null)
+{
+    <h5 class="text-danger">@Model.ErrorMessage</h5>
+}
+else
+{
+    <div class="row">
+
+        @if (Model.TopMessage != null)
+        {
+            if (Model.TopMessageHref != null)
+            {
+                <a href="@Model.TopMessageHref">@Model.TopMessage</a>
+            }
+            else
+            {
+                <p>@Model.TopMessage</p>
+            }
+
+        }
+        @if (Model.Presentations != null)
+        {
+            @foreach (var item in Model.Presentations)
+            {
+                @Component.InvokeAsync(nameof(MyPresentationCard), new { model = item }).Result
+            }
+        }
+
+
+    </div>
+
+    @if (Model.PaginationModel != null)
+    {
+        @Component.InvokeAsync(nameof(PaginationView), new { model = Model.PaginationModel }).Result
+    }
+}
