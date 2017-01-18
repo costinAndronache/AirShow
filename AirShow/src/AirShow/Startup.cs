@@ -53,7 +53,7 @@ namespace AirShow
             services.AddScoped<IPresentationThumbnailRepository, ThumbnailRepository>();
             services.AddScoped<ICategoriesRepository, EFCategoriesRepository>();
             services.AddScoped<ITagsRepository, EFTagsRepository>();
-
+            services.AddScoped<IUsersRepository, EFUsersRepository>();
 
             services.AddSingleton<IPresentationFilesRepository, BasicFileRepository>();
             services.AddSingleton<GlobalWebSocketServer>();

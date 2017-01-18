@@ -20,7 +20,18 @@
         <li class="list-group-item">
             @Component.InvokeAsync(nameof(TagsView), new { model = new TagsViewModel { TagsList = Model.Tags } }).Result
         </li>
-
+        @if (Model.UserInfos != null && Model.UserInfos.Count > 0)
+            {
+            <li class="list-group-item">
+                <p>Owned by the following users:</p>
+                <div class="usersListDiv">
+                    @foreach (var item in Model.UserInfos)
+                    {
+                        <a href="@item.Href">@item.Name</a>
+                    }
+                </div>
+            </li>
+        }
         <li class="list-group-item">
             @if (this.User.Identity.IsAuthenticated)
             {

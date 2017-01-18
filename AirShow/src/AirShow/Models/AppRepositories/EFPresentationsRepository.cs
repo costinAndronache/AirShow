@@ -41,21 +41,18 @@ namespace AirShow.Models.AppRepositories
             {
                 var up = singledOutUP.First();
                 var presentation = up.Presentation;
+                _context.UserPresentations.Remove(up);
+                var rows = await _context.SaveChangesAsync();
 
-                var upToRemove = presentation.UserPresentations.Where(userp => userp.PresentationId == presentation.Id &&
-                                                                            userp.UserId == userId).ToList();
-
-                if (upToRemove.Count != 1)
+                if (rows <= 0)
                 {
                     return new OperationStatus
                     {
-                        ErrorMessageIfAny = "An error ocurred. The data for this presentation is corrupted"
+                        ErrorMessageIfAny = "Error while trying to update the database."
                     };
                 }
 
-                presentation.UserPresentations.Remove(upToRemove.First());
-
-                if (presentation.UserPresentations.Count == 0)
+                if (! await _context.UserPresentations.AnyAsync(u => u.PresentationId == presentation.Id))
                 {
                     var presentationTags = _context.PresentationTags.Where(pt => pt.PresentationId == presentation.Id).ToList();
                     _context.Presentations.Remove(presentation);
@@ -63,21 +60,7 @@ namespace AirShow.Models.AppRepositories
                     _context.SaveChanges();
 
                     return await _filesRepository.DeleteFileWithId(presentation.FileId);
-                } else
-                {
-                    var rows = await _context.SaveChangesAsync();
-                    if (rows > 0)
-                    {
-                        return new OperationStatus();
-                    }
-                    else
-                    {
-                        return new OperationStatus
-                        {
-                            ErrorMessageIfAny = "Unknown error"
-                        };
-                    }
-                }
+                } 
 
 
             }
@@ -381,6 +364,27 @@ namespace AirShow.Models.AppRepositories
             }
             return new OperationStatus();
         }
+
+
+        public async Task<PagedOperationResult<List<Presentation>>> PublicPresentationsForUser(string userId, PagingOptions options)
+        {
+            var result = new PagedOperationResult<List<Presentation>>();
+
+            var count = _context.UserPresentations.Where(up => up.UserId == userId).Include(up => up.Presentation)
+                .Count(up => up.Presentation.IsPublic);
+
+            var list = await _context.UserPresentations.Where(up => up.UserId == userId).Include(up => up.Presentation)
+                .Where(up => up.Presentation.IsPublic).Select(up => up.Presentation).
+                Skip(options.ToSkip).Take(options.ItemsPerPage).
+                ToListAsync();
+
+
+            result.Value = list;
+            result.TotalPages = count / options.ItemsPerPage;
+
+            return result;
+        }
+
     }
 
 }

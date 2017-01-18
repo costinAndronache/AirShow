@@ -18,13 +18,15 @@ namespace AirShow.Controllers
     [Authorize]
     public class HomeController : PresentationsListController
     {
+        private UserManager<User> _userManager;
 
         public HomeController(IPresentationsRepository presentationsRepository,
                               ITagsRepository tagsRepository,
                               ICategoriesRepository categoriesRepository,
-                              UserManager<User> userManager): base(presentationsRepository, tagsRepository,categoriesRepository,userManager)
+                              IUsersRepository usersRepository,
+                              UserManager<User> userManager): base(presentationsRepository, tagsRepository,categoriesRepository, usersRepository)
         {
-            
+            _userManager = userManager;
         }
 
         public IActionResult Index()

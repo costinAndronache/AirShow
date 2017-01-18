@@ -43,6 +43,7 @@ namespace AirShow.Models.Interfaces
 
 
         Task<PagedOperationResult<List<Presentation>>> PublicPresentations(PagingOptions options, string excludeUserIdIfAny);
+        Task<PagedOperationResult<List<Presentation>>> PublicPresentationsForUser(string userId, PagingOptions options);
 
         Task<OperationStatus> AddPresentationToUser(int presentationId, string userId);
 

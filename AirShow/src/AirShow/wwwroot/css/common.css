@@ -15,3 +15,7 @@
 }
 
 
+.usersListDiv {
+    height: 75px;
+    overflow: auto;
+}

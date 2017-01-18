@@ -1,7 +1,8 @@
 ﻿@model PresentationsViewModel
 @{
     ViewData["Title"] = "Public Presentations";
-    ViewData[ViewConstants.kNavbarIndexPairKey] = new LeftNavbar.IndexPair {
+    ViewData[ViewConstants.kNavbarIndexPairKey] = new LeftNavbar.IndexPair
+    {
         IndexWhenUserAuthorized = NavbarModel.AuthorizableItemsIndex.Explore,
         IndexWhenUserAnonymus = NavbarModel.NonAuthorizableItemsIndex.Explore
     };
@@ -13,8 +14,8 @@
 }
 
 @section scripts {
-   
-<script src="~/js/PublicPresentations.js"></script>
+
+    <script src="~/js/PublicPresentations.js"></script>
 }
 
 <div class="row">
@@ -24,7 +25,8 @@
         <p>
             At the moment there are no public presentations available.
         </p>
-    } else
+    }
+    else
     {
         <p>Public presentations uploaded by our users:</p>
     }

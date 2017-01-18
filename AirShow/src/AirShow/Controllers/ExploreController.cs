@@ -29,12 +29,17 @@ namespace AirShow.Controllers
                 { "tags", PresentationSearchType.Tags }
         };
 
+        private static LeftNavbar.IndexPair defaultNavbarIndexPair = new LeftNavbar.IndexPair {IndexWhenUserAnonymus = NavbarModel.NonAuthorizableItemsIndex.Explore,
+                                                                                        IndexWhenUserAuthorized = NavbarModel.AuthorizableItemsIndex.Explore};
+        private UserManager<User> _userManager;
+
         public ExploreController(IPresentationsRepository presentationsRepository,
                               ITagsRepository tagsRepository,
                               ICategoriesRepository categoriesRepository,
-                              UserManager<User> userManager): base(presentationsRepository, tagsRepository,categoriesRepository,userManager)
+                              IUsersRepository usersRepository,
+                              UserManager<User> userManager): base(presentationsRepository, tagsRepository,categoriesRepository, usersRepository)
         {
-
+            _userManager = userManager;
         }
       
         public IActionResult Index()
@@ -47,11 +52,7 @@ namespace AirShow.Controllers
         {
             var pagingOptions = PagingOptions.CreateWithTheseOrDefaults(page, itemsPerPage);
             var vm = new PresentationsViewModel();
-            vm.NavbarIndexPair = new LeftNavbar.IndexPair
-            {
-                IndexWhenUserAnonymus = NavbarModel.NonAuthorizableItemsIndex.Explore,
-                IndexWhenUserAuthorized = NavbarModel.AuthorizableItemsIndex.Explore
-            };
+            vm.NavbarIndexPair = defaultNavbarIndexPair;
 
             string excludedUserId = null;
             if (this.User != null)
@@ -79,17 +80,15 @@ namespace AirShow.Controllers
             vm.Presentations = await base.CreateCardsModel(presentations.Value);
             vm.Title = "Public Presentations";
 
-            return base.DisplayListPage(vm);
+            return DisplayPublicListPage(vm);
         }
 
 
         public async Task<IActionResult> SearchPresentations(string keywords, string where, int? page, int? itemsPerPage)
         {
             var vm = new PresentationsViewModel();
-            vm.NavbarIndexPair = new LeftNavbar.IndexPair
-            {
-                IndexWhenUserAuthorized = NavbarModel.AuthorizableItemsIndex.Explore
-            };
+            vm.NavbarIndexPair = defaultNavbarIndexPair;
+
             if (keywords == null || keywords.Length == 0)
             {
                 vm.TopMessage = "You provided no keywords to search with";
@@ -118,7 +117,7 @@ namespace AirShow.Controllers
 
             vm.Presentations = await base.CreateCardsModel(presentations.Value);
             vm.PaginationModel = await CreateSearchPaginationModel(keywordsList, searchType, presentations.TotalPages, pagingOptions);
-            return base.DisplayListPage(vm);
+            return DisplayListPage(vm);
         }
 
 
@@ -156,11 +155,7 @@ namespace AirShow.Controllers
         public async Task<IActionResult> UserPresentationsByTag(string tag, int? page, int? itemsPerPage)
         {
             var vm = new PresentationsViewModel();
-            vm.NavbarIndexPair = new LeftNavbar.IndexPair
-            {
-                IndexWhenUserAnonymus = NavbarModel.NonAuthorizableItemsIndex.Explore,
-                IndexWhenUserAuthorized = NavbarModel.AuthorizableItemsIndex.Explore
-            };
+            vm.NavbarIndexPair = defaultNavbarIndexPair;
 
             if (tag == null || tag.Length == 0)
             {
@@ -189,6 +184,33 @@ namespace AirShow.Controllers
             return base.DisplayListPage(vm);
         }
 
+        [AllowAnonymous]
+        public async Task<IActionResult> PublicPresentationsForUser(string userId, int? page, int? itemsPerPage)
+        {
+            var pagingOptions = PagingOptions.CreateWithTheseOrDefaults(page, itemsPerPage);
+            var vm = new PresentationsViewModel();
+            vm.NavbarIndexPair = defaultNavbarIndexPair;
+
+            var result = await _presentationsRepository.PublicPresentationsForUser(userId, pagingOptions);
+            if (result.ErrorMessageIfAny != null)
+            {
+                vm.ErrorMessage = result.ErrorMessageIfAny;
+                return base.DisplayListPage(vm);
+            }
+
+            if (result.Value.Count == 0)
+            {
+                vm.TopMessage = "There are no public presentations from this user";
+                return base.DisplayListPage(vm);
+            }
+
+            vm.PaginationModel = PaginationViewModel.BuildModelWith(result.TotalPages, pagingOptions, i =>
+            $"{nameof(ExploreController).WithoutControllerPart()}/{nameof(ExploreController.PublicPresentationsForUser)}" + 
+            $"?userId={userId}&page={i}&itemsPerPage={pagingOptions.ItemsPerPage}");
+
+            vm.Presentations = await base.CreateCardsModel(result.Value);
+            return base.DisplayPublicListPage(vm);
+        }
 
         private async Task<PaginationViewModel> CreateTagPaginationModel(string tag, PagingOptions options, int totalPages)
         {

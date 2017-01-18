@@ -20,7 +20,8 @@
 }
 
 @section scripts {
-    <script src="~/js/MyPresentations.js"></script>
+
+    <script src="~/js/PublicPresentations.js"></script>
 }
 
 @if (Model.ErrorMessage != null)
@@ -47,7 +48,7 @@ else
         {
             @foreach (var item in Model.Presentations)
             {
-                @Component.InvokeAsync(nameof(MyPresentationCard), new { model = item }).Result
+                @Component.InvokeAsync(nameof(PublicPresentationCard), new { model = item }).Result
             }
         }
 

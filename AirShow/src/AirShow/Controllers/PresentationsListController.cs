@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Identity;
 using AirShow.Models.EF;
 using AirShow.Models.ViewModels;
 using AirShow.Models.Common;
+using AirShow.Utils;
 
 // For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -15,20 +16,21 @@ namespace AirShow.Controllers
 {
     public abstract class PresentationsListController : Controller
     {
-        protected UserManager<User> _userManager;
         protected IPresentationsRepository _presentationsRepository;
         protected ITagsRepository _tagsRepository;
         protected ICategoriesRepository _categoriesRepository;
+        private IUsersRepository _usersRepository;
 
         public PresentationsListController(IPresentationsRepository presentationsRepository,
                               ITagsRepository tagsRepository,
                               ICategoriesRepository categoriesRepository,
-                              UserManager<User> userManager)
+                              IUsersRepository usersRepository)
         {
-            _userManager = userManager;
+
             _presentationsRepository = presentationsRepository;
             _tagsRepository = tagsRepository;
             _categoriesRepository = categoriesRepository;
+            _usersRepository = usersRepository;
         }
 
 
@@ -39,8 +41,19 @@ namespace AirShow.Controllers
             {
                 var tagsResult = await _tagsRepository.GetTagsForPresentation(item);
                 var categoryResult = await _categoriesRepository.GetCategoryForPresentation(item);
+                var usersResult = await _usersRepository.GetUsersForPresentation(item.Id, PagingOptions.CreateWithTheseOrDefaults(1, 10));
+                var usersList = new List<PresentationCardModel.UserInfo>();
+
+                if (usersResult.Value != null)
+                {
+                    usersList = usersResult.Value.Select(u => new PresentationCardModel.UserInfo { Name = u.Name, Href
+                    = $"/{nameof(ExploreController).WithoutControllerPart()}/{nameof(ExploreController.PublicPresentationsForUser)}" + 
+                    $"?userId={u.Id}&page=1&itemsPerPage=10"}).ToList();
+                }
+
                 presentations.Add(new PresentationCardModel()
                 {
+                    UserInfos = usersList,
                     Category = categoryResult.Value,
                     Presentation = item,
                     Tags = tagsResult.Value.Select(t => t.Name).ToList()
@@ -54,5 +67,11 @@ namespace AirShow.Controllers
         {
             return View("DisplayListPage", vm);
         }
+
+        protected IActionResult DisplayPublicListPage(PresentationsViewModel vm)
+        {
+            return View("DisplayPublicListPage", vm);
+        }
+
     }
 }
