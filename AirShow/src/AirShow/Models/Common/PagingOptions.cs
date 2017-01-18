@@ -30,7 +30,7 @@ namespace AirShow.Models.Common
             return new PagingOptions
             {
                 PageIndex = page.HasValue ? page.Value : 1,
-                ItemsPerPage = itemsPerPage.HasValue ? itemsPerPage.Value : 1
+                ItemsPerPage = itemsPerPage.HasValue ? itemsPerPage.Value : 5
             };
         }
     }

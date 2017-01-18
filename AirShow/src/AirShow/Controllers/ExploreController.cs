@@ -79,7 +79,7 @@ namespace AirShow.Controllers
 
             vm.Presentations = await base.CreateCardsModel(presentations.Value);
             vm.Title = "Public Presentations";
-
+            vm.TopMessage = $"Displaying public presentations, {(presentations.TotalPages > 0 ? presentations.TotalPages : 1)} pages in total";
             return DisplayPublicListPage(vm);
         }
 
@@ -191,6 +191,8 @@ namespace AirShow.Controllers
             var vm = new PresentationsViewModel();
             vm.NavbarIndexPair = defaultNavbarIndexPair;
 
+            
+
             var result = await _presentationsRepository.PublicPresentationsForUser(userId, pagingOptions);
             if (result.ErrorMessageIfAny != null)
             {
@@ -209,6 +211,11 @@ namespace AirShow.Controllers
             $"?userId={userId}&page={i}&itemsPerPage={pagingOptions.ItemsPerPage}");
 
             vm.Presentations = await base.CreateCardsModel(result.Value);
+            var usersResult = await _usersRepository.GetUserWithId(userId);
+            if (usersResult.Value != null)
+            {
+                vm.TopMessage = $"Page {pagingOptions.PageIndex} of public presentations for {usersResult.Value.Name}";
+            }
             return base.DisplayPublicListPage(vm);
         }
 

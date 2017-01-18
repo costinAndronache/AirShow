@@ -10,6 +10,6 @@ namespace AirShow.Models.Interfaces
     public interface IUsersRepository
     {
         Task<PagedOperationResult<List<User>>> GetUsersForPresentation(int presentationId, PagingOptions options);
-
+        Task<OperationResult<User>> GetUserWithId(string id);
     }
 }

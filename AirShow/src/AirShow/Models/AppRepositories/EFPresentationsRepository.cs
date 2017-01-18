@@ -97,9 +97,9 @@ namespace AirShow.Models.AppRepositories
 
         public async Task<OperationStatus> DownloadPresentation(string name, string userId, Stream inStream)
         {
-            var upList = await _context.UserPresentations.Where(up => up.UserId == userId)
-                .Where(up => _context.Presentations.Any(p => p.Id == up.PresentationId))
-                .Include(up => up.Presentation).ToListAsync();
+            var upList = await _context.UserPresentations.Where(up => up.UserId == userId).Include(up => up.Presentation)
+                .Where(up => up.Presentation.Name == name)
+                .ToListAsync();
 
             if (upList.Count != 1)
             {

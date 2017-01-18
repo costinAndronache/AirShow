@@ -44,5 +44,20 @@ namespace AirShow.Models.AppRepositories
 
             return result;
         }
+
+        public async Task<OperationResult<User>> GetUserWithId(string id)
+        {
+            var result = new OperationResult<User>();
+
+            var userList = await _context.Users.Where(u => u.Id == id).ToListAsync();
+            if (userList.Count != 1)
+            {
+                result.ErrorMessageIfAny = "User not found";
+                return result;
+            }
+
+            result.Value = userList.First();
+            return result;
+        }
     }
 }

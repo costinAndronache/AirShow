@@ -19,3 +19,11 @@
     height: 75px;
     overflow: auto;
 }
+
+.topMessageContainer {
+    text-align:center;
+    display:table-cell;
+    vertical-align:middle;
+    height: 50px;
+    width: 100%;
+}

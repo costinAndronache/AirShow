@@ -19,7 +19,7 @@ namespace AirShow.Controllers
         protected IPresentationsRepository _presentationsRepository;
         protected ITagsRepository _tagsRepository;
         protected ICategoriesRepository _categoriesRepository;
-        private IUsersRepository _usersRepository;
+        protected IUsersRepository _usersRepository;
 
         public PresentationsListController(IPresentationsRepository presentationsRepository,
                               ITagsRepository tagsRepository,
