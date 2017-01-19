@@ -16,7 +16,7 @@
     @RenderSection("style", false)
 </head>
 <body>
-    <div>
+    <div class="">
         @Component.InvokeAsync(nameof(SearchNavbarView)).Result
     </div>
     <div class="mainBodyDiv row">
@@ -24,7 +24,7 @@
               @Component.InvokeAsync(nameof(LeftNavbar), 
              new { indexPair = ViewData[ViewConstants.kNavbarIndexPairKey]}).Result
         </div>
-        <div class="container body-content col-md-9">
+        <div class="col-md-9">
             @RenderBody()
             <hr />
         </div>

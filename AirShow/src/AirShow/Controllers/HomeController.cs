@@ -12,6 +12,7 @@ using AirShow.Models.Common;
 using Microsoft.AspNetCore.Http;
 using AirShow.WebSockets;
 using AirShow.Views.Shared.Components;
+using AirShow.Utils;
 
 namespace AirShow.Controllers
 {
@@ -69,7 +70,7 @@ namespace AirShow.Controllers
             if (userPresentationsResult.Value.Count == 0)
             {
                 vm.TopMessage = "You do not have any presentations. Start uploading some";
-                vm.TopMessageHref = "/Home/UploadPresentation";
+                vm.TopMessageHref = $"/{nameof(HomeController).WithoutControllerPart()}/{nameof(HomeController.UploadPresentation)}";
                 return base.DisplayListPage(vm);
             }
 
@@ -77,7 +78,41 @@ namespace AirShow.Controllers
             vm.PaginationModel = PaginationViewModel.BuildModelWith(userPresentationsResult.TotalPages,
                 pagingOptions, index => "/Home/MyPresentations?page=" + index + "&itemsPerPage=" + pagingOptions.ItemsPerPage);
 
+            vm.TopMessage = "My presentations";
+            vm.ButtonsToolbarModel = ButtonsToolbarModel.UserModelwithHighlightedIndex(0);
             return base.DisplayListPage(vm);
+        }
+
+        public async Task<IActionResult> MyPresentationsByCategory(string categoryName, int? page, int? itemsPerPage)
+        {
+            var vm = new PresentationsViewModel();
+            vm.Title = $"{categoryName.ToUpper()}";
+            vm.ButtonsToolbarModel = ButtonsToolbarModel.UserModelwithHighlightedIndex(ButtonsToolbarModel.IndexOf(categoryName));
+            vm.NavbarIndexPair = new LeftNavbar.IndexPair { IndexWhenUserAuthorized = NavbarModel.AuthorizableItemsIndex.HomeMyPresentations };
+
+
+            var userId = _userManager.GetUserId(this.User);
+            var pagingOptions = PagingOptions.CreateWithTheseOrDefaults(page, itemsPerPage);
+            var presentationsResult = await _presentationsRepository.UserPresentationsFromCategory(userId, categoryName, pagingOptions);
+            if (presentationsResult.ErrorMessageIfAny != null)
+            {
+                vm.ErrorMessage = presentationsResult.ErrorMessageIfAny;
+                return DisplayListPage(vm);
+            }
+
+            if (presentationsResult.Value.Count == 0)
+            {
+                vm.TopMessage = $"You do not have any presentations in the {categoryName.ToLower()} category.";
+                vm.TopMessageHref = $"/{nameof(HomeController).WithoutControllerPart()}/{nameof(HomeController.UploadPresentation)}";
+                return DisplayListPage(vm);
+            }
+
+            vm.TopMessage = $"Presentations in category {categoryName.ToLower()}, page {pagingOptions.PageIndex} of {presentationsResult.TotalPages}";
+            vm.Presentations = await CreateCardsModel(presentationsResult.Value);
+            vm.PaginationModel = PaginationViewModel.BuildModelWith(presentationsResult.TotalPages, pagingOptions, i =>
+            $"/{nameof(HomeController).WithoutControllerPart()}/{nameof(HomeController.MyPresentationsByCategory)}?categpryName=" +
+            $"{categoryName}&page={i}&itemsPerPage={pagingOptions.ItemsPerPage}");
+            return DisplayListPage(vm);
         }
 
         public async Task<IActionResult> UploadPresentation()

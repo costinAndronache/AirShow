@@ -22,8 +22,22 @@
 
 .topMessageContainer {
     text-align:center;
-    display:table-cell;
-    vertical-align:middle;
     height: 50px;
     width: 100%;
+}
+
+
+.categoryButton {
+   position:relative;
+   margin:10px auto;
+   display:inline-block;
+}
+
+.categoryButtonsContainer {
+	height: 100px;
+	width: 100%;
+	margin: 10px;
+    text-align:center;
+    position:relative;
+
 }

@@ -31,18 +31,26 @@ else
 {
     <div class="row">
 
+        @if (Model.ButtonsToolbarModel != null)
+        {
+            @Component.InvokeAsync(nameof(ButtonsToolbar), new { model = Model.ButtonsToolbarModel }).Result
+        }
+
         @if (Model.TopMessage != null)
         {
-            if (Model.TopMessageHref != null)
-            {
-                <a href="@Model.TopMessageHref">@Model.TopMessage</a>
-            }
-            else
-            {
-                <p class="card-title">@Model.TopMessage</p>
-            }
+            <div class="topMessageContainer">
+                @if (Model.TopMessageHref != null)
+                {
+                    <a href="@Model.TopMessageHref">@Model.TopMessage</a>
+                }
+                else
+                {
+                    <p class="card-title">@Model.TopMessage</p>
+                }
+            </div>
 
         }
+
         @if (Model.Presentations != null)
         {
             @foreach (var item in Model.Presentations)

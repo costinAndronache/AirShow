@@ -9,17 +9,19 @@ class PublicPresentationsHelper {
         if (buttons) {
             for (var i = 0; i < buttons.length; i++) {
                 var aButton = buttons[i] as HTMLButtonElement;
-                aButton.onclick = function (ev: Event) {
-                    var presentationId = aButton.getAttribute("data-presentationId");
-                    self.requestAddToMyAccount(presentationId, function () {
-                        aButton.hidden = true;
-                    });
+
+                (function (button: HTMLButtonElement) {
+                    button.onclick = function (ev: Event) {
+                        var presentationId = button.getAttribute("data-presentationId");
+                        self.requestAddToMyAccount(presentationId, function () {
+                            button.hidden = true;
+                            alert('You can now view your newly added presentation in \"MyPresentations\"');
+                        });
+                    }
+                })(aButton);
                 }
             }
         }
-
-    }
-
 
     private requestAddToMyAccount(presentationId: string, callbackIfDone: () => void) {
 

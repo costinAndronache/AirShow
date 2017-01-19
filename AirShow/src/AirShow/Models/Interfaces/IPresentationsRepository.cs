@@ -45,6 +45,9 @@ namespace AirShow.Models.Interfaces
         Task<PagedOperationResult<List<Presentation>>> PublicPresentations(PagingOptions options, string excludeUserIdIfAny);
         Task<PagedOperationResult<List<Presentation>>> PublicPresentationsForUser(string userId, PagingOptions options);
 
+        Task<PagedOperationResult<List<Presentation>>> PublicPresentationsFromCategory(string categoryName, PagingOptions options);
+        Task<PagedOperationResult<List<Presentation>>> UserPresentationsFromCategory(string userId, string categoryName, PagingOptions options);
+
         Task<OperationStatus> AddPresentationToUser(int presentationId, string userId);
 
     }

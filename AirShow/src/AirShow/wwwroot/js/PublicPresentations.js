@@ -7,12 +7,15 @@ var PublicPresentationsHelper = (function () {
         if (buttons) {
             for (var i = 0; i < buttons.length; i++) {
                 var aButton = buttons[i];
-                aButton.onclick = function (ev) {
-                    var presentationId = aButton.getAttribute("data-presentationId");
-                    self.requestAddToMyAccount(presentationId, function () {
-                        aButton.hidden = true;
-                    });
-                };
+                (function (button) {
+                    button.onclick = function (ev) {
+                        var presentationId = button.getAttribute("data-presentationId");
+                        self.requestAddToMyAccount(presentationId, function () {
+                            button.hidden = true;
+                            alert('You can now view your newly added presentation in \"MyPresentations\"');
+                        });
+                    };
+                })(aButton);
             }
         }
     };

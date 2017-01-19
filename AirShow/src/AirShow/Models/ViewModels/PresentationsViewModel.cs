@@ -11,6 +11,7 @@ namespace AirShow.Models.ViewModels
     {
         public List<PresentationCardModel> Presentations { get; set; }
         public PaginationViewModel PaginationModel { get; set; }
+        public ButtonsToolbarModel ButtonsToolbarModel { get; set; }
         public string TopMessage { get; set; }
         public string TopMessageHref { get; set; }
         public string Title { get; set; }

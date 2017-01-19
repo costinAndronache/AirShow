@@ -72,7 +72,7 @@ class SearchBarViewHelper {
 
     private requestSearchAfterKeywords(keywords: string, where: string) {
         var url = window.location.origin + "/Explore/SearchPresentations?keywords=" + encodeURI(keywords) +
-            "&where=" + where + "&page=1&itemsPerPage=1";
+            "&where=" + where + "&page=1&itemsPerPage=5";
 
         window.location.href = url;
     }

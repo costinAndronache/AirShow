@@ -87,12 +87,14 @@ namespace AirShow.Models.AppRepositories
                 .Select(up => up.Presentation).Skip(toSkip).Take(toTake).ToListAsync();
 
 
-            return new PagedOperationResult<List<Presentation>>
+            var result =  new PagedOperationResult<List<Presentation>>
             {
                 Value = upList,
                 TotalPages = totalPages,
                 ItemsPerPage = options.ItemsPerPage
             };
+            if (result.TotalPages == 0) { result.TotalPages++; }
+            return result;
         }
 
         public async Task<OperationStatus> DownloadPresentation(string name, string userId, Stream inStream)
@@ -204,15 +206,23 @@ namespace AirShow.Models.AppRepositories
                 .ToListAsync();
 
             
-            return new PagedOperationResult<List<Presentation>>
+            var result =  new PagedOperationResult<List<Presentation>>
             {
                 Value = upList,
                 ItemsPerPage = options.ItemsPerPage
             };
+            if (result.TotalPages == 0) { result.TotalPages++; }
+            return result;
         }
 
         public async Task<PagedOperationResult<List<Presentation>>> GetUserPresentationsFromTag(string tag, string userId, PagingOptions options)
         {
+            var count = _context.UserPresentations.Where(u => u.UserId == userId)
+                .Include(u => u.Presentation)
+                .Select(u => u.Presentation)
+                .Include(p => p.PresentationTags)
+                .Count(p => p.PresentationTags.Any(pt => pt.Tag.Name == tag));
+
             var upList = await _context.UserPresentations.Where(u => u.UserId == userId)
                 .Include(u => u.Presentation)
                 .Select(u => u.Presentation)
@@ -222,11 +232,14 @@ namespace AirShow.Models.AppRepositories
                 .Take(options.ItemsPerPage)
                 .ToListAsync();
 
-            return new PagedOperationResult<List<Presentation>>
+            var result =  new PagedOperationResult<List<Presentation>>
             {
                 Value = upList,
-                ItemsPerPage = options.ItemsPerPage
+                ItemsPerPage = options.ItemsPerPage,
+                TotalPages = count / options.ItemsPerPage
             };
+            if (result.TotalPages == 0) { result.TotalPages++; }
+            return result;
         }
 
         public async Task<OperationResult<int>> GetNumberOfUserPresentationsInCategory(string categoryName, string userId)
@@ -303,7 +316,7 @@ namespace AirShow.Models.AppRepositories
             }
 
             var numOfPages = presentationsResult.Count / options.ItemsPerPage;
-
+            if (numOfPages == 0){ numOfPages++; }
             return new PagedOperationResult<List<Presentation>>
             {
                 Value = presentationsResult.Skip((options.PageIndex - 1) * options.ItemsPerPage).Take(options.ItemsPerPage).ToList(),
@@ -328,12 +341,14 @@ namespace AirShow.Models.AppRepositories
             }
 
 
-            return new PagedOperationResult<List<Presentation>>
+            var result =  new PagedOperationResult<List<Presentation>>
             {
                 Value = presentations,
                 TotalPages = count / options.ItemsPerPage,
                 ItemsPerPage = options.ItemsPerPage
             };
+            if (result.TotalPages == 0) { result.TotalPages++; }
+            return result;
         }
 
         public async Task<OperationStatus> AddPresentationToUser(int presentationId, string userId)
@@ -381,7 +396,72 @@ namespace AirShow.Models.AppRepositories
 
             result.Value = list;
             result.TotalPages = count / options.ItemsPerPage;
+            if (result.TotalPages == 0){result.TotalPages++;}
+            return result;
+        }
 
+        public async Task<PagedOperationResult<List<Presentation>>> PublicPresentationsFromCategory(string categoryName, PagingOptions options)
+        {
+            var result = new PagedOperationResult<List<Presentation>>();
+            var categoryIdResult = await GetIdOfCategoryWithName(categoryName);
+            if (categoryIdResult.ErrorMessageIfAny != null)
+            {
+                result.ErrorMessageIfAny = categoryIdResult.ErrorMessageIfAny;
+                return result;
+            }
+            var catId = categoryIdResult.Value;
+            var count = _context.Presentations.Count(p => p.CategoryId == catId && p.IsPublic);
+            var presentations = await _context.Presentations.Where(p => p.CategoryId == catId && p.IsPublic)
+                .Skip(options.ToSkip).Take(options.ItemsPerPage)
+                .ToListAsync();
+
+            result =  new PagedOperationResult<List<Presentation>>
+            {
+                Value = presentations,
+                TotalPages = count / options.ItemsPerPage
+            };
+            if (result.TotalPages == 0) { result.TotalPages++; }
+            return result;
+        }
+        public async Task<PagedOperationResult<List<Presentation>>> UserPresentationsFromCategory(string userId, string categoryName, PagingOptions options)
+        {
+            var result = new PagedOperationResult<List<Presentation>>();
+            var categoryIdResult = await GetIdOfCategoryWithName(categoryName);
+            if (categoryIdResult.ErrorMessageIfAny != null)
+            {
+                result.ErrorMessageIfAny = categoryIdResult.ErrorMessageIfAny;
+                return result;
+            }
+            var catId = categoryIdResult.Value;
+
+            var userPresentations = await _context.UserPresentations.Where(u => u.UserId == userId).
+                Include(u => u.Presentation).Where(u => u.Presentation.CategoryId == catId)
+                .Select(u => u.Presentation)
+                .Skip(options.ToSkip).Take(options.ItemsPerPage)
+                .ToListAsync();
+
+
+            var count = _context.UserPresentations.Where(u => u.UserId == userId).Include(u => u.Presentation).Count(u =>
+            u.Presentation.CategoryId == catId);
+
+            result.Value = userPresentations;
+            result.TotalPages = count / options.ItemsPerPage;
+            if (result.TotalPages == 0){result.TotalPages++;}
+            return result;
+        }
+
+
+        private async Task<OperationResult<int>> GetIdOfCategoryWithName(string categoryName)
+        {
+            var result = new OperationResult<int>();
+            var categoriesList = await _context.Categories.Where(c => c.Name == categoryName).ToListAsync();
+            if (categoriesList.Count != 1)
+            {
+                result.ErrorMessageIfAny = $"No category with name {categoryName} found.";
+                return result;
+            }
+            var category = categoriesList.First();
+            result.Value = category.Id;
             return result;
         }
 

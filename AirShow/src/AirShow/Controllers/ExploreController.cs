@@ -80,9 +80,43 @@ namespace AirShow.Controllers
             vm.Presentations = await base.CreateCardsModel(presentations.Value);
             vm.Title = "Public Presentations";
             vm.TopMessage = $"Displaying public presentations, {(presentations.TotalPages > 0 ? presentations.TotalPages : 1)} pages in total";
+
+            vm.ButtonsToolbarModel = ButtonsToolbarModel.PublicModelWithHighlightedIndex(0);
+
             return DisplayPublicListPage(vm);
         }
 
+        [AllowAnonymous]
+        public async Task<IActionResult> PublicPresentationsByCategory(string categoryName, int? page, int? itemsPerPage)
+        {
+            var vm = new PresentationsViewModel();
+            vm.NavbarIndexPair = defaultNavbarIndexPair;
+            vm.Title = categoryName.ToUpper();
+            vm.ButtonsToolbarModel = ButtonsToolbarModel.PublicModelWithHighlightedIndex(ButtonsToolbarModel.IndexOf(categoryName));
+
+            var pagingOptions = PagingOptions.CreateWithTheseOrDefaults(page, itemsPerPage);
+            var presentationsResult = await _presentationsRepository.PublicPresentationsFromCategory(categoryName, pagingOptions);
+            if (presentationsResult.ErrorMessageIfAny != null)
+            {
+                vm.ErrorMessage = presentationsResult.ErrorMessageIfAny;
+                return DisplayPublicListPage(vm);
+            }
+
+            if (presentationsResult.Value.Count == 0)
+            {
+                vm.TopMessage = $"There is no public presentation under the category {categoryName}. Be the first to upload one!";
+                vm.TopMessageHref = $"/{nameof(HomeController).WithoutControllerPart()}/{nameof(HomeController.UploadPresentation)}";
+                return DisplayPublicListPage(vm);
+            }
+
+            vm.PaginationModel = PaginationViewModel.BuildModelWith(presentationsResult.TotalPages, pagingOptions, i =>
+            $"{nameof(ExploreController).WithoutControllerPart()}/{nameof(ExploreController.PublicPresentationsByCategory)}" + 
+            $"?categoryName={categoryName}&page={i}&itemsPerPage={pagingOptions.ItemsPerPage}");
+
+            vm.TopMessage = $"Public presentations in the {categoryName} category, page {pagingOptions.PageIndex} of {presentationsResult.TotalPages}";
+            vm.Presentations = await CreateCardsModel(presentationsResult.Value);
+            return DisplayPublicListPage(vm);
+        }
 
         public async Task<IActionResult> SearchPresentations(string keywords, string where, int? page, int? itemsPerPage)
         {
@@ -115,6 +149,8 @@ namespace AirShow.Controllers
                 return base.DisplayListPage(vm);
             }
 
+
+            vm.TopMessage = $"Search results for the keywords \"{keywords}\" in your presentations";
             vm.Presentations = await base.CreateCardsModel(presentations.Value);
             vm.PaginationModel = await CreateSearchPaginationModel(keywordsList, searchType, presentations.TotalPages, pagingOptions);
             return DisplayListPage(vm);
@@ -179,6 +215,7 @@ namespace AirShow.Controllers
                 return base.DisplayListPage(vm);
             }
 
+            vm.TopMessage = $"Presentations associated with \"{tag}\", page {pagingOptions.PageIndex} of {presentations.TotalPages}";
             vm.Presentations = await base.CreateCardsModel(presentations.Value);
             vm.PaginationModel = await CreateTagPaginationModel(tag, pagingOptions, presentations.TotalPages);
             return base.DisplayListPage(vm);
