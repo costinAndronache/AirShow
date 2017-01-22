@@ -69,7 +69,7 @@ var SearchBarViewHelper = (function () {
     };
     SearchBarViewHelper.prototype.requestSearchInPublicPresentations = function (keywords, where) {
         var url = window.location.origin + "/Explore/SearchPublicPresentations?keywords=" + encodeURI(keywords) +
-            "&where" + where + "&page=1&itemsPerPage=5";
+            "&where=" + where + "&page=1&itemsPerPage=5";
         window.location.href = url;
     };
     return SearchBarViewHelper;
