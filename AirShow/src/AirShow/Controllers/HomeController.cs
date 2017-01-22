@@ -25,7 +25,11 @@ namespace AirShow.Controllers
                               ITagsRepository tagsRepository,
                               ICategoriesRepository categoriesRepository,
                               IUsersRepository usersRepository,
-                              UserManager<User> userManager): base(presentationsRepository, tagsRepository,categoriesRepository, usersRepository)
+                              IPresentationThumbnailRepository thumbnailRepository, UserManager<User> userManager) : base(presentationsRepository, 
+                                                                                      tagsRepository,
+                                                                                      categoriesRepository, 
+                                                                                      usersRepository,
+                                                                                      thumbnailRepository)
         {
             _userManager = userManager;
         }

@@ -1,6 +1,14 @@
 ﻿@model PresentationCardModel
     <div class="card col-md-5 col-sm-4 cardFixed">
-        <img src="~/images/pdfIcon.png" alt="PDF icon" class="card-img-top">
+        @{
+            var src = "~/images/pdfIcon.png";
+            if (Model.ThumbnailURL != null)
+            {
+                src = Model.ThumbnailURL;
+            }
+            <img src="@src" alt="PDF icon" class="card-img-top">
+        }
+        
         <div class="card-block">
             <h5 class="card-title">@Model.Presentation.Name</h5>
             <span>

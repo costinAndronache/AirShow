@@ -20,13 +20,16 @@ namespace AirShow.Controllers
         protected ITagsRepository _tagsRepository;
         protected ICategoriesRepository _categoriesRepository;
         protected IUsersRepository _usersRepository;
+        private IPresentationThumbnailRepository _thumbnailRepository;
 
         public PresentationsListController(IPresentationsRepository presentationsRepository,
                               ITagsRepository tagsRepository,
                               ICategoriesRepository categoriesRepository,
-                              IUsersRepository usersRepository)
+                              IUsersRepository usersRepository, 
+                              IPresentationThumbnailRepository thumbnailRepository)
         {
 
+            _thumbnailRepository = thumbnailRepository;
             _presentationsRepository = presentationsRepository;
             _tagsRepository = tagsRepository;
             _categoriesRepository = categoriesRepository;
@@ -51,11 +54,13 @@ namespace AirShow.Controllers
                     $"?userId={u.Id}&page=1&itemsPerPage=10"}).ToList();
                 }
 
+                var thumbnail = await _thumbnailRepository.GetThumbnailURLFor(item);
                 presentations.Add(new PresentationCardModel()
                 {
                     UserInfos = usersList,
                     Category = categoryResult.Value,
                     Presentation = item,
+                    ThumbnailURL = thumbnail.Value,
                     Tags = tagsResult.Value.Select(t => t.Name).ToList()
                 });
             }

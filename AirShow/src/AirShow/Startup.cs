@@ -50,7 +50,7 @@ namespace AirShow
             services.AddScoped<BasicDBSeeder>();
             services.AddScoped<IPresentationsRepository, EFPresentationsRepository>();
             services.AddScoped<IPresentationFilesRepository, BasicFileRepository>();
-            services.AddScoped<IPresentationThumbnailRepository, ThumbnailRepository>();
+            services.AddScoped<IPresentationThumbnailRepository, LocalThumbnailRepository>();
             services.AddScoped<ICategoriesRepository, EFCategoriesRepository>();
             services.AddScoped<ITagsRepository, EFTagsRepository>();
             services.AddScoped<IUsersRepository, EFUsersRepository>();

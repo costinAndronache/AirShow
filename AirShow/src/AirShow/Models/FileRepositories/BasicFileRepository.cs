@@ -11,6 +11,7 @@ using System.Security.Cryptography;
 using System.Text;
 using AirShow.Models.Contexts;
 using Microsoft.EntityFrameworkCore;
+using AirShow.Utils;
 
 namespace AirShow.Models.FileRepositories
 {
@@ -29,7 +30,7 @@ namespace AirShow.Models.FileRepositories
         private  OperationResult<string>  GetOrCreateUploadsDirectory()
         {
             var directory = Directory.GetCurrentDirectory() + Path.DirectorySeparatorChar + "userUploads";
-            var result = ConfirmDirectoryExistsOrCreate(directory);
+            var result = AirshowUtils.ConfirmDirectoryExistsOrCreate(directory);
             if (result.ErrorMessageIfAny != null)
             {
                 return new OperationResult<string>
@@ -66,46 +67,6 @@ namespace AirShow.Models.FileRepositories
             return stringId;
         }
 
-
-
-
-        private OperationStatus ConfirmDirectoryExistsOrCreate(string directoryPath)
-        {
-            
-            if (!Directory.Exists(directoryPath))
-            {
-                try
-                {
-                    var di = Directory.CreateDirectory(directoryPath);
-                }
-                catch (Exception e)
-                {
-                    var message = OperationStatus.kUnknownError;
-                    if (_env.IsDevelopment())
-                    {
-                        message = e.InnerException.ToString();
-                    }
-                    return new OperationStatus
-                    {
-                        ErrorMessageIfAny = message
-                    };
-                }
-            }
-
-            return new OperationStatus();
-        }
-
-        private static FileStream CreateFileToWriteAtPath(string path)
-        {
-            try
-            {
-                FileStream fs = new FileStream(path, FileMode.CreateNew);
-                return fs;
-            } catch (Exception e)
-            {
-                return null;
-            }
-        }
 
         public async Task<OperationStatus> GetFileForId(int id, Stream inStream)
         {
@@ -150,7 +111,7 @@ namespace AirShow.Models.FileRepositories
                 };
             }
 
-            var fs = CreateFileToWriteAtPath(filePathResult.Value);
+            var fs = AirshowUtils.CreateFileToWriteAtPath(filePathResult.Value);
             if (fs == null)
             {
                 return new OperationResult<int>

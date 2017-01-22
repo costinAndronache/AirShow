@@ -221,12 +221,13 @@ E:\Git\AirShow\AirShow\src\AirShow\Controllers\UsersController.cs
 E:\Git\AirShow\AirShow\src\AirShow\Migrations\20170117185756_Initial.cs
 E:\Git\AirShow\AirShow\src\AirShow\Migrations\20170117185756_Initial.Designer.cs
 E:\Git\AirShow\AirShow\src\AirShow\Migrations\AirShowContextModelSnapshot.cs
+E:\Git\AirShow\AirShow\src\AirShow\Models\AppRepositories\CloudinaryThumbnailRepository.cs
 E:\Git\AirShow\AirShow\src\AirShow\Models\AppRepositories\EFCategoriesRepository.cs
 E:\Git\AirShow\AirShow\src\AirShow\Models\AppRepositories\EFPresentationsRepository.cs
 E:\Git\AirShow\AirShow\src\AirShow\Models\AppRepositories\EFTagsRepository.cs
 E:\Git\AirShow\AirShow\src\AirShow\Models\AppRepositories\EFUsersRepository.cs
+E:\Git\AirShow\AirShow\src\AirShow\Models\AppRepositories\LocalThumbnailRepository.cs
 E:\Git\AirShow\AirShow\src\AirShow\Models\AppRepositories\RepoUtils.cs
-E:\Git\AirShow\AirShow\src\AirShow\Models\AppRepositories\ThumbnailRepository.cs
 E:\Git\AirShow\AirShow\src\AirShow\Models\Common\OperationResult.cs
 E:\Git\AirShow\AirShow\src\AirShow\Models\Common\OperationStatus.cs
 E:\Git\AirShow\AirShow\src\AirShow\Models\Common\PagedOperationResult.cs
