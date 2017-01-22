@@ -37,6 +37,10 @@ namespace AirShow.Models.Interfaces
         Task<PagedOperationResult<List<Presentation>>> SearchUserPresentations(List<string> keywords, string userId, PagingOptions options,
                                                                                PresentationSearchType searchType);
 
+
+        Task<PagedOperationResult<List<Presentation>>> SearchPublicPresentations(List<string> keywords, PagingOptions options,
+                                                                       PresentationSearchType searchType, string excludeFromUserId);
+
         Task<OperationStatus> UploadPresentationForUser(string userId, UploadPresentationModel model);
         Task<OperationStatus> DownloadPresentation(string name, string userId, Stream inStream);
         Task<OperationStatus> DeletePresentation(string presentationName, string userId);

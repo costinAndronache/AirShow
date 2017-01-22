@@ -44,7 +44,7 @@ namespace AirShow.Controllers
       
         public IActionResult Index()
         {
-            return View();
+            return RedirectToAction(nameof(ExploreController.PublicPresentations));
         }
 
         [AllowAnonymous]
@@ -156,6 +156,50 @@ namespace AirShow.Controllers
             return DisplayListPage(vm);
         }
 
+        [AllowAnonymous]
+        public async Task<IActionResult> SearchPublicPresentations(string keywords, string where, int? page, int? itemsPerPage)
+        {
+            var vm = new PresentationsViewModel();
+            vm.NavbarIndexPair = defaultNavbarIndexPair;
+
+            if (keywords == null || keywords.Length == 0)
+            {
+                vm.TopMessage = "You provided no keywords to search with";
+                return base.DisplayListPage(vm);
+            }
+
+            string excludeUserId = null;
+            if (this.User != null && this.User.Identity.IsAuthenticated)
+            {
+                excludeUserId = _userManager.GetUserId(this.User);
+            }
+
+            _userManager.GetUserId(User);
+            var pagingOptions = PagingOptions.CreateWithTheseOrDefaults(page, itemsPerPage);
+            var searchType = CreateSearchType(where);
+            var keywordsList = CreateKeywordsList(keywords);
+
+            PagedOperationResult<List<Presentation>> presentations = await _presentationsRepository.
+                SearchPublicPresentations(keywordsList, pagingOptions, searchType, excludeUserId);
+
+            if (presentations.ErrorMessageIfAny != null)
+            {
+                vm.ErrorMessage = presentations.ErrorMessageIfAny;
+                return base.DisplayListPage(vm);
+            }
+
+            if (presentations.Value.Count == 0)
+            {
+                vm.TopMessage = "The search returned no results for the keywords " + keywords;
+                return base.DisplayListPage(vm);
+            }
+
+
+            vm.TopMessage = $"Search results for the keywords \"{keywords}\" in public presentations";
+            vm.Presentations = await base.CreateCardsModel(presentations.Value);
+            vm.PaginationModel = await CreateSearchPaginationModel(keywordsList, searchType, presentations.TotalPages, pagingOptions);
+            return DisplayPublicListPage(vm);
+        }
 
         public static PresentationSearchType CreateSearchType(string where)
         {

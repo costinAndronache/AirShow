@@ -1,20 +1,28 @@
 ﻿ <div class="row mainNavbarContainer">
-            
+
+     <div class="col-md-7" style="">
+         <div class="searchForm input-group">
+             <div class="input-group-btn">
+                 <button type="button" style="color:white;width:100px;" class="btn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                     <i class="fa fa-search"></i>
+                 </button>
+                 <div class="dropdown-menu">
+                     <a class="dropdown-item" href="#" id="anchorMyPresentations">Search in my presentations</a>
+                     <div role="separator" class="dropdown-divider"></div>
+                     <a class="dropdown-item" href="#" id="anchorPublicPresentations">Search in public presentations</a>
+                 </div>
+             </div>
+
+             <span><input id="searchInput" class="searchInput fullWidth" type="text" placeholder="Search" value="" autocomplete="off"></span>
+
+         </div>
+     </div>
 
 
-              <div class="col-sm-12 col-lg-8" style="">
-                <div class="searchForm input-group">
-                    <span><button id="searchButton" class="fullWidth searchNavbarHeight" style="color:white;">
-                        <i class="fa fa-search"></i>
-                    </button></span>
-                    <span><input id="searchInput" class="searchInput fullWidth" type="text" placeholder="Search" value="" autocomplete="off"></span>
-
-                </div>                
-              </div>
 
 
-            <div class="searchNavbarHeight col-sm-12 col-lg-4">
-                <div class="btn-group categoryButtonsContainer" data-toggle="buttons" style="">
+            <div class="col-md-5">
+                <div class="btn-group" data-toggle="buttons" style="">
                     <label class="btn btn-primary active checkboxLabel">
                         <input type="checkbox" id="checkboxName" checked autocomplete="off">In name
                     </label>
@@ -25,7 +33,5 @@
                         <input type="checkbox" id="checkboxTags" autocomplete="off">In tags
                     </label>
                 </div>
-                
-            </div>
-               
+            </div>               
 </div>

@@ -277,52 +277,92 @@ namespace AirShow.Models.AppRepositories
         public async Task<PagedOperationResult<List<Presentation>>> SearchUserPresentations(List<string> keywords, string userId, PagingOptions options,
                                                                        PresentationSearchType searchType)
         {
-            var presentationsResult = new List<Presentation>();
             var userPresentations = _context.UserPresentations.Where(u => u.UserId == userId)
                                                               .Include(u => u.Presentation)
                                                               .Select(u => u.Presentation);
+
+            return await SearchInPresentations(userPresentations, keywords, options, searchType);
+        }
+
+        public async Task<PagedOperationResult<List<Presentation>>> SearchPublicPresentations(List<string> keywords, PagingOptions options,
+                                                               PresentationSearchType searchType, string excludeFromUserId)
+        {
+
+            IQueryable<Presentation> selectedPresentations;
+            if (excludeFromUserId != null)
+            {
+                selectedPresentations = _context.UserPresentations.Where(u => u.UserId != excludeFromUserId)
+                    .Include(u => u.Presentation).Where(u => u.Presentation.IsPublic).Select(u => u.Presentation);
+            } else
+            {
+                selectedPresentations = _context.Presentations.Where(p => p.IsPublic);
+            }
+
+            return await SearchInPresentations(selectedPresentations, keywords, options, searchType);
+        }
+
+        private async Task<PagedOperationResult<List<Presentation>>> SearchInPresentations(IQueryable<Presentation> selectedPresentations, 
+            List<string> keywords, PagingOptions options, PresentationSearchType searchType)
+        {
+            var presentationsResult = new List<Presentation>();
+            IQueryable<Presentation> finalPresentations = null;
 
             foreach (var word in keywords)
             {
                 var lowerWord = word.ToLower();
 
-                IQueryable<Presentation> presentationsSearch = userPresentations;
+                List<IQueryable<Presentation>> unionList = new List<IQueryable<Presentation>>();
+                
 
                 if ((searchType & PresentationSearchType.Name) > 0)
                 {
-                    presentationsSearch = presentationsSearch.Where(p => p.Name.ToLower().Contains(lowerWord));
-                }
-                
-                if ((searchType & PresentationSearchType.Description) > 0 )
-                {
-                    presentationsSearch = presentationsSearch.Where(p => p.Description.ToLower().Contains(lowerWord));
+                    var query = selectedPresentations.Where(p => p.Name.ToLower().Contains(lowerWord));
+                    unionList.Add(query);
                 }
 
-                if ((searchType & PresentationSearchType.Tags) > 0 )
+                if ((searchType & PresentationSearchType.Description) > 0)
                 {
-                    presentationsSearch = presentationsSearch.Include(p => p.PresentationTags).
+                    var query = selectedPresentations.Where(p => p.Description.ToLower().Contains(lowerWord));
+                    unionList.Add(query);
+                }
+
+                if ((searchType & PresentationSearchType.Tags) > 0)
+                {
+                    var query = selectedPresentations.Include(p => p.PresentationTags).
                         Where(p => p.PresentationTags.Any(pt => pt.Tag.Name.ToLower().Contains(lowerWord)));
+                    unionList.Add(query); 
                 }
 
-                var presentations = await presentationsSearch.ToListAsync();
-
-                foreach (var item in presentations)
+                if (unionList.Count > 0)
                 {
-                    if (!presentationsResult.Any(p => p.Id == item.Id))
+                    var endResult = unionList.First();
+                    if (unionList.Count > 1)
                     {
-                        presentationsResult.Add(item);
+                        for (int i = 1; i < unionList.Count; i++)
+                        {
+                            var queryableAtI = unionList[i];
+                            endResult = endResult.Union(queryableAtI);
+                        }
+                    }
+                    if (finalPresentations == null)
+                    {
+                        finalPresentations = endResult;
+                    }else
+                    {
+                        finalPresentations = finalPresentations.Union(endResult);
                     }
                 }
             }
 
-            var numOfPages = presentationsResult.Count / options.ItemsPerPage;
-            if (numOfPages == 0){ numOfPages++; }
+            var numOfPages = finalPresentations.Count() / options.ItemsPerPage;
+            if (numOfPages == 0) { numOfPages++; }
             return new PagedOperationResult<List<Presentation>>
             {
-                Value = presentationsResult.Skip((options.PageIndex - 1) * options.ItemsPerPage).Take(options.ItemsPerPage).ToList(),
+                Value = await finalPresentations.Skip(options.ToSkip).Take(options.ItemsPerPage).ToListAsync(),
                 TotalPages = numOfPages
             };
         }
+
 
         public async Task<PagedOperationResult<List<Presentation>>> PublicPresentations(PagingOptions options, string excludeUserIdIfAny)
         {

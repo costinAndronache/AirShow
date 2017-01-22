@@ -7,14 +7,18 @@ class SearchBarViewHelper {
     private checkboxTags: HTMLInputElement;
 
     private searchButton: HTMLButtonElement;
-   
+
+    private anchorMyPresentations: HTMLAnchorElement;
+    private anchorPublicPresentations: HTMLAnchorElement;
 
     constructor() {
         this.textInput = document.getElementById("searchInput") as HTMLInputElement;
-        this.searchButton = document.getElementById("searchButton") as HTMLButtonElement;
         this.checkboxDescription = document.getElementById("checkboxDescription") as HTMLInputElement;
         this.checkboxName = document.getElementById("checkboxName") as HTMLInputElement;
         this.checkboxTags = document.getElementById("checkboxTags") as HTMLInputElement;
+        this.anchorMyPresentations = document.getElementById("anchorMyPresentations") as HTMLAnchorElement;
+        this.anchorPublicPresentations = document.getElementById("anchorPublicPresentations") as HTMLAnchorElement;
+
     }
 
     public run() {
@@ -25,14 +29,19 @@ class SearchBarViewHelper {
     private setupControls() {
 
         var self = this;
-        this.searchButton.onclick = function (ev: Event) {
-            self.beginNewSearch();
+        this.anchorMyPresentations.onclick = function (ev: Event) {
+            self.beginNewSearch(true);
+            return false;
+        }
+
+        this.anchorPublicPresentations.onclick = function (ev: Event) {
+            self.beginNewSearch(false);
             return false;
         }
 
         this.textInput.onkeydown = function (ev: KeyboardEvent) {
             if (ev.keyCode == 13) {
-                self.beginNewSearch();
+                self.beginNewSearch(true);
                 return false;
             }
         }
@@ -40,13 +49,18 @@ class SearchBarViewHelper {
 
     }
 
-    private beginNewSearch() {
+    private beginNewSearch(personal: boolean) {
         var value = this.textInput.value.replace("\n", "");
         if (value.length == 0) {
             alert("Please insert at least one keyword for your search. Thank you");
             return;
         }
-        this.requestSearchAfterKeywords(value, this.buildWhereString());
+        if (personal) {
+            this.requestSearchInMyPresentations(value, this.buildWhereString());
+        } else {
+            this.requestSearchInPublicPresentations(value, this.buildWhereString());
+        }
+
     }
 
     private buildWhereString(): string {
@@ -70,9 +84,16 @@ class SearchBarViewHelper {
         return whereString;
     }
 
-    private requestSearchAfterKeywords(keywords: string, where: string) {
+    private requestSearchInMyPresentations(keywords: string, where: string) {
         var url = window.location.origin + "/Explore/SearchPresentations?keywords=" + encodeURI(keywords) +
             "&where=" + where + "&page=1&itemsPerPage=5";
+
+        window.location.href = url;
+    }
+
+    private requestSearchInPublicPresentations(keywords: string, where: string) {
+        var url = window.location.origin + "/Explore/SearchPublicPresentations?keywords=" + encodeURI(keywords) +
+            "&where" + where + "&page=1&itemsPerPage=5";
 
         window.location.href = url;
     }

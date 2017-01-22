@@ -117,3 +117,7 @@
 .searchTypeButtonsGroup {
     vertical-align:middle;
 }
+
+.checkbox {
+    display: inline;
+}

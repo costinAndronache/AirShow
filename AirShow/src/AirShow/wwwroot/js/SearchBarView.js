@@ -1,34 +1,44 @@
 var SearchBarViewHelper = (function () {
     function SearchBarViewHelper() {
         this.textInput = document.getElementById("searchInput");
-        this.searchButton = document.getElementById("searchButton");
         this.checkboxDescription = document.getElementById("checkboxDescription");
         this.checkboxName = document.getElementById("checkboxName");
         this.checkboxTags = document.getElementById("checkboxTags");
+        this.anchorMyPresentations = document.getElementById("anchorMyPresentations");
+        this.anchorPublicPresentations = document.getElementById("anchorPublicPresentations");
     }
     SearchBarViewHelper.prototype.run = function () {
         this.setupControls();
     };
     SearchBarViewHelper.prototype.setupControls = function () {
         var self = this;
-        this.searchButton.onclick = function (ev) {
-            self.beginNewSearch();
+        this.anchorMyPresentations.onclick = function (ev) {
+            self.beginNewSearch(true);
+            return false;
+        };
+        this.anchorPublicPresentations.onclick = function (ev) {
+            self.beginNewSearch(false);
             return false;
         };
         this.textInput.onkeydown = function (ev) {
             if (ev.keyCode == 13) {
-                self.beginNewSearch();
+                self.beginNewSearch(true);
                 return false;
             }
         };
     };
-    SearchBarViewHelper.prototype.beginNewSearch = function () {
+    SearchBarViewHelper.prototype.beginNewSearch = function (personal) {
         var value = this.textInput.value.replace("\n", "");
         if (value.length == 0) {
             alert("Please insert at least one keyword for your search. Thank you");
             return;
         }
-        this.requestSearchAfterKeywords(value, this.buildWhereString());
+        if (personal) {
+            this.requestSearchInMyPresentations(value, this.buildWhereString());
+        }
+        else {
+            this.requestSearchInPublicPresentations(value, this.buildWhereString());
+        }
     };
     SearchBarViewHelper.prototype.buildWhereString = function () {
         var whereString = "";
@@ -52,9 +62,14 @@ var SearchBarViewHelper = (function () {
         }
         return whereString;
     };
-    SearchBarViewHelper.prototype.requestSearchAfterKeywords = function (keywords, where) {
+    SearchBarViewHelper.prototype.requestSearchInMyPresentations = function (keywords, where) {
         var url = window.location.origin + "/Explore/SearchPresentations?keywords=" + encodeURI(keywords) +
             "&where=" + where + "&page=1&itemsPerPage=5";
+        window.location.href = url;
+    };
+    SearchBarViewHelper.prototype.requestSearchInPublicPresentations = function (keywords, where) {
+        var url = window.location.origin + "/Explore/SearchPublicPresentations?keywords=" + encodeURI(keywords) +
+            "&where" + where + "&page=1&itemsPerPage=5";
         window.location.href = url;
     };
     return SearchBarViewHelper;

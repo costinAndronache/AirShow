@@ -42,42 +42,31 @@ namespace AirShow.Models.AppRepositories
 
         internal async Task<OperationStatus> UploadStream(Stream stream, string publicId)
         {
-            return new OperationStatus();
 
             byte[] buffer = ReadFully(stream);
-            string file = Convert.ToBase64String(buffer);
             long timestamp = DateTimeOffset.Now.ToUnixTimeSeconds();
             string signature = GenerateSignature(publicId, timestamp, _apiParams.ApiSecret);
 
-            var fileUrlEncoded = WebUtility.UrlEncode(file);
-            var stringContent = "api_key=" + _apiParams.ApiKey + "&public_id=" + publicId + ".pdf" +
-                "&signature=" + signature + "&timestamp=" + timestamp + "&file=" ;
-
-            var httpContent = new StringContent(stringContent, Encoding.ASCII, "application/x-www-form-urlencoded");
-
-            /*var formContent = new FormUrlEncodedContent(new[]
-            {
-                new KeyValuePair<string, string>("file", file),
-                new KeyValuePair<string, string>("api_key", _apiParams.ApiKey),
-                new KeyValuePair<string, string>("timestamp", timestamp + ""),
-                new KeyValuePair<string, string>("signature", signature),
-                new KeyValuePair<string, string>("public_id", publicId + ".pdf")
-            }); */
-
-
             MultipartFormDataContent form = new MultipartFormDataContent();
-            form.Add(new StringContent(fileUrlEncoded), "file");
-            form.Add(new StringContent("api_key"), _apiParams.ApiKey);
-            form.Add(new StringContent("timestamp"), timestamp + "");
-            form.Add(new StringContent("signature"), signature);
-            form.Add(new StringContent("public_id"), publicId + ".pdf");
-            
-           
 
-            var uri = "https://api.cloudinary.com/v1_1/" + _apiParams.cloudName + "/image/upload";
+            form.Add(new StringContent(_apiParams.ApiKey), "api_key", "api_key");
+            //form.Add(new StringContent(timestamp + ""), "timestamp", "timestamp");
+            form.Add(new StringContent(signature), "signature", "signature");
+
+            form.Add(new ByteArrayContent(buffer), "file", "file");
+            //form.Add(new StringContent("nyqyjw2b"), "upload_preset");
+            form.Add(new StringContent(publicId + ".pdf"), "public_id");
+            
+
+            var uri = "https://api.cloudinary.com/v1_1/" + _apiParams.cloudName + "/raw/upload";
             try
             {
-                var response = await client.PostAsync(uri.ToString(), form);
+                var requestMessage = new HttpRequestMessage(HttpMethod.Post, uri);
+                requestMessage.Headers.Add("X-Requested-With", "XMLHttpRequest");
+                requestMessage.Headers.Add("User-Agent", "CloudinaryiOS/10.1");
+                requestMessage.Content = form;
+
+                var response = await client.SendAsync(requestMessage);
 
                 if (response.StatusCode != System.Net.HttpStatusCode.OK)
                 {

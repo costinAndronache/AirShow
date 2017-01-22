@@ -111,7 +111,7 @@ namespace AirShow
             {
                 routes.MapRoute(
                     name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
+                    template: "{controller=Explore}/{action=Index}/{id?}");
             });
         }
 

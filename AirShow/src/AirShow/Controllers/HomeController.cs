@@ -32,7 +32,12 @@ namespace AirShow.Controllers
 
         public IActionResult Index()
         {
-            return RedirectToAction("MyPresentations");
+            if (this.User.Identity != null)
+            {
+                return RedirectToAction(nameof(HomeController.MyPresentations));
+            }
+            return RedirectToAction(nameof(ExploreController.PublicPresentations), nameof(ExploreController).WithoutControllerPart(),
+                new {page = 1, itemsPerPage = 5});
         }
 
         
