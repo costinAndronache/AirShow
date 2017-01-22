@@ -1,6 +1,11 @@
 ﻿
 ///<reference path="Definitions/PDFJS.d.ts"/>
 
+interface Document {
+    mozFullScreen: boolean
+    msFullscreenElement: boolean
+}
+
 class ViewPresentationHelper {
 
     pdfURL: string;
@@ -103,17 +108,46 @@ class ViewPresentationHelper {
 
         var adjustWidthHeight = function () {
             cv.style.height = "100%";
-            cv.style.width = "100%";
+            cv.style.width = "auto";
         }
+
+        var oldHeight = cv.style.height;
+        var oldWidth = cv.style.width;
+
+        var whenExitingFullScreen = function () {
+            cv.style.width = oldWidth;
+            cv.style.height = oldHeight;
+        }
+
         if (cv.requestFullscreen) {
             cv.requestFullscreen();
             adjustWidthHeight();
             return true
         }
 
+        var exitHandler = function () {
+            if (document.webkitIsFullScreen || document.fullscreenElement || document.mozFullScreen || document.msFullscreenElement) {
+                console.log('in full screen');
+            } else {
+                whenExitingFullScreen();
+                document.removeEventListener('webkitfullscreenchange', this, false);
+                document.removeEventListener('mozfullscreenchange', this, false);
+                document.removeEventListener('fullscreenchange', this, false);
+                document.removeEventListener('MSFullscreenChange', this, false);
+            }
+        }
+
+        if (document.addEventListener) {
+            document.addEventListener('webkitfullscreenchange', exitHandler, false);
+            document.addEventListener('mozfullscreenchange', exitHandler, false);
+            document.addEventListener('fullscreenchange', exitHandler, false);
+            document.addEventListener('MSFullscreenChange', exitHandler, false);
+        }
+
         if (cv.webkitRequestFullScreen) {
             cv.webkitRequestFullScreen();
             adjustWidthHeight();
+
             return true
         }
 

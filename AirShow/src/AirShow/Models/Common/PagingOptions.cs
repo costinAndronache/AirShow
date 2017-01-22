@@ -29,8 +29,8 @@ namespace AirShow.Models.Common
         {
             return new PagingOptions
             {
-                PageIndex = page.HasValue ? page.Value : 1,
-                ItemsPerPage = itemsPerPage.HasValue ? itemsPerPage.Value : 5
+                PageIndex = page.HasValue ? (page.Value > 0 ? page.Value : 1) : 1,
+                ItemsPerPage = itemsPerPage.HasValue ? (itemsPerPage.Value > 0 ? itemsPerPage.Value: 5) : 5
             };
         }
     }

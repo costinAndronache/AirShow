@@ -81,7 +81,7 @@ namespace AirShow.Models.AppRepositories
             var toTake = options.ItemsPerPage;
 
             var count = _context.UserPresentations.Count(up => up.UserId == userId);
-            var totalPages = count / (options.ItemsPerPage > 0 ? options.ItemsPerPage : 1);
+            var totalPages = (int)(Math.Ceiling((float)count / options.ItemsPerPage));
 
             var upList = await _context.UserPresentations.Where(up => up.UserId == userId).Include(up => up.Presentation)
                 .Select(up => up.Presentation).Skip(toSkip).Take(toTake).ToListAsync();
@@ -196,6 +196,12 @@ namespace AirShow.Models.AppRepositories
 
         public async Task<PagedOperationResult<List<Presentation>>> GetUserPresentationsFromCategory(string categoryName, string userId, PagingOptions options)
         {
+            var count = _context.UserPresentations.Where(up => up.UserId == userId)
+                        .Include(up => up.Presentation)
+                        .Select(up => up.Presentation)
+                        .Include(p => p.Category)
+                        .Where(p => p.Category.Name == categoryName).Count();
+
             var upList = await _context.UserPresentations.Where(up => up.UserId == userId)
                 .Include(up => up.Presentation)
                 .Select(up => up.Presentation)
@@ -205,11 +211,14 @@ namespace AirShow.Models.AppRepositories
                 .Take(options.ItemsPerPage)
                 .ToListAsync();
 
-            
+
+            var pages = Math.Ceiling((float)count / options.ItemsPerPage);
+
             var result =  new PagedOperationResult<List<Presentation>>
             {
                 Value = upList,
-                ItemsPerPage = options.ItemsPerPage
+                ItemsPerPage = options.ItemsPerPage,
+                TotalPages = (int)pages
             };
             if (result.TotalPages == 0) { result.TotalPages++; }
             return result;
@@ -236,7 +245,7 @@ namespace AirShow.Models.AppRepositories
             {
                 Value = upList,
                 ItemsPerPage = options.ItemsPerPage,
-                TotalPages = count / options.ItemsPerPage
+                TotalPages = (int)( Math.Ceiling((float)count / options.ItemsPerPage))
             };
             if (result.TotalPages == 0) { result.TotalPages++; }
             return result;
@@ -354,7 +363,7 @@ namespace AirShow.Models.AppRepositories
                 }
             }
 
-            var numOfPages = finalPresentations.Count() / options.ItemsPerPage;
+            var numOfPages = (int)Math.Ceiling((float)finalPresentations.Count() / options.ItemsPerPage);
             if (numOfPages == 0) { numOfPages++; }
             return new PagedOperationResult<List<Presentation>>
             {
@@ -384,7 +393,7 @@ namespace AirShow.Models.AppRepositories
             var result =  new PagedOperationResult<List<Presentation>>
             {
                 Value = presentations,
-                TotalPages = count / options.ItemsPerPage,
+                TotalPages = (int)Math.Ceiling((float)count / options.ItemsPerPage),
                 ItemsPerPage = options.ItemsPerPage
             };
             if (result.TotalPages == 0) { result.TotalPages++; }
