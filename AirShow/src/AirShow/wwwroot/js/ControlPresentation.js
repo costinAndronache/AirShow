@@ -30,6 +30,11 @@ var PointerCanvasController = (function () {
     PointerCanvasController.prototype.setupControls = function () {
         var self = this;
         var canvasParent = this.canvas.parentElement;
+        document.body.addEventListener("touchmove", function (ev) {
+            if (ev.target == canvasParent) {
+                ev.preventDefault();
+            }
+        }, false);
         var redrawWithCoordinates = function (coordX, coordY) {
             self.pointerCenterX = coordX / self.canvas.width;
             self.pointerCenterY = coordY / self.canvas.height;
