@@ -6,13 +6,32 @@
                                     IndexWhenUserAuthorized = NavbarModel.AuthorizableItemsIndex.HomeMyPresentations
                                                 };
 }
+
+@section style {
+<link href="~/css/ControlPresentation.css" rel="stylesheet" />
+}
+
 <div class="row">
 
-    <div class="col-md-3">
+    <div class="col-md-12">
 
-        <div class="pdfNavigationButtonsHost">
+        <div id="pointerCanvasContainer" class="">
+            <canvas id="pointerCanvas">
+            </canvas>
+        </div>
+
+        <div id="pointerControlsContainer" class="">
+            <button id="resetPositionButton" class="btn btn-primary">Reset position</button>
+            <button id="resetSizeButton" class="btn btn-primary">Reset size</button>
+            <button id="increaseSizeButton" class="btn btn-primary"><span class="fa fa-plus"></span></button>
+            <button id="decreaseSizeButton" class="btn btn-primary"><span class="fa fa-minus"/></button>
+
+        </div>
+
+        <div class="">
             <button id="previousButton" class="btn btn-primary">Previous Page</button>
             <button id="nextButton" class="btn btn-primary">Next Page</button>
+            <button id="toggleToolsButton" class="btn btn-primary">Toggle Tools</button>
         </div>
 
     </div>

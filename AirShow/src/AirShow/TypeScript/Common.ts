@@ -1,6 +1,13 @@
 ﻿
 enum ActionTypeCode {
-    PageChangeAction = 1
+    PageChangeAction = 1,
+    ChangePointerOriginAction = 2,
+    IncreasePointerSizeAction = 3,
+    DeceasePointerSizeAction = 4,
+    ResetPointerSizeAction = 5,
+    ShowPointerAction = 6,
+    HidePointerAction = 7,
+    ResetPointerPositionAction = 8
 }
 
 enum PageChangeActionType {
@@ -10,6 +17,9 @@ enum PageChangeActionType {
 
 const kActionTypeCodeKey: string = "kActionTypeCodeKey";
 const kPageChangeActionTypeKey: string = "kPageChangeActionTypeKey";
+
+const kPointerCenterXKey = "kPointerCenterXKey";
+const kPointerCenterYKey = "kPointerCenterYKey";
 
 function absoluteY(element: HTMLElement): number {
     var top = 0, left = 0;
@@ -21,3 +31,18 @@ function absoluteY(element: HTMLElement): number {
 
     return top;
 };
+
+
+
+
+function drawCircleInCanvas(pointerCenterX: number, pointerCenterY: number,
+    radius: number, canvas: HTMLCanvasElement) {
+    var ctx = canvas.getContext('2d');
+    ctx.fillStyle = "#FF0000";
+    ctx.beginPath();
+    var x = pointerCenterX * canvas.width;
+    var y = pointerCenterY * canvas.height;
+
+    ctx.arc(x, y, radius, 0, 2 * Math.PI, false);
+    ctx.fill();
+}

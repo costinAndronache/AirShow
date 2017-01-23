@@ -6,18 +6,30 @@ interface Document {
     msFullscreenElement: boolean
 }
 
+
+
 class ViewPresentationHelper {
+
+    pointerCenterX: number;
+    pointerCenterY: number;
+
+    isShowingPointer: boolean;
+    radius: number;
+
+    currentDisplayedDataImage: string;
 
     pdfURL: string;
     canvasId: string;
     canvas: HTMLCanvasElement;
     pdfFile: PDFDocumentProxy;
     currentDisplayedPage: number;
-    constructor(pdfURL: string, canvasId: string) {
+    constructor(pdfURL: string, canvasId: string ) {
         this.pdfURL = pdfURL;
         this.canvasId = canvasId;
         this.currentDisplayedPage = -1;
         this.canvas = document.getElementById(this.canvasId) as HTMLCanvasElement;
+        this.isShowingPointer = false;
+        this.radius = 10;
     }
 
 
@@ -28,7 +40,6 @@ class ViewPresentationHelper {
         PDFJS.getDocument(this.pdfURL).then(function (pdfPromise: PDFDocumentProxy) {
             self.pdfFile = pdfPromise;
             self.nextStepAfterLoadingPDF();
-          
         });
     }
 
@@ -38,25 +49,52 @@ class ViewPresentationHelper {
         this.setupControls();
     }
 
+    private drawWithCurrentState() {
+        var self = this;
+        var ctx = self.canvas.getContext('2d');
+        this.drawDataUri(function () {
+            if (self.isShowingPointer) {
+                drawCircleInCanvas(self.pointerCenterX, self.pointerCenterY, self.radius, self.canvas);
+            }
+
+        });
+
+    }
+
+    private drawDataUri(callback: () => void ) {
+        var canvas = this.canvas;
+        var image = new Image();
+        image.src = this.currentDisplayedDataImage;
+        image.addEventListener("load", function () {
+            canvas.getContext('2d').drawImage(image, 0, 0);
+            callback();
+        });
+    }
 
     private displayPage(index: number) {
         var self = this;
         this.pdfFile.getPage(index).then(function (page: PDFPageProxy) {
    
             var context = self.canvas.getContext('2d');
-   
             var viewport = page.getViewport(1);
 
             viewport = page.getViewport(1.0);
 
-            self.canvas.height = viewport.height;
+            var parentDiv = self.canvas.parentElement as HTMLDivElement;
+            self.canvas.height = viewport.height ;
             self.canvas.width = viewport.width;
 
             var renderContext = {
                 canvasContext: context,
                 viewport: viewport
             };
-            page.render(renderContext);
+            page.render(renderContext).then(function (page: PDFPageProxy) {
+                self.currentDisplayedDataImage = self.canvas.toDataURL();
+                self.pointerCenterX = 0.5;
+                self.pointerCenterY = 0.5;
+
+                self.drawWithCurrentState();
+            });
             self.currentDisplayedPage = index;
         });
     }
@@ -92,10 +130,12 @@ class ViewPresentationHelper {
         window.addEventListener('keydown', function (ev: KeyboardEvent) {
             if (ev.keyCode == 37) { // left arrow 
                 self.displayPreviousPage();
+                return false;
             }
 
             if (ev.keyCode == 39) { // right arrow
                 self.displayNextPage();
+                return false;
             }
 
         });
@@ -125,9 +165,9 @@ class ViewPresentationHelper {
             return true
         }
 
+        var self = this;
         var exitHandler = function () {
             if (document.webkitIsFullScreen || document.fullscreenElement || document.mozFullScreen || document.msFullscreenElement) {
-                console.log('in full screen');
             } else {
                 whenExitingFullScreen();
                 document.removeEventListener('webkitfullscreenchange', this, false);
@@ -155,6 +195,47 @@ class ViewPresentationHelper {
         return false;
 
     }
+
+    showPointer() {
+        this.isShowingPointer = true;
+        this.drawWithCurrentState();
+    }
+
+    hidePointer() {
+        this.isShowingPointer = false;
+        this.drawWithCurrentState();
+    }
+
+    changePointerXY(x: number, y: number) {
+        this.pointerCenterX = x;
+        this.pointerCenterY = y;
+        this.drawWithCurrentState();
+    }
+
+    increasePointerSize() {
+        this.radius += 5;
+        this.drawWithCurrentState();
+    }
+
+    decreasePointerSize() {
+        this.radius -= 5;
+        if (this.radius <= 5) {
+            this.radius = 5;
+        }
+        this.drawWithCurrentState();
+    }
+
+    resetPointerSize() {
+        this.radius = 10;
+        this.drawWithCurrentState();
+    }
+
+    resetPointerPosition() {
+        this.pointerCenterX = 0.5;
+        this.pointerCenterY = 0.5;
+        this.drawWithCurrentState();
+    }
+
 }
 
 class PresentationControllerHelper {
@@ -178,11 +259,9 @@ class PresentationControllerHelper {
         };
 
         this.ws.onerror = function (ev: Event) {
-            alert("There was an error though");
         };
 
         this.ws.onclose = function (ev: CloseEvent) {
-            alert("closed " + ev.code);
         }
 
         this.ws.onmessage = function (ev: MessageEvent) {
@@ -193,10 +272,35 @@ class PresentationControllerHelper {
 
      handleMessage(message: any) {
         var messageCode = message[kActionTypeCodeKey] as number;
-        if (messageCode == ActionTypeCode.PageChangeAction)
-        {
+        if (messageCode == ActionTypeCode.PageChangeAction) {
             this.handleChangePageMessage(message);
         }
+        console.log(message);
+        switch (messageCode) {
+            case ActionTypeCode.IncreasePointerSizeAction:
+                this.presentationHelper.increasePointerSize();
+                break;
+            case ActionTypeCode.DeceasePointerSizeAction:
+                this.presentationHelper.decreasePointerSize();
+                break;
+            case ActionTypeCode.ResetPointerPositionAction:
+                this.presentationHelper.resetPointerPosition();
+                break;
+            case ActionTypeCode.ChangePointerOriginAction:
+                this.handleChangeXYMessage(message);
+                break;
+            case ActionTypeCode.ShowPointerAction:
+                this.presentationHelper.showPointer();
+                break;
+            case ActionTypeCode.HidePointerAction:
+                this.presentationHelper.hidePointer();
+                break;
+            case ActionTypeCode.ResetPointerSizeAction:
+                this.presentationHelper.resetPointerSize();
+                break;
+            default: break;
+        }
+
     }
 
     private handleChangePageMessage(message: any) {
@@ -207,6 +311,20 @@ class PresentationControllerHelper {
             this.presentationHelper.displayPreviousPage();
             
         }
+    }
+
+    private handleShowPointerMessage(message: any) {
+        this.presentationHelper.showPointer();
+    }
+
+    private handleHidePointerMessage(message: any) {
+        this.presentationHelper.hidePointer();
+    }
+
+    private handleChangeXYMessage(message: any) {
+        var x = message[kPointerCenterXKey] as number;
+        var y = message[kPointerCenterYKey] as number;
+        this.presentationHelper.changePointerXY(x, y);
     }
 
 }
@@ -231,6 +349,7 @@ class ActivationHelper {
         }
     }
 }
+
 
 window.addEventListener("load", function () {
     let greeter = new ViewPresentationHelper(window["presentationURL"], "pdfHost");

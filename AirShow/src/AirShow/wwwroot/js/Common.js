@@ -1,6 +1,13 @@
 var ActionTypeCode;
 (function (ActionTypeCode) {
     ActionTypeCode[ActionTypeCode["PageChangeAction"] = 1] = "PageChangeAction";
+    ActionTypeCode[ActionTypeCode["ChangePointerOriginAction"] = 2] = "ChangePointerOriginAction";
+    ActionTypeCode[ActionTypeCode["IncreasePointerSizeAction"] = 3] = "IncreasePointerSizeAction";
+    ActionTypeCode[ActionTypeCode["DeceasePointerSizeAction"] = 4] = "DeceasePointerSizeAction";
+    ActionTypeCode[ActionTypeCode["ResetPointerSizeAction"] = 5] = "ResetPointerSizeAction";
+    ActionTypeCode[ActionTypeCode["ShowPointerAction"] = 6] = "ShowPointerAction";
+    ActionTypeCode[ActionTypeCode["HidePointerAction"] = 7] = "HidePointerAction";
+    ActionTypeCode[ActionTypeCode["ResetPointerPositionAction"] = 8] = "ResetPointerPositionAction";
 })(ActionTypeCode || (ActionTypeCode = {}));
 var PageChangeActionType;
 (function (PageChangeActionType) {
@@ -9,6 +16,8 @@ var PageChangeActionType;
 })(PageChangeActionType || (PageChangeActionType = {}));
 var kActionTypeCodeKey = "kActionTypeCodeKey";
 var kPageChangeActionTypeKey = "kPageChangeActionTypeKey";
+var kPointerCenterXKey = "kPointerCenterXKey";
+var kPointerCenterYKey = "kPointerCenterYKey";
 function absoluteY(element) {
     var top = 0, left = 0;
     do {
@@ -19,4 +28,13 @@ function absoluteY(element) {
     return top;
 }
 ;
+function drawCircleInCanvas(pointerCenterX, pointerCenterY, radius, canvas) {
+    var ctx = canvas.getContext('2d');
+    ctx.fillStyle = "#FF0000";
+    ctx.beginPath();
+    var x = pointerCenterX * canvas.width;
+    var y = pointerCenterY * canvas.height;
+    ctx.arc(x, y, radius, 0, 2 * Math.PI, false);
+    ctx.fill();
+}
 //# sourceMappingURL=Common.js.map

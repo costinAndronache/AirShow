@@ -1,5 +1,18 @@
 ﻿
 #pdfHost {
     background-color: aqua;
-    border: 1px solid black
+    border: 1px solid black;
+    z-index: 0;
+}
+
+#pointerCanvas {
+    z-index: 1;
+    position: absolute;
+    top: 0;
+    left: 15px;
+}
+
+.canvasContainer {
+    overflow: auto;
+    width: 100%;
 }

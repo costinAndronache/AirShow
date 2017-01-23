@@ -5,6 +5,8 @@ var ViewPresentationHelper = (function () {
         this.canvasId = canvasId;
         this.currentDisplayedPage = -1;
         this.canvas = document.getElementById(this.canvasId);
+        this.isShowingPointer = false;
+        this.radius = 10;
     }
     ViewPresentationHelper.prototype.run = function () {
         var self = this;
@@ -18,19 +20,43 @@ var ViewPresentationHelper = (function () {
         this.displayPage(1);
         this.setupControls();
     };
+    ViewPresentationHelper.prototype.drawWithCurrentState = function () {
+        var self = this;
+        var ctx = self.canvas.getContext('2d');
+        this.drawDataUri(function () {
+            if (self.isShowingPointer) {
+                drawCircleInCanvas(self.pointerCenterX, self.pointerCenterY, self.radius, self.canvas);
+            }
+        });
+    };
+    ViewPresentationHelper.prototype.drawDataUri = function (callback) {
+        var canvas = this.canvas;
+        var image = new Image();
+        image.src = this.currentDisplayedDataImage;
+        image.addEventListener("load", function () {
+            canvas.getContext('2d').drawImage(image, 0, 0);
+            callback();
+        });
+    };
     ViewPresentationHelper.prototype.displayPage = function (index) {
         var self = this;
         this.pdfFile.getPage(index).then(function (page) {
             var context = self.canvas.getContext('2d');
             var viewport = page.getViewport(1);
             viewport = page.getViewport(1.0);
+            var parentDiv = self.canvas.parentElement;
             self.canvas.height = viewport.height;
             self.canvas.width = viewport.width;
             var renderContext = {
                 canvasContext: context,
                 viewport: viewport
             };
-            page.render(renderContext);
+            page.render(renderContext).then(function (page) {
+                self.currentDisplayedDataImage = self.canvas.toDataURL();
+                self.pointerCenterX = 0.5;
+                self.pointerCenterY = 0.5;
+                self.drawWithCurrentState();
+            });
             self.currentDisplayedPage = index;
         });
     };
@@ -61,9 +87,11 @@ var ViewPresentationHelper = (function () {
         window.addEventListener('keydown', function (ev) {
             if (ev.keyCode == 37) {
                 self.displayPreviousPage();
+                return false;
             }
             if (ev.keyCode == 39) {
                 self.displayNextPage();
+                return false;
             }
         });
     };
@@ -84,9 +112,9 @@ var ViewPresentationHelper = (function () {
             adjustWidthHeight();
             return true;
         }
+        var self = this;
         var exitHandler = function () {
             if (document.webkitIsFullScreen || document.fullscreenElement || document.mozFullScreen || document.msFullscreenElement) {
-                console.log('in full screen');
             }
             else {
                 whenExitingFullScreen();
@@ -109,6 +137,39 @@ var ViewPresentationHelper = (function () {
         }
         return false;
     };
+    ViewPresentationHelper.prototype.showPointer = function () {
+        this.isShowingPointer = true;
+        this.drawWithCurrentState();
+    };
+    ViewPresentationHelper.prototype.hidePointer = function () {
+        this.isShowingPointer = false;
+        this.drawWithCurrentState();
+    };
+    ViewPresentationHelper.prototype.changePointerXY = function (x, y) {
+        this.pointerCenterX = x;
+        this.pointerCenterY = y;
+        this.drawWithCurrentState();
+    };
+    ViewPresentationHelper.prototype.increasePointerSize = function () {
+        this.radius += 5;
+        this.drawWithCurrentState();
+    };
+    ViewPresentationHelper.prototype.decreasePointerSize = function () {
+        this.radius -= 5;
+        if (this.radius <= 5) {
+            this.radius = 5;
+        }
+        this.drawWithCurrentState();
+    };
+    ViewPresentationHelper.prototype.resetPointerSize = function () {
+        this.radius = 10;
+        this.drawWithCurrentState();
+    };
+    ViewPresentationHelper.prototype.resetPointerPosition = function () {
+        this.pointerCenterX = 0.5;
+        this.pointerCenterY = 0.5;
+        this.drawWithCurrentState();
+    };
     return ViewPresentationHelper;
 }());
 var PresentationControllerHelper = (function () {
@@ -124,10 +185,8 @@ var PresentationControllerHelper = (function () {
             alert('Now you can login on your remote device and control this presentation by going to \"My active presentations\". Do not close this page');
         };
         this.ws.onerror = function (ev) {
-            alert("There was an error though");
         };
         this.ws.onclose = function (ev) {
-            alert("closed " + ev.code);
         };
         this.ws.onmessage = function (ev) {
             var message = JSON.parse(ev.data);
@@ -139,6 +198,31 @@ var PresentationControllerHelper = (function () {
         if (messageCode == ActionTypeCode.PageChangeAction) {
             this.handleChangePageMessage(message);
         }
+        console.log(message);
+        switch (messageCode) {
+            case ActionTypeCode.IncreasePointerSizeAction:
+                this.presentationHelper.increasePointerSize();
+                break;
+            case ActionTypeCode.DeceasePointerSizeAction:
+                this.presentationHelper.decreasePointerSize();
+                break;
+            case ActionTypeCode.ResetPointerPositionAction:
+                this.presentationHelper.resetPointerPosition();
+                break;
+            case ActionTypeCode.ChangePointerOriginAction:
+                this.handleChangeXYMessage(message);
+                break;
+            case ActionTypeCode.ShowPointerAction:
+                this.presentationHelper.showPointer();
+                break;
+            case ActionTypeCode.HidePointerAction:
+                this.presentationHelper.hidePointer();
+                break;
+            case ActionTypeCode.ResetPointerSizeAction:
+                this.presentationHelper.resetPointerSize();
+                break;
+            default: break;
+        }
     };
     PresentationControllerHelper.prototype.handleChangePageMessage = function (message) {
         var changePageTypeCode = message[kPageChangeActionTypeKey];
@@ -148,6 +232,17 @@ var PresentationControllerHelper = (function () {
         else {
             this.presentationHelper.displayPreviousPage();
         }
+    };
+    PresentationControllerHelper.prototype.handleShowPointerMessage = function (message) {
+        this.presentationHelper.showPointer();
+    };
+    PresentationControllerHelper.prototype.handleHidePointerMessage = function (message) {
+        this.presentationHelper.hidePointer();
+    };
+    PresentationControllerHelper.prototype.handleChangeXYMessage = function (message) {
+        var x = message[kPointerCenterXKey];
+        var y = message[kPointerCenterYKey];
+        this.presentationHelper.changePointerXY(x, y);
     };
     return PresentationControllerHelper;
 }());
