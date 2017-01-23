@@ -57,11 +57,17 @@ var PointerCanvasController = (function () {
             var y = touch.clientY - self.canvas.clientTop;
             redrawWithCoordinates(x, y);
         };
-        if (window.navigator.msPointerEnabled) {
-            canvasParent.addEventListener("MSPointerMove", touchMoveHandler, false);
-            canvasParent.addEventListener("pointerdown", touchMoveHandler, false);
+        var eventType;
+        if (window.navigator.pointerEnabled) {
+            eventType = "pointermove";
         }
-        canvasParent.addEventListener("touchmove", touchMoveHandler, false);
+        else if (window.navigator.msPointerEnabled) {
+            eventType = "MSPointerMove";
+        }
+        else {
+            eventType = "touchmove";
+        }
+        canvasParent.addEventListener(eventType, touchMoveHandler, false);
         canvasParent.addEventListener("mousemove", function (ev) {
             if (ev.buttons == 1) {
                 redrawWithCoordinates(ev.offsetX, ev.offsetY);

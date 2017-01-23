@@ -90,12 +90,17 @@ class PointerCanvasController {
             var y = touch.clientY - self.canvas.clientTop;
             redrawWithCoordinates(x, y);
         }
-        if (window.navigator.msPointerEnabled) {
-            canvasParent.addEventListener("MSPointerMove", touchMoveHandler, false);
-            canvasParent.addEventListener("pointerdown", touchMoveHandler, false);
+
+        var eventType: string;
+        if (window.navigator.pointerEnabled) {
+            eventType = "pointermove";
+        } else if (window.navigator.msPointerEnabled) {
+            eventType = "MSPointerMove";
+        } else {
+            eventType = "touchmove";
         }
 
-        canvasParent.addEventListener("touchmove", touchMoveHandler, false); 
+        canvasParent.addEventListener(eventType, touchMoveHandler, false); 
 
         canvasParent.addEventListener("mousemove", function (ev: MouseEvent) {
             if (ev.buttons == 1) {
