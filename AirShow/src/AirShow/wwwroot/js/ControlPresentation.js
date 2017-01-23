@@ -56,8 +56,8 @@ var PointerCanvasController = (function () {
         };
         var touchMoveHandler = function (ev) {
             var touch = ev.targetTouches[0];
-            var x = self.canvas.clientLeft;
-            var y = self.canvas.clientTop;
+            var x = touch.clientX;
+            var y = touch.clientY;
             redrawWithCoordinates(x, y);
         };
         var pointerHandler = function (ev) {
