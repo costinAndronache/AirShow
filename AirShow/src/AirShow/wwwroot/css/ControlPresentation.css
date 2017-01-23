@@ -5,6 +5,8 @@
     overflow: hidden;
     -ms-touch-action:none;
     background-color: mediumaquamarine;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 #pointerControlsContainer {

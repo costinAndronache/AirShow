@@ -32,7 +32,7 @@ class PointerCanvasController {
     }
 
     expand() {
-        this.canvasContainer.style.height = window.innerHeight + 'px';
+        this.canvasContainer.style.height = (window.innerHeight * 0.8) + 'px';
         this.toolsDiv.style.height = "auto";
         this.resizeCanvasAfterParent();
         this.drawWithCurrentState();
@@ -45,8 +45,8 @@ class PointerCanvasController {
     }
 
     private resizeCanvasAfterParent() {
-        this.canvas.width = this.canvasContainer.clientWidth * 0.8;
-        this.canvas.height = this.canvasContainer.clientHeight * 0.8;
+        this.canvas.width = this.canvasContainer.clientWidth;
+        this.canvas.height = this.canvasContainer.clientHeight;
     }
 
     run() {

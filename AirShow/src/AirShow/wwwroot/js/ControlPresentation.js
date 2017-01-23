@@ -10,7 +10,7 @@ var PointerCanvasController = (function () {
         this.radius = 10;
     }
     PointerCanvasController.prototype.expand = function () {
-        this.canvasContainer.style.height = window.innerHeight + 'px';
+        this.canvasContainer.style.height = (window.innerHeight * 0.8) + 'px';
         this.toolsDiv.style.height = "auto";
         this.resizeCanvasAfterParent();
         this.drawWithCurrentState();
@@ -21,8 +21,8 @@ var PointerCanvasController = (function () {
         this.resizeCanvasAfterParent();
     };
     PointerCanvasController.prototype.resizeCanvasAfterParent = function () {
-        this.canvas.width = this.canvasContainer.clientWidth * 0.8;
-        this.canvas.height = this.canvasContainer.clientHeight * 0.8;
+        this.canvas.width = this.canvasContainer.clientWidth;
+        this.canvas.height = this.canvasContainer.clientHeight;
     };
     PointerCanvasController.prototype.run = function () {
         this.setupControls();
