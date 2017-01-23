@@ -281,10 +281,6 @@ class ControlPresentationHelper {
 
 window.addEventListener("load", function () {
 
-    document.addEventListener("touchmove", function (ev: TouchEvent) {
-        ev.preventDefault();
-    });
-
     var canvasHelper = new PointerCanvasController();
     window["canvasHelper"] = canvasHelper;
 
