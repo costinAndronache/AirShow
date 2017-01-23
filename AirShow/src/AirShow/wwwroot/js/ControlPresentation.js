@@ -42,18 +42,23 @@ var PointerCanvasController = (function () {
             var y = touch.clientY - self.canvas.clientTop;
             redrawWithCoordinates(x, y);
         };
+        var pointerHandler = function (ev) {
+            alert('touches moved ' + ev.width + ", " + ev.height);
+        };
         var eventType;
         if (window.navigator.pointerEnabled) {
             eventType = "pointermove";
+            canvasParent.addEventListener(eventType, pointerHandler, false);
         }
         else if (window.navigator.msPointerEnabled) {
             eventType = "MSPointerMove";
+            canvasParent.addEventListener(eventType, pointerHandler, false);
         }
         else {
             eventType = "touchmove";
+            canvasParent.addEventListener(eventType, touchMoveHandler, false);
         }
         setTimeout(function () { alert('event type is ' + eventType); }, 5000);
-        canvasParent.addEventListener(eventType, touchMoveHandler, false);
         canvasParent.addEventListener("mousemove", function (ev) {
             if (ev.buttons == 1) {
                 redrawWithCoordinates(ev.offsetX, ev.offsetY);

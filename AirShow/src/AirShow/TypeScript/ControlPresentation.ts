@@ -74,18 +74,25 @@ class PointerCanvasController {
             redrawWithCoordinates(x, y);
         }
 
+        var pointerHandler = function (ev: PointerEvent) {
+            alert('touches moved ' + ev.width + ", " + ev.height);
+        }
+
         var eventType: string;
         if (window.navigator.pointerEnabled) {
             eventType = "pointermove";
+            canvasParent.addEventListener(eventType, pointerHandler, false);
         } else if (window.navigator.msPointerEnabled) {
             eventType = "MSPointerMove";
+            canvasParent.addEventListener(eventType, pointerHandler, false);
         } else {
             eventType = "touchmove";
+            canvasParent.addEventListener(eventType, touchMoveHandler, false); 
         }
 
         setTimeout(function () { alert('event type is ' + eventType); }, 5000);
 
-        canvasParent.addEventListener(eventType, touchMoveHandler, false); 
+
 
         canvasParent.addEventListener("mousemove", function (ev: MouseEvent) {
             if (ev.buttons == 1) {
