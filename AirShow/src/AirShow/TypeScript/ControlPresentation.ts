@@ -100,6 +100,8 @@ class PointerCanvasController {
             eventType = "touchmove";
         }
 
+        setTimeout(function () { alert('event type is ' + eventType); }, 5000);
+
         canvasParent.addEventListener(eventType, touchMoveHandler, false); 
 
         canvasParent.addEventListener("mousemove", function (ev: MouseEvent) {

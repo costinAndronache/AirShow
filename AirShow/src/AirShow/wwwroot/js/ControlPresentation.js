@@ -67,6 +67,7 @@ var PointerCanvasController = (function () {
         else {
             eventType = "touchmove";
         }
+        setTimeout(function () { alert('event type is ' + eventType); }, 5000);
         canvasParent.addEventListener(eventType, touchMoveHandler, false);
         canvasParent.addEventListener("mousemove", function (ev) {
             if (ev.buttons == 1) {
