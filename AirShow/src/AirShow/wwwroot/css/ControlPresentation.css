@@ -1,7 +1,7 @@
 ﻿
 #pointerCanvasContainer {
     width: 80%;
-    height: 0px;
+    height: 60%;
     overflow: hidden;
     -ms-touch-action:none;
     background-color: mediumaquamarine;
@@ -10,7 +10,32 @@
 }
 
 #pointerControlsContainer {
-    height: 0px;
+    height: 0;
     overflow: hidden;
     margin: 10px;
+}
+
+.modalToolsDivs {
+    margin-bottom: 5px;
+}
+
+.totalToolsContainer {
+    overflow:auto;
+}
+
+.modal-dialog {
+  width: 100%;
+  height: 100%;
+  padding: 0;
+    margin-top: 0;
+  margin-bottom: 0;
+}
+
+.modal-content {
+  height: 100%;
+  width: 100%;
+  border-radius: 0;
+  padding: 0;
+  margin-top: 0;
+  margin-bottom: 0;
 }

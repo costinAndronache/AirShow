@@ -1,5 +1,8 @@
 ﻿///<reference path="Common.ts"/>
 
+interface JQuery {
+    modal(options: any);
+}
 
 class PointerCanvasController {
 
@@ -7,17 +10,21 @@ class PointerCanvasController {
     pointerCenterY: number;
     radius: number;
 
+    private isShown: boolean;
+
     callbackOnResetPointerPosition: () => void;
     callbackOnResetPointerSize: () => void;
     callbackOnChangeXY: (x: number, y: number) => void;
     callbackOnIncreasePointerSize: () => void;
     callbackOnDecreasePointerSize: () => void;
-    
+    callbackOnHide: () => void;
+    callbackOnShow: () => void;
 
     canvas: HTMLCanvasElement;
     toolsDiv: HTMLDivElement;
     canvasContainer: HTMLDivElement;
 
+    modalDivContainer: HTMLDivElement;
 
     constructor() {
         this.canvas = document.getElementById("pointerCanvas") as HTMLCanvasElement;
@@ -25,29 +32,39 @@ class PointerCanvasController {
         this.pointerCenterY = 0.5;
         this.canvasContainer = document.getElementById("pointerCanvasContainer") as HTMLDivElement;
         this.toolsDiv = document.getElementById("pointerControlsContainer") as HTMLDivElement;
-
+        this.modalDivContainer = document.getElementById("modalContainer") as HTMLDivElement;
         this.resizeCanvasAfterParent();
+
+        this.isShown = false;
 
         this.radius = 10;
     }
 
     expand() {
-        this.canvasContainer.style.height = (window.innerHeight * 0.8) + 'px';
-        this.toolsDiv.style.height = "auto";
-        this.resizeCanvasAfterParent();
-        this.drawWithCurrentState();
+
+        this.isShown = true;
+        jQuery("#modalContainer").modal("show");
+        this.callbackOnShow();
     }
 
     contract() {
-        this.canvasContainer.style.height = "0";
-        this.toolsDiv.style.height = "0";
-        this.resizeCanvasAfterParent();
+        this.isShown = false;
+        jQuery("#modalContainer").modal("hide");
+        this.callbackOnHide();
     }
 
     private resizeCanvasAfterParent() {
         this.canvas.width = this.canvasContainer.clientWidth;
         this.canvas.height = this.canvasContainer.clientHeight;
     }
+
+    toggleDisplayOrHide() {
+        if (this.isShown) {
+            this.contract();
+        } else {
+            this.expand();
+        }
+    } 
 
     run() {
         this.setupControls();
@@ -62,6 +79,11 @@ class PointerCanvasController {
                 ev.preventDefault();
             }
         }, false);
+
+        window.addEventListener("resize", function (ev: UIEvent) {
+            self.resizeCanvasAfterParent();
+            self.drawWithCurrentState();
+        });
 
         var redrawWithCoordinates = function (coordX: number, coordY: number) {
             self.pointerCenterX = coordX / self.canvas.width;
@@ -101,12 +123,27 @@ class PointerCanvasController {
             }
         });
 
+        jQuery("#modalContainer").on("hidden.bs.modal", function () {
+            self.isShown = false;
+            jQuery("#modalContainer").modal("hide");
+            self.callbackOnHide();
+        });
+
+        jQuery("#modalContainer").on("shown.bs.modal", function () {
+            self.resizeCanvasAfterParent();
+            self.drawWithCurrentState();
+        });
 
         var resetSizeButton = document.getElementById("resetSizeButton") as HTMLButtonElement;
         var resetPositionButton = document.getElementById("resetPositionButton") as HTMLButtonElement;
         var increaseSizeButton = document.getElementById("increaseSizeButton") as HTMLButtonElement;
         var decreaseSizeButton = document.getElementById("decreaseSizeButton") as HTMLButtonElement;
+        var toggleButton = document.getElementById("toggleToolsButton") as HTMLButtonElement;
 
+
+        toggleButton.onclick = function () {
+            self.toggleDisplayOrHide();
+        }
         resetPositionButton.onclick = function () {
             self.resetPosition();
         }
@@ -152,16 +189,12 @@ class ControlPresentationHelper {
 
     private ws: WebSocket;
     private connectionString: string;
-    private areToolsExpanded: boolean;
 
     private pointerController: PointerCanvasController;
 
     constructor(connectionString: string, pointerController: PointerCanvasController) {
         this.connectionString = connectionString;
-        this.areToolsExpanded = false;
         this.pointerController = pointerController;
-        this.pointerController.contract();
-
         var self = this;
 
         this.pointerController.callbackOnChangeXY = function (x: number, y: number) {
@@ -188,6 +221,13 @@ class ControlPresentationHelper {
             self.sendActionCode(ActionTypeCode.ResetPointerSizeAction);
         }
 
+        this.pointerController.callbackOnHide = function () {
+            self.sendActionCode(ActionTypeCode.HidePointerAction);
+        }
+
+        this.pointerController.callbackOnShow = function () {
+            self.sendActionCode(ActionTypeCode.ShowPointerAction);
+        }
     }
 
     run() {
@@ -219,7 +259,6 @@ class ControlPresentationHelper {
     private setupControls() {
         var previousButton = document.getElementById("previousButton") as HTMLButtonElement;
         var nextButton = document.getElementById("nextButton") as HTMLButtonElement;
-        var toggleButton = document.getElementById("toggleToolsButton") as HTMLButtonElement;
         var self = this;
 
         previousButton.onclick = function (ev: Event) {
@@ -230,9 +269,7 @@ class ControlPresentationHelper {
             self.nextButtonPressed();
         }
 
-        toggleButton.onclick = function () {
-            self.toggleTools();
-        }
+
     }
 
     private nextButtonPressed() {
@@ -263,20 +300,7 @@ class ControlPresentationHelper {
         this.ws.send(request);
     }
 
-    private toggleTools() {
 
-        var obj: any = {}
-        if (this.areToolsExpanded) {
-            this.pointerController.contract();
-            obj[kActionTypeCodeKey] = ActionTypeCode.HidePointerAction;;
-        } else {
-            this.pointerController.expand();
-            obj[kActionTypeCodeKey] = ActionTypeCode.ShowPointerAction;
-        }
-
-        this.areToolsExpanded = !this.areToolsExpanded;
-        this.sendRequestObject(obj);
-    }
 
 }
 

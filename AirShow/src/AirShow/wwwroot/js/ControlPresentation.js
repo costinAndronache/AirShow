@@ -6,23 +6,32 @@ var PointerCanvasController = (function () {
         this.pointerCenterY = 0.5;
         this.canvasContainer = document.getElementById("pointerCanvasContainer");
         this.toolsDiv = document.getElementById("pointerControlsContainer");
+        this.modalDivContainer = document.getElementById("modalContainer");
         this.resizeCanvasAfterParent();
+        this.isShown = false;
         this.radius = 10;
     }
     PointerCanvasController.prototype.expand = function () {
-        this.canvasContainer.style.height = (window.innerHeight * 0.8) + 'px';
-        this.toolsDiv.style.height = "auto";
-        this.resizeCanvasAfterParent();
-        this.drawWithCurrentState();
+        this.isShown = true;
+        jQuery("#modalContainer").modal("show");
+        this.callbackOnShow();
     };
     PointerCanvasController.prototype.contract = function () {
-        this.canvasContainer.style.height = "0";
-        this.toolsDiv.style.height = "0";
-        this.resizeCanvasAfterParent();
+        this.isShown = false;
+        jQuery("#modalContainer").modal("hide");
+        this.callbackOnHide();
     };
     PointerCanvasController.prototype.resizeCanvasAfterParent = function () {
         this.canvas.width = this.canvasContainer.clientWidth;
         this.canvas.height = this.canvasContainer.clientHeight;
+    };
+    PointerCanvasController.prototype.toggleDisplayOrHide = function () {
+        if (this.isShown) {
+            this.contract();
+        }
+        else {
+            this.expand();
+        }
     };
     PointerCanvasController.prototype.run = function () {
         this.setupControls();
@@ -35,6 +44,10 @@ var PointerCanvasController = (function () {
                 ev.preventDefault();
             }
         }, false);
+        window.addEventListener("resize", function (ev) {
+            self.resizeCanvasAfterParent();
+            self.drawWithCurrentState();
+        });
         var redrawWithCoordinates = function (coordX, coordY) {
             self.pointerCenterX = coordX / self.canvas.width;
             self.pointerCenterY = coordY / self.canvas.height;
@@ -68,10 +81,23 @@ var PointerCanvasController = (function () {
                 redrawWithCoordinates(ev.offsetX, ev.offsetY);
             }
         });
+        jQuery("#modalContainer").on("hidden.bs.modal", function () {
+            self.isShown = false;
+            jQuery("#modalContainer").modal("hide");
+            self.callbackOnHide();
+        });
+        jQuery("#modalContainer").on("shown.bs.modal", function () {
+            self.resizeCanvasAfterParent();
+            self.drawWithCurrentState();
+        });
         var resetSizeButton = document.getElementById("resetSizeButton");
         var resetPositionButton = document.getElementById("resetPositionButton");
         var increaseSizeButton = document.getElementById("increaseSizeButton");
         var decreaseSizeButton = document.getElementById("decreaseSizeButton");
+        var toggleButton = document.getElementById("toggleToolsButton");
+        toggleButton.onclick = function () {
+            self.toggleDisplayOrHide();
+        };
         resetPositionButton.onclick = function () {
             self.resetPosition();
         };
@@ -110,9 +136,7 @@ var PointerCanvasController = (function () {
 var ControlPresentationHelper = (function () {
     function ControlPresentationHelper(connectionString, pointerController) {
         this.connectionString = connectionString;
-        this.areToolsExpanded = false;
         this.pointerController = pointerController;
-        this.pointerController.contract();
         var self = this;
         this.pointerController.callbackOnChangeXY = function (x, y) {
             var obj = {};
@@ -132,6 +156,12 @@ var ControlPresentationHelper = (function () {
         };
         this.pointerController.callbackOnResetPointerSize = function () {
             self.sendActionCode(ActionTypeCode.ResetPointerSizeAction);
+        };
+        this.pointerController.callbackOnHide = function () {
+            self.sendActionCode(ActionTypeCode.HidePointerAction);
+        };
+        this.pointerController.callbackOnShow = function () {
+            self.sendActionCode(ActionTypeCode.ShowPointerAction);
         };
     }
     ControlPresentationHelper.prototype.run = function () {
@@ -155,16 +185,12 @@ var ControlPresentationHelper = (function () {
     ControlPresentationHelper.prototype.setupControls = function () {
         var previousButton = document.getElementById("previousButton");
         var nextButton = document.getElementById("nextButton");
-        var toggleButton = document.getElementById("toggleToolsButton");
         var self = this;
         previousButton.onclick = function (ev) {
             self.previousButtonPressed();
         };
         nextButton.onclick = function (ev) {
             self.nextButtonPressed();
-        };
-        toggleButton.onclick = function () {
-            self.toggleTools();
         };
     };
     ControlPresentationHelper.prototype.nextButtonPressed = function () {
@@ -188,20 +214,6 @@ var ControlPresentationHelper = (function () {
     ControlPresentationHelper.prototype.sendRequestObject = function (obj) {
         var request = JSON.stringify(obj);
         this.ws.send(request);
-    };
-    ControlPresentationHelper.prototype.toggleTools = function () {
-        var obj = {};
-        if (this.areToolsExpanded) {
-            this.pointerController.contract();
-            obj[kActionTypeCodeKey] = ActionTypeCode.HidePointerAction;
-            ;
-        }
-        else {
-            this.pointerController.expand();
-            obj[kActionTypeCodeKey] = ActionTypeCode.ShowPointerAction;
-        }
-        this.areToolsExpanded = !this.areToolsExpanded;
-        this.sendRequestObject(obj);
     };
     return ControlPresentationHelper;
 }());
