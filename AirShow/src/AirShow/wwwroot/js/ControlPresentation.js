@@ -43,7 +43,7 @@ var PointerCanvasController = (function () {
             redrawWithCoordinates(x, y);
         };
         var pointerHandler = function (ev) {
-            alert('touches moved ' + ev.width + ", " + ev.height);
+            alert('touches moved ' + ev.offsetX + ", " + ev.offsetY);
         };
         var eventType;
         if (window.navigator.pointerEnabled) {
