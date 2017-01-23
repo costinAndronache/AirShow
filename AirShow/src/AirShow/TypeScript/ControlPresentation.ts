@@ -95,8 +95,8 @@ class PointerCanvasController {
 
         var touchMoveHandler = function (ev: TouchEvent) {
             var touch = ev.targetTouches[0];
-            var x = touch.clientX - self.canvas.clientLeft;
-            var y = touch.clientY - self.canvas.clientTop;
+            var x = self.canvas.clientLeft;
+            var y = self.canvas.clientTop;
             redrawWithCoordinates(x, y);
         }
 
