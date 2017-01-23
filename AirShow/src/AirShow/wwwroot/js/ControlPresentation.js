@@ -185,6 +185,9 @@ var ControlPresentationHelper = (function () {
     return ControlPresentationHelper;
 }());
 window.addEventListener("load", function () {
+    document.addEventListener("touchmove", function (ev) {
+        ev.preventDefault();
+    });
     var canvasHelper = new PointerCanvasController();
     window["canvasHelper"] = canvasHelper;
     var helper = new ControlPresentationHelper(window["activationRequestString"], canvasHelper);
