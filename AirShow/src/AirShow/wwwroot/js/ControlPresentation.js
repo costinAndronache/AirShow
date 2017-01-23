@@ -21,8 +21,8 @@ var PointerCanvasController = (function () {
         this.resizeCanvasAfterParent();
     };
     PointerCanvasController.prototype.resizeCanvasAfterParent = function () {
-        this.canvas.width = this.canvasContainer.clientWidth;
-        this.canvas.height = this.canvasContainer.clientHeight;
+        this.canvas.width = this.canvasContainer.clientWidth * 0.8;
+        this.canvas.height = this.canvasContainer.clientHeight * 0.8;
     };
     PointerCanvasController.prototype.run = function () {
         this.setupControls();
@@ -63,7 +63,6 @@ var PointerCanvasController = (function () {
             eventType = "touchmove";
             canvasParent.addEventListener(eventType, touchMoveHandler, false);
         }
-        setTimeout(function () { alert('event type is ' + eventType); }, 5000);
         canvasParent.addEventListener("mousemove", function (ev) {
             if (ev.buttons == 1) {
                 redrawWithCoordinates(ev.offsetX, ev.offsetY);
