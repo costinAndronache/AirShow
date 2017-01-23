@@ -51,12 +51,17 @@ var PointerCanvasController = (function () {
             self.callbackOnChangeXY(self.pointerCenterX, self.pointerCenterY);
             self.drawWithCurrentState();
         };
-        canvasParent.addEventListener("touchmove", function (ev) {
+        var touchMoveHandler = function (ev) {
             var touch = ev.targetTouches[0];
             var x = touch.clientX - self.canvas.clientLeft;
             var y = touch.clientY - self.canvas.clientTop;
             redrawWithCoordinates(x, y);
-        });
+        };
+        if (window.navigator.msPointerEnabled) {
+            canvasParent.addEventListener("MSPointerMove", touchMoveHandler, false);
+            canvasParent.addEventListener("pointerdown", touchMoveHandler, false);
+        }
+        canvasParent.addEventListener("touchmove", touchMoveHandler, false);
         canvasParent.addEventListener("mousemove", function (ev) {
             if (ev.buttons == 1) {
                 redrawWithCoordinates(ev.offsetX, ev.offsetY);
