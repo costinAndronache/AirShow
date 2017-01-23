@@ -30,21 +30,6 @@ var PointerCanvasController = (function () {
     PointerCanvasController.prototype.setupControls = function () {
         var self = this;
         var canvasParent = this.canvas.parentElement;
-        document.body.addEventListener("touchstart", function (ev) {
-            if (ev.target == canvasParent) {
-                ev.preventDefault();
-            }
-        }, false);
-        document.body.addEventListener("touchend", function (ev) {
-            if (ev.target == canvasParent) {
-                ev.preventDefault();
-            }
-        }, false);
-        document.body.addEventListener("touchmove", function (ev) {
-            if (ev.target == canvasParent) {
-                ev.preventDefault();
-            }
-        }, false);
         var redrawWithCoordinates = function (coordX, coordY) {
             self.pointerCenterX = coordX / self.canvas.width;
             self.pointerCenterY = coordY / self.canvas.height;
