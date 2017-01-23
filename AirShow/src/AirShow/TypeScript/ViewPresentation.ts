@@ -23,6 +23,10 @@ class ViewPresentationHelper {
     canvas: HTMLCanvasElement;
     pdfFile: PDFDocumentProxy;
     currentDisplayedPage: number;
+    fullScreenButton: HTMLButtonElement;
+
+    callbackWhenPdfLoaded: () => void;
+
     constructor(pdfURL: string, canvasId: string ) {
         this.pdfURL = pdfURL;
         this.canvasId = canvasId;
@@ -35,10 +39,24 @@ class ViewPresentationHelper {
 
 
     run() {
+        this.setupControls();
+
+        var loadingIndicatorDiv = document.getElementById("loadingIndicatorDiv") as HTMLDivElement;
+        var topCanvasContainer = document.getElementById("topCanvasContainer") as HTMLDivElement;
+        topCanvasContainer.hidden = true;
+        this.fullScreenButton.hidden = true;
+
         var self = this;
         PDFJS.workerSrc = "/lib/pdfjs-dist/build/pdf.worker.min.js";
         PDFJS.getDocument(this.pdfURL).then(function (pdfPromise: PDFDocumentProxy) {
+
+            loadingIndicatorDiv.style.height = "0";
+            loadingIndicatorDiv.hidden = true;
+            self.fullScreenButton.hidden = false;
+            topCanvasContainer.hidden = false;
+
             self.pdfFile = pdfPromise;
+            self.callbackWhenPdfLoaded();
             self.nextStepAfterLoadingPDF();
         });
     }
@@ -46,7 +64,6 @@ class ViewPresentationHelper {
 
     private nextStepAfterLoadingPDF() {
         this.displayPage(1);
-        this.setupControls();
     }
 
     private drawWithCurrentState() {
@@ -112,11 +129,11 @@ class ViewPresentationHelper {
     }
 
     private setupControls() {
-        var fullScreenButton = document.getElementById("fullScreenButton") as HTMLButtonElement;
+        this.fullScreenButton = document.getElementById("fullScreenButton") as HTMLButtonElement;
 
         var self = this;
 
-        fullScreenButton.onclick = function (ev: Event) {
+        this.fullScreenButton.onclick = function (ev: Event) {
             if (document.fullscreenElement) {
                 if (document.exitFullscreen) {
                     document.exitFullscreen();
@@ -255,7 +272,8 @@ class PresentationControllerHelper {
         this.ws = new WebSocket("ws://" + location.host);
         this.ws.onopen = function (ev: Event) {
             self.ws.send(window["activationRequestString"]);
-            alert('Now you can login on your remote device and control this presentation by going to \"My active presentations\". Do not close this page');
+            jQuery("#modalMessageView").modal("show");
+            
         };
 
         this.ws.onerror = function (ev: Event) {
@@ -347,6 +365,12 @@ class ActivationHelper {
             activateButton.hidden = true;
             self.controllerHelper.run();
         }
+
+        activateButton.hidden = true;
+        this.presentationHelper.callbackWhenPdfLoaded = function () {
+            activateButton.hidden = false;
+        }
+
     }
 }
 

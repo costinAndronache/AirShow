@@ -46,3 +46,8 @@ function drawCircleInCanvas(pointerCenterX: number, pointerCenterY: number,
     ctx.arc(x, y, radius, 0, 2 * Math.PI, false);
     ctx.fill();
 }
+
+interface JQuery {
+    modal(options: any);
+}
+

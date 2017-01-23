@@ -9,16 +9,25 @@ var ViewPresentationHelper = (function () {
         this.radius = 10;
     }
     ViewPresentationHelper.prototype.run = function () {
+        this.setupControls();
+        var loadingIndicatorDiv = document.getElementById("loadingIndicatorDiv");
+        var topCanvasContainer = document.getElementById("topCanvasContainer");
+        topCanvasContainer.hidden = true;
+        this.fullScreenButton.hidden = true;
         var self = this;
         PDFJS.workerSrc = "/lib/pdfjs-dist/build/pdf.worker.min.js";
         PDFJS.getDocument(this.pdfURL).then(function (pdfPromise) {
+            loadingIndicatorDiv.style.height = "0";
+            loadingIndicatorDiv.hidden = true;
+            self.fullScreenButton.hidden = false;
+            topCanvasContainer.hidden = false;
             self.pdfFile = pdfPromise;
+            self.callbackWhenPdfLoaded();
             self.nextStepAfterLoadingPDF();
         });
     };
     ViewPresentationHelper.prototype.nextStepAfterLoadingPDF = function () {
         this.displayPage(1);
-        this.setupControls();
     };
     ViewPresentationHelper.prototype.drawWithCurrentState = function () {
         var self = this;
@@ -71,9 +80,9 @@ var ViewPresentationHelper = (function () {
         }
     };
     ViewPresentationHelper.prototype.setupControls = function () {
-        var fullScreenButton = document.getElementById("fullScreenButton");
+        this.fullScreenButton = document.getElementById("fullScreenButton");
         var self = this;
-        fullScreenButton.onclick = function (ev) {
+        this.fullScreenButton.onclick = function (ev) {
             if (document.fullscreenElement) {
                 if (document.exitFullscreen) {
                     document.exitFullscreen();
@@ -182,7 +191,7 @@ var PresentationControllerHelper = (function () {
         this.ws = new WebSocket("ws://" + location.host);
         this.ws.onopen = function (ev) {
             self.ws.send(window["activationRequestString"]);
-            alert('Now you can login on your remote device and control this presentation by going to \"My active presentations\". Do not close this page');
+            jQuery("#modalMessageView").modal("show");
         };
         this.ws.onerror = function (ev) {
         };
@@ -257,6 +266,10 @@ var ActivationHelper = (function () {
             self.controllerHelper = new PresentationControllerHelper(window["activationRequestString"], self.presentationHelper);
             activateButton.hidden = true;
             self.controllerHelper.run();
+        };
+        activateButton.hidden = true;
+        this.presentationHelper.callbackWhenPdfLoaded = function () {
+            activateButton.hidden = false;
         };
     };
     return ActivationHelper;

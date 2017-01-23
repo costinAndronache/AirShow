@@ -252,6 +252,7 @@ E:\Git\AirShow\AirShow\src\AirShow\Models\ViewModels\BaseViewModel.cs
 E:\Git\AirShow\AirShow\src\AirShow\Models\ViewModels\ButtonsToolbarModel.cs
 E:\Git\AirShow\AirShow\src\AirShow\Models\ViewModels\LeftNavbarViewModel.cs
 E:\Git\AirShow\AirShow\src\AirShow\Models\ViewModels\LoginViewModel.cs
+E:\Git\AirShow\AirShow\src\AirShow\Models\ViewModels\ModalMessageViewModel.cs
 E:\Git\AirShow\AirShow\src\AirShow\Models\ViewModels\MyPresentationCardViewModel.cs
 E:\Git\AirShow\AirShow\src\AirShow\Models\ViewModels\PaginationViewModel.cs
 E:\Git\AirShow\AirShow\src\AirShow\Models\ViewModels\PresentationsViewModel.cs
@@ -264,6 +265,7 @@ E:\Git\AirShow\AirShow\src\AirShow\Utils\StringExtensions.cs
 E:\Git\AirShow\AirShow\src\AirShow\Utils\Utils.cs
 E:\Git\AirShow\AirShow\src\AirShow\Views\Shared\Components\ButtonsToolbar\ButtonsToolbar.cs
 E:\Git\AirShow\AirShow\src\AirShow\Views\Shared\Components\LeftNavbar\LeftNavbar.cs
+E:\Git\AirShow\AirShow\src\AirShow\Views\Shared\Components\ModalMessageView\ModalMessageView.cs
 E:\Git\AirShow\AirShow\src\AirShow\Views\Shared\Components\MyPresentationCard\MyPresentationCard.cs
 E:\Git\AirShow\AirShow\src\AirShow\Views\Shared\Components\PaginationView\PaginationView.cs
 E:\Git\AirShow\AirShow\src\AirShow\Views\Shared\Components\PublicPresentationCard\PublicPresentationCard.cs

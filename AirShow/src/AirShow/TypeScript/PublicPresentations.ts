@@ -1,4 +1,4 @@
-﻿
+﻿///<reference path="Common.ts"/>
 class PublicPresentationsHelper {
 
     run() {
@@ -15,7 +15,7 @@ class PublicPresentationsHelper {
                         var presentationId = button.getAttribute("data-presentationId");
                         self.requestAddToMyAccount(presentationId, function () {
                             button.hidden = true;
-                            alert('You can now view your newly added presentation in \"MyPresentations\"');
+                            jQuery("#modalMessageView").modal("show");
                         });
                     }
                 })(aButton);

@@ -30,6 +30,14 @@
 }
 else
 {
+
+    var id = "modalMessageView";
+    var title = "Done";
+    var message = "You can now view your newly added presentation in \"MyPresentations\"";
+
+    @Component.InvokeAsync(nameof(ModalMessageView), new { model = new ModalMessageViewModel { Title = title, Message = message, Id = id } }).Result;
+
+
     <div class="row">
 
         @if (Model.ButtonsToolbarModel != null)

@@ -1,8 +1,5 @@
 ﻿///<reference path="Common.ts"/>
 
-interface JQuery {
-    modal(options: any);
-}
 
 class PointerCanvasController {
 
