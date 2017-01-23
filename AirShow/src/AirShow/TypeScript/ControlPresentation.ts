@@ -75,7 +75,7 @@ class PointerCanvasController {
         }
 
         var pointerHandler = function (ev: PointerEvent) {
-            alert('touches moved ' + ev.offsetX + ", " + ev.offsetY);
+            redrawWithCoordinates(ev.offsetX, ev.offsetY);
         }
 
         var eventType: string;
