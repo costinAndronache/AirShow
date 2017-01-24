@@ -8,6 +8,7 @@ var ActionTypeCode;
     ActionTypeCode[ActionTypeCode["ShowPointerAction"] = 6] = "ShowPointerAction";
     ActionTypeCode[ActionTypeCode["HidePointerAction"] = 7] = "HidePointerAction";
     ActionTypeCode[ActionTypeCode["ResetPointerPositionAction"] = 8] = "ResetPointerPositionAction";
+    ActionTypeCode[ActionTypeCode["CloseDueToBeingReplacedAction"] = 9] = "CloseDueToBeingReplacedAction";
 })(ActionTypeCode || (ActionTypeCode = {}));
 var PageChangeActionType;
 (function (PageChangeActionType) {
@@ -18,6 +19,10 @@ var kActionTypeCodeKey = "kActionTypeCodeKey";
 var kPageChangeActionTypeKey = "kPageChangeActionTypeKey";
 var kPointerCenterXKey = "kPointerCenterXKey";
 var kPointerCenterYKey = "kPointerCenterYKey";
+var RoomTokenKey = "kRoomTokenKey";
+var SideKey = "kSideKey";
+var ViewSide = "view";
+var ControlSide = "control";
 function absoluteY(element) {
     var top = 0, left = 0;
     do {

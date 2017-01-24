@@ -514,6 +514,35 @@ namespace AirShow.Models.AppRepositories
             return result;
         }
 
+        public async Task<OperationResult<List<Presentation>>> GetPresentationsWithIds(List<int> idList)
+        {
+            var result = new OperationResult<List<Presentation>>();
+
+            var presentations = await _context.Presentations.Where(p => idList.Contains(p.Id)).ToListAsync();
+            result.Value = presentations;
+            if (presentations == null)
+            {
+                result.Value = new List<Presentation>();
+            }
+
+            return result;
+        }
+
+        public async Task<OperationResult<Presentation>> GetPresentationForUser(string userId, string presentationName)
+        {
+            var result = new OperationResult<Presentation>();
+            var upList = await _context.UserPresentations.Where(up => up.UserId == userId).Include(u => u.Presentation)
+                .Where(up => up.Presentation.Name == presentationName).ToListAsync();
+
+            if (upList.Count == 1)
+            {
+                result.Value = upList.First().Presentation;
+            } else
+            {
+                result.ErrorMessageIfAny = "Could not find presentation for user";
+            }
+            return result;
+        }
     }
 
 }

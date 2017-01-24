@@ -61,8 +61,8 @@
             </li>
 
             <li class="list-group-item">
-                <a asp-controller="Presentations"
-                   asp-action="@nameof(PresentationsController.ViewPresentation)"
+                <a asp-controller="@nameof(ControlController).WithoutControllerPart()"
+                   asp-action="@nameof(ControlController.ViewPresentation)"
                    asp-route-name="@Model.Presentation.Name"
                    class="btn btn-primary" role="button">View</a>
 

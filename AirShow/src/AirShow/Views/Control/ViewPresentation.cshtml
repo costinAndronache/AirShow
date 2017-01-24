@@ -1,0 +1,58 @@
+﻿@model ViewPresentationViewModel
+
+@{ 
+    ViewData[ViewConstants.kNavbarIndexPairKey] = new LeftNavbar.IndexPair { IndexWhenUserAuthorized = NavbarModel.AuthorizableItemsIndex.HomeMyPresentations };
+}
+
+@section style {
+<link href="~/css/ViewPresentation.css" rel="stylesheet" />
+}
+
+<div class="col-md-12">
+
+    <div id="loadingIndicatorDiv">
+        <p> Your presentation is being loaded <i class="fa fa-spinner fa-spin" style="font-size:24px"></i></p>
+    </div>
+
+    <div id="topCanvasContainer">
+        <div class="canvasContainer">
+            <canvas id="pdfHost" class=""></canvas>
+        </div>
+    </div>
+
+
+    <div class="pdfNavigationButtonsHost">
+        <button id="fullScreenButton" class="btn btn-primary">Fullscreen</button>
+        <button id="activateButton" class="btn btn-primary">Activate</button>
+    </div>
+
+    @{
+        var id = "modalMessageView";
+        var title = "Presentation activated";
+        var message = "Now you can login on your remote device and control this presentation by going to \"My active presentations\".\nDo not close this page";
+        @Component.InvokeAsync(nameof(ModalMessageView), new { model = new ModalMessageViewModel { Title = title, Message = message, Id = id } }).Result
+    }
+
+    
+
+</div>
+
+
+@section scripts {
+@if (Model.PresentationURL != null)
+{
+    <script>
+        window.presentationURL = "@Model.PresentationURL";
+    </script>
+}
+
+@if (Model.ActivationRequestString != null)
+{
+    <script>
+        window.activationRequestString = "@Model.ActivationRequestString";
+    </script>
+}
+<script src="~/js/Common.js"></script>
+<script src="~/lib/pdfjs-dist/build/pdf.min.js"></script>
+<script src="~/js/ConnectViewPresentation.js"></script>
+}

@@ -54,6 +54,7 @@ namespace AirShow
             services.AddScoped<ICategoriesRepository, EFCategoriesRepository>();
             services.AddScoped<ITagsRepository, EFTagsRepository>();
             services.AddScoped<IUsersRepository, EFUsersRepository>();
+            services.AddSingleton<GlobalSessionManager>();
 
             services.AddSingleton<IPresentationFilesRepository, BasicFileRepository>();
             services.AddSingleton<GlobalWebSocketServer>();
@@ -96,8 +97,8 @@ namespace AirShow
                 if (http.WebSockets.IsWebSocketRequest)
                 {
                     var webSocket = await http.WebSockets.AcceptWebSocketAsync();
-                    var gwss = app.ApplicationServices.GetService<GlobalWebSocketServer>();
-                    gwss.HandleWebSocket(webSocket);
+                    var gwss = app.ApplicationServices.GetService<GlobalSessionManager>();
+                    gwss.HandleWebSocketV2(webSocket);
                 }
                 else
                 {

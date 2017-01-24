@@ -1,5 +1,7 @@
 ﻿/// <autosync enabled="true" />
 /// <reference path="js/common.js" />
+/// <reference path="js/connectcontrolforpresentation.js" />
+/// <reference path="js/connectviewpresentation.js" />
 /// <reference path="js/controlpresentation.js" />
 /// <reference path="js/mypresentations.js" />
 /// <reference path="js/publicpresentations.js" />

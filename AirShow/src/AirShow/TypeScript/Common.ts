@@ -7,7 +7,8 @@ enum ActionTypeCode {
     ResetPointerSizeAction = 5,
     ShowPointerAction = 6,
     HidePointerAction = 7,
-    ResetPointerPositionAction = 8
+    ResetPointerPositionAction = 8, 
+    CloseDueToBeingReplacedAction = 9
 }
 
 enum PageChangeActionType {
@@ -20,6 +21,13 @@ const kPageChangeActionTypeKey: string = "kPageChangeActionTypeKey";
 
 const kPointerCenterXKey = "kPointerCenterXKey";
 const kPointerCenterYKey = "kPointerCenterYKey";
+
+
+const  RoomTokenKey = "kRoomTokenKey";
+const  SideKey = "kSideKey";
+const  ViewSide = "view";
+const  ControlSide = "control";
+
 
 function absoluteY(element: HTMLElement): number {
     var top = 0, left = 0;

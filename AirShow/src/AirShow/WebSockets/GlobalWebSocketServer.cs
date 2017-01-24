@@ -29,13 +29,17 @@ namespace AirShow.WebSockets
 
     public class GlobalWebSocketServer
     {
+
+
         private WebSocket _debugSocket;
         private ConcurrentBag<WebSocket> _webSockets;
         private ConcurrentDictionary<string, ConcurrentDictionary<string,System.Net.WebSockets.WebSocket>> _firstPhaseSockets;
         private ConcurrentBag<LocalWebSocketServer> _localServers;
 
+
         public GlobalWebSocketServer()
         {
+
             _firstPhaseSockets = new ConcurrentDictionary<string, ConcurrentDictionary<string, WebSocket>>();
             _localServers = new ConcurrentBag<LocalWebSocketServer>();
             _webSockets = new ConcurrentBag<WebSocket>();
@@ -99,36 +103,14 @@ namespace AirShow.WebSockets
             
         }
 
+       
+
         public void KeepPresentationSocketAlive(WebSocket webSocket)
         {
             Console.Write(Thread.CurrentThread);
             var token = CancellationToken.None;
             var buffer = new ArraySegment<Byte>(new Byte[4096]);
             var received = webSocket.ReceiveAsync(buffer, token).Result;
-            return;
-
-            /*
-            while (webSocket.State == WebSocketState.Open)
-            {
-                var token = CancellationToken.None;
-                var buffer = new ArraySegment<Byte>(new Byte[4096]);
-                var received =  webSocket.ReceiveAsync(buffer, token).Result;
-
-                switch (received.MessageType)
-                {
-                    case WebSocketMessageType.Text:
-                        var request = Encoding.UTF8.GetString(buffer.Array,
-                                                buffer.Offset,
-                                                buffer.Count);
-                        var type = WebSocketMessageType.Text;
-                        var data = Encoding.UTF8.GetBytes("Echo from server :" + request);
-                        buffer = new ArraySegment<Byte>(data);
-                        webSocket.SendAsync(buffer, type, true, token).RunSynchronously();
-                        break;
-                }
-            }*/
-
-            Console.Write("" + webSocket.State);
         }
     }
 }

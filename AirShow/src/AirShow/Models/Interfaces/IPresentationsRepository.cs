@@ -54,5 +54,9 @@ namespace AirShow.Models.Interfaces
 
         Task<OperationStatus> AddPresentationToUser(int presentationId, string userId);
 
+        Task<OperationResult<List<Presentation>>> GetPresentationsWithIds(List<int> idList);
+        Task<OperationResult<Presentation>> GetPresentationForUser(string userId, string presentationName);
+
+
     }
 }
