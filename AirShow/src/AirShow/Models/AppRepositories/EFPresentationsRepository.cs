@@ -430,15 +430,23 @@ namespace AirShow.Models.AppRepositories
         }
 
 
-        public async Task<PagedOperationResult<List<Presentation>>> PublicPresentationsForUser(string userId, PagingOptions options)
+        public async Task<PagedOperationResult<List<Presentation>>> PublicPresentationsForUser(string userId, PagingOptions options, string excludeUserId)
         {
             var result = new PagedOperationResult<List<Presentation>>();
 
-            var count = _context.UserPresentations.Where(up => up.UserId == userId).Include(up => up.Presentation)
-                .Count(up => up.Presentation.IsPublic);
+            var upList = _context.UserPresentations.Where(u => u.UserId == userId).Include(u => u.Presentation)
+                .Where(u => u.Presentation.IsPublic);
 
-            var list = await _context.UserPresentations.Where(up => up.UserId == userId).Include(up => up.Presentation)
-                .Where(up => up.Presentation.IsPublic).Select(up => up.Presentation).
+            if (excludeUserId != null)
+            {
+                upList = upList.Where(u => !_context.UserPresentations.Any(up => up.UserId == excludeUserId && up.PresentationId == u.PresentationId));
+            }
+
+            var count = upList.Count();
+
+
+
+            var list = await upList.Select(up => up.Presentation).
                 Skip(options.ToSkip).Take(options.ItemsPerPage).
                 ToListAsync();
 
@@ -449,7 +457,8 @@ namespace AirShow.Models.AppRepositories
             return result;
         }
 
-        public async Task<PagedOperationResult<List<Presentation>>> PublicPresentationsFromCategory(string categoryName, PagingOptions options)
+        public async Task<PagedOperationResult<List<Presentation>>> PublicPresentationsFromCategory(string categoryName, 
+            PagingOptions options, string excludeUserId)
         {
             var result = new PagedOperationResult<List<Presentation>>();
             var categoryIdResult = await GetIdOfCategoryWithName(categoryName);
@@ -459,8 +468,17 @@ namespace AirShow.Models.AppRepositories
                 return result;
             }
             var catId = categoryIdResult.Value;
-            var count = _context.Presentations.Count(p => p.CategoryId == catId && p.IsPublic);
-            var presentations = await _context.Presentations.Where(p => p.CategoryId == catId && p.IsPublic)
+
+            var presentationSource = _context.Presentations.Where(p => p.CategoryId == catId && p.IsPublic);
+
+            if (excludeUserId != null)
+            {
+                presentationSource = presentationSource.Where(p => !_context.UserPresentations.Any(u => u.UserId == excludeUserId
+                && u.PresentationId == p.Id));
+            }
+
+            var count = presentationSource.Count();
+            var presentations = await presentationSource
                 .Skip(options.ToSkip).Take(options.ItemsPerPage)
                 .ToListAsync();
 
@@ -472,6 +490,8 @@ namespace AirShow.Models.AppRepositories
             if (result.TotalPages == 0) { result.TotalPages++; }
             return result;
         }
+
+
         public async Task<PagedOperationResult<List<Presentation>>> UserPresentationsFromCategory(string userId, string categoryName, PagingOptions options)
         {
             var result = new PagedOperationResult<List<Presentation>>();
@@ -542,6 +562,11 @@ namespace AirShow.Models.AppRepositories
                 result.ErrorMessageIfAny = "Could not find presentation for user";
             }
             return result;
+        }
+
+        public async Task<bool> UserOwnsPresentation(string userId, int presentationId)
+        {
+            return _context.UserPresentations.Any(u => u.UserId == userId && u.PresentationId == presentationId);
         }
     }
 

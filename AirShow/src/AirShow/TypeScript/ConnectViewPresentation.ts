@@ -260,10 +260,14 @@ class ConnectPresentationControllerHelper {
     private presentationHelper: ConnectViewPresentationHelper;
     private presentationId: string;
     private ws: WebSocket;
+    private intervalToken: number;
+    private lastActivityTimestamp: number;
+    private onDisconnect: () => void;
 
-    constructor(presentationId: string, presentationHelper: ConnectViewPresentationHelper) {
+    constructor(presentationId: string, presentationHelper: ConnectViewPresentationHelper, onDisconnect: () => void) {
         this.presentationId = presentationId;
         this.presentationHelper = presentationHelper;
+        this.onDisconnect = onDisconnect;
     }
 
 
@@ -280,7 +284,6 @@ class ConnectPresentationControllerHelper {
                 } 
 
                 if (response["roomToken"]) {
-                    alert(response["roomToken"]);
                     self.connectWSWithRoomToken(response["roomToken"]);
                 }
             }
@@ -299,13 +302,26 @@ class ConnectPresentationControllerHelper {
             self.ws.send(message);
             
             jQuery("#modalMessageView").modal("show");
+            self.lastActivityTimestamp = Date.now();
+
+            self.intervalToken = setInterval(function () {
+                var elapsed = Date.now() - self.lastActivityTimestamp;
+                if (elapsed >= maxTimeOfInactivity) {
+                    self.disconnectFromInactivity();
+                    clearInterval(self.intervalToken);
+                }
+            }, maxTimeOfInactivity)
 
         };
 
         this.ws.onerror = function (ev: Event) {
+            alert("Something unexpected happened. The connection has been lost");
+            self.onDisconnect();
         };
 
         this.ws.onclose = function (ev: CloseEvent) {
+            jQuery("#modalSocketDisconnect").modal("show");
+            self.onDisconnect();
         }
 
         this.ws.onmessage = function (ev: MessageEvent) {
@@ -314,12 +330,13 @@ class ConnectPresentationControllerHelper {
         };
     }
 
-     handleMessage(message: any) {
+    handleMessage(message: any) {
+        this.lastActivityTimestamp = Date.now();
+
         var messageCode = message[kActionTypeCodeKey] as number;
         if (messageCode == ActionTypeCode.PageChangeAction) {
             this.handleChangePageMessage(message);
         }
-        console.log(message);
         switch (messageCode) {
             case ActionTypeCode.IncreasePointerSizeAction:
                 this.presentationHelper.increasePointerSize();
@@ -345,13 +362,20 @@ class ConnectPresentationControllerHelper {
             case ActionTypeCode.CloseDueToBeingReplacedAction:
                 this.handleDismiss();
                 break;
+            case ActionTypeCode.CloseDueToBeingInactive:
+                this.handleDismiss();
+                break;
+
             default: break;
         }
     }
 
      private handleDismiss() {
          this.ws.close();
-         alert('You have been dismissed by another party');
+    }
+
+     private disconnectFromInactivity() {
+         this.ws.close();
      }
 
     private handleChangePageMessage(message: any) {
@@ -394,7 +418,10 @@ class ConnectActivationHelper {
         var self = this;
         var activateButton = document.getElementById("activateButton") as HTMLButtonElement;
         activateButton.onclick = function (ev: Event) {
-            self.controllerHelper = new ConnectPresentationControllerHelper(window["activationRequestString"], self.presentationHelper);
+            self.controllerHelper = new ConnectPresentationControllerHelper(window["activationRequestString"], self.presentationHelper,
+                function () {
+                    activateButton.hidden = false;
+                });
             activateButton.hidden = true;
             self.controllerHelper.run();
         }

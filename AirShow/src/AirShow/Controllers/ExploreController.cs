@@ -91,13 +91,21 @@ namespace AirShow.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> PublicPresentationsByCategory(string categoryName, int? page, int? itemsPerPage)
         {
+            string excludedUserId = null;
+            if (this.User != null && this.User.Identity.IsAuthenticated)
+            {
+                excludedUserId = _userManager.GetUserId(this.User);
+            }
+
             var vm = new PresentationsViewModel();
             vm.NavbarIndexPair = defaultNavbarIndexPair;
             vm.Title = categoryName.ToUpper();
             vm.ButtonsToolbarModel = ButtonsToolbarModel.PublicModelWithHighlightedIndex(ButtonsToolbarModel.IndexOf(categoryName));
 
             var pagingOptions = PagingOptions.CreateWithTheseOrDefaults(page, itemsPerPage);
-            var presentationsResult = await _presentationsRepository.PublicPresentationsFromCategory(categoryName, pagingOptions);
+            var presentationsResult = await _presentationsRepository.PublicPresentationsFromCategory(categoryName, pagingOptions, 
+                excludedUserId);
+
             if (presentationsResult.ErrorMessageIfAny != null)
             {
                 vm.ErrorMessage = presentationsResult.ErrorMessageIfAny;
@@ -270,13 +278,19 @@ namespace AirShow.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> PublicPresentationsForUser(string userId, int? page, int? itemsPerPage)
         {
+            string excludedUserId = null;
+            if (this.User != null && this.User.Identity.IsAuthenticated)
+            {
+                excludedUserId = _userManager.GetUserId(this.User);
+            }
+
             var pagingOptions = PagingOptions.CreateWithTheseOrDefaults(page, itemsPerPage);
             var vm = new PresentationsViewModel();
             vm.NavbarIndexPair = defaultNavbarIndexPair;
 
             
 
-            var result = await _presentationsRepository.PublicPresentationsForUser(userId, pagingOptions);
+            var result = await _presentationsRepository.PublicPresentationsForUser(userId, pagingOptions, excludedUserId);
             if (result.ErrorMessageIfAny != null)
             {
                 vm.ErrorMessage = result.ErrorMessageIfAny;

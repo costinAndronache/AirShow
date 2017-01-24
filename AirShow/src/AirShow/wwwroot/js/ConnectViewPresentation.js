@@ -182,9 +182,10 @@ var ConnectViewPresentationHelper = (function () {
     return ConnectViewPresentationHelper;
 }());
 var ConnectPresentationControllerHelper = (function () {
-    function ConnectPresentationControllerHelper(presentationId, presentationHelper) {
+    function ConnectPresentationControllerHelper(presentationId, presentationHelper, onDisconnect) {
         this.presentationId = presentationId;
         this.presentationHelper = presentationHelper;
+        this.onDisconnect = onDisconnect;
     }
     ConnectPresentationControllerHelper.prototype.run = function () {
         var xhr = new XMLHttpRequest();
@@ -197,7 +198,6 @@ var ConnectPresentationControllerHelper = (function () {
                     alert(xhr.responseText);
                 }
                 if (response["roomToken"]) {
-                    alert(response["roomToken"]);
                     self.connectWSWithRoomToken(response["roomToken"]);
                 }
             }
@@ -214,10 +214,22 @@ var ConnectPresentationControllerHelper = (function () {
             var message = JSON.stringify(obj);
             self.ws.send(message);
             jQuery("#modalMessageView").modal("show");
+            self.lastActivityTimestamp = Date.now();
+            self.intervalToken = setInterval(function () {
+                var elapsed = Date.now() - self.lastActivityTimestamp;
+                if (elapsed >= maxTimeOfInactivity) {
+                    self.disconnectFromInactivity();
+                    clearInterval(self.intervalToken);
+                }
+            }, maxTimeOfInactivity);
         };
         this.ws.onerror = function (ev) {
+            alert("Something unexpected happened. The connection has been lost");
+            self.onDisconnect();
         };
         this.ws.onclose = function (ev) {
+            jQuery("#modalSocketDisconnect").modal("show");
+            self.onDisconnect();
         };
         this.ws.onmessage = function (ev) {
             var message = JSON.parse(ev.data);
@@ -225,11 +237,11 @@ var ConnectPresentationControllerHelper = (function () {
         };
     };
     ConnectPresentationControllerHelper.prototype.handleMessage = function (message) {
+        this.lastActivityTimestamp = Date.now();
         var messageCode = message[kActionTypeCodeKey];
         if (messageCode == ActionTypeCode.PageChangeAction) {
             this.handleChangePageMessage(message);
         }
-        console.log(message);
         switch (messageCode) {
             case ActionTypeCode.IncreasePointerSizeAction:
                 this.presentationHelper.increasePointerSize();
@@ -255,12 +267,17 @@ var ConnectPresentationControllerHelper = (function () {
             case ActionTypeCode.CloseDueToBeingReplacedAction:
                 this.handleDismiss();
                 break;
+            case ActionTypeCode.CloseDueToBeingInactive:
+                this.handleDismiss();
+                break;
             default: break;
         }
     };
     ConnectPresentationControllerHelper.prototype.handleDismiss = function () {
         this.ws.close();
-        alert('You have been dismissed by another party');
+    };
+    ConnectPresentationControllerHelper.prototype.disconnectFromInactivity = function () {
+        this.ws.close();
     };
     ConnectPresentationControllerHelper.prototype.handleChangePageMessage = function (message) {
         var changePageTypeCode = message[kPageChangeActionTypeKey];
@@ -292,7 +309,9 @@ var ConnectActivationHelper = (function () {
         var self = this;
         var activateButton = document.getElementById("activateButton");
         activateButton.onclick = function (ev) {
-            self.controllerHelper = new ConnectPresentationControllerHelper(window["activationRequestString"], self.presentationHelper);
+            self.controllerHelper = new ConnectPresentationControllerHelper(window["activationRequestString"], self.presentationHelper, function () {
+                activateButton.hidden = false;
+            });
             activateButton.hidden = true;
             self.controllerHelper.run();
         };

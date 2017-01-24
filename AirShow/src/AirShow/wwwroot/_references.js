@@ -1,4 +1,5 @@
 ﻿/// <autosync enabled="true" />
+/// <reference path="js/activepresentationssessions.js" />
 /// <reference path="js/common.js" />
 /// <reference path="js/connectcontrolforpresentation.js" />
 /// <reference path="js/connectviewpresentation.js" />

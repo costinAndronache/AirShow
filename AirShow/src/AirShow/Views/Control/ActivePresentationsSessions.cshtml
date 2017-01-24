@@ -9,24 +9,33 @@
 
     @if (Model.Count == 0)
     {
-        <p>There doesn't seem to be anything here</p>
-    }
-
-    @foreach (var item in Model)
-    {
-        <div class="col-sm-2 col-md-2">
-            <div class="thumbnail">
-                <img src="@item.ThumbnailURL" alt="PDF icon" class="img-thumbnail">
-                <div class="caption">
-                    <p>@item.Presentation.Name</p>
-                    <div class="container-fluid">
-                        <a asp-controller="@nameof(ControlController).WithoutControllerPart()" asp-action="@nameof(ControlController.ConnectControlForPresentation)" 
-                           asp-route-presentationId="@item.Presentation.Id"
-                           class="btn btn-primary">Control</a>
-                    </div>
-                </div>
-            </div>
+        <div class="col-sm-2 col-md-5">
+            <p>There doesn't seem to be anything here</p>
         </div>
     }
 
+            @foreach (var item in Model)
+            {
+                <div class="col-sm-6 col-md-3" id="@item.Presentation.Id">
+                    <div class="thumbnail">
+                        <img src="@item.ThumbnailURL" alt="PDF icon" class="img-thumbnail" style="height: 240px; overflow: hidden; margin-top:10px;">
+                        <div class="caption">
+                            <div class="container-fluid">
+                                <p>@item.Presentation.Name</p>
+                                <a asp-controller="@nameof(ControlController).WithoutControllerPart()" asp-action="@nameof(ControlController.ConnectControlForPresentation)"
+                                   asp-route-presentationId="@item.Presentation.Id"
+                                   class="btn btn-primary">Control</a>
+
+                                <button class="btn btn-primary stopButton" data-presentationId="@item.Presentation.Id">Stop</button> 
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+
 </div>
+
+@section scripts {
+<script src="~/js/ActivePresentationsSessions.js"></script>
+}

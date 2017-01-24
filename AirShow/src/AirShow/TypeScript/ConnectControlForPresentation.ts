@@ -91,9 +91,11 @@ class ConnectControlPointerCanvasController {
         }
 
         var touchMoveHandler = function (ev: TouchEvent) {
-            var touch = ev.targetTouches[0];
-            var x = touch.clientX;
-            var y = touch.clientY;
+            
+            var rect = canvasParent.getBoundingClientRect();
+            var x = ev.targetTouches[0].pageX - rect.left;
+            var y = ev.targetTouches[0].pageY - rect.top;
+
             redrawWithCoordinates(x, y);
         }
 
@@ -186,14 +188,20 @@ class ConnectControlControlPresentationHelper {
 
     private ws: WebSocket;
     private roomToken: string;
-
     private pointerController: ConnectControlPointerCanvasController;
+    private intervalToken: number;
+
+    private lastActivityTimestamp: number;
+    private isInBatteryFriendlyMode: boolean;
+    private loadingIndicatorDiv: HTMLDivElement;
 
     constructor(roomToken: string, pointerController: ConnectControlPointerCanvasController) {
         this.roomToken = roomToken;
         this.pointerController = pointerController;
-        var self = this;
+        
 
+        var self = this;
+       
         this.pointerController.callbackOnChangeXY = function (x: number, y: number) {
             var obj: any = {};
             obj[kActionTypeCodeKey] = ActionTypeCode.ChangePointerOriginAction;
@@ -229,11 +237,16 @@ class ConnectControlControlPresentationHelper {
 
     run() {
         this.setupControls();
-        this.setupWebSocket();
+        this.loadingIndicatorDiv.style.height = "50px";
+        var self = this;
+
+        this.makeNewWSConnectionWithCallback(function () {
+            self.loadingIndicatorDiv.style.height = "0";
+        });
     }
 
 
-    private setupWebSocket() {
+    makeNewWSConnectionWithCallback(cb: () => void) {
         this.ws = new WebSocket("ws://" + location.host);
         var self = this;
 
@@ -242,15 +255,32 @@ class ConnectControlControlPresentationHelper {
             obj[RoomTokenKey] = self.roomToken;
             obj[SideKey] = ControlSide;
             self.sendRequestObject(obj);
+            self.lastActivityTimestamp = Date.now();
+            self.isInBatteryFriendlyMode = false;
+
+            self.intervalToken = setInterval(function () {
+                var elapsed = Date.now() - self.lastActivityTimestamp;
+                if (elapsed >= maxTimeOfInactivity) {
+                    alert('Will disconnect due to inactivity');
+                    self.ws.send(JSON.stringify({ kActionTypeCodeKey: 10 }));
+                    clearInterval(self.intervalToken);
+                    //will get disconnected
+                }
+
+            }, maxTimeOfInactivity);
+
+            if (cb) {
+                cb();
+            }
         }
 
         this.ws.onmessage = function (ev: MessageEvent) {
             self.ws.close();
-            alert('You have been disconnected by another party');
+            jQuery("#modalSocketDisconnect").modal("show");
         }
 
         this.ws.onerror = function (ev: Event) {
-            alert('onerror');
+            jQuery("#modalError").modal("show");
         }
     }
 
@@ -258,6 +288,9 @@ class ConnectControlControlPresentationHelper {
     private setupControls() {
         var previousButton = document.getElementById("previousButton") as HTMLButtonElement;
         var nextButton = document.getElementById("nextButton") as HTMLButtonElement;
+        var switchConnectionButton = document.getElementById("switchConnectionButton") as HTMLButtonElement;
+        this.loadingIndicatorDiv = document.getElementById("loadingIndicatorDiv") as HTMLDivElement;
+
         var self = this;
 
         previousButton.onclick = function (ev: Event) {
@@ -268,6 +301,9 @@ class ConnectControlControlPresentationHelper {
             self.nextButtonPressed();
         }
 
+        switchConnectionButton.onclick = function () {
+            self.toggleBatteryFriendlyMode(switchConnectionButton);
+        }
 
     }
 
@@ -284,8 +320,8 @@ class ConnectControlControlPresentationHelper {
         var obj: any = {};
         obj[kActionTypeCodeKey] = ActionTypeCode.PageChangeAction;
         obj[kPageChangeActionTypeKey] = type;
-        var request = JSON.stringify(obj);
-        this.ws.send(request);
+        this.sendRequestObject(obj);
+
     }
 
     private sendActionCode(code: number) {
@@ -296,10 +332,53 @@ class ConnectControlControlPresentationHelper {
 
     private sendRequestObject(obj: any) {
         var request = JSON.stringify(obj);
-        this.ws.send(request);
+        this.sendControlString(request);
+
+        this.lastActivityTimestamp = Date.now();
     }
 
+    private sendControlString(message: string) {
+        if (!this.isInBatteryFriendlyMode) {
+            this.ws.send(message);
+        } else {
+            var xhr = new XMLHttpRequest();
+            var uriComponent = encodeURIComponent(message);
+            xhr.open("GET", "/Control/SendControlMessage?sessionToken=" + this.roomToken + "&message=" + uriComponent);
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    var response = JSON.parse(xhr.responseText);
+                    if (response["error"]) {
+                        alert(xhr.responseText);
+                    }
+                }
+            }
 
+            xhr.send();
+        }
+    }
+
+    private toggleBatteryFriendlyMode(button: HTMLButtonElement) {
+        var toggleToolsButton = document.getElementById("toggleToolsButton") as HTMLButtonElement;
+        var self = this;
+        this.isInBatteryFriendlyMode = !this.isInBatteryFriendlyMode;
+        if (this.isInBatteryFriendlyMode) {
+            jQuery("#modalAboutBatteryFriendly").modal("show");
+            this.ws.close();
+            button.innerHTML = "Battery friendly off";
+            toggleToolsButton.hidden = true;
+
+        } else {
+            button.hidden = true;
+            this.loadingIndicatorDiv.style.height = "50px";
+
+            this.makeNewWSConnectionWithCallback(function () {
+                toggleToolsButton.hidden = false;
+                button.hidden = false;
+                button.innerHTML = "Battery friendly on";
+                self.loadingIndicatorDiv.style.height = "0";
+            });
+        }
+    }
 
 }
 

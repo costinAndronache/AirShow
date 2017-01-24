@@ -251,6 +251,7 @@ E:\Git\AirShow\AirShow\src\AirShow\Models\Seeders\BasicDBSeeder.cs
 E:\Git\AirShow\AirShow\src\AirShow\Models\ViewModels\ActivePresentationModel.cs
 E:\Git\AirShow\AirShow\src\AirShow\Models\ViewModels\BaseViewModel.cs
 E:\Git\AirShow\AirShow\src\AirShow\Models\ViewModels\ButtonsToolbarModel.cs
+E:\Git\AirShow\AirShow\src\AirShow\Models\ViewModels\ConnectControlForPresentationViewModel.cs
 E:\Git\AirShow\AirShow\src\AirShow\Models\ViewModels\LeftNavbarViewModel.cs
 E:\Git\AirShow\AirShow\src\AirShow\Models\ViewModels\LoginViewModel.cs
 E:\Git\AirShow\AirShow\src\AirShow\Models\ViewModels\ModalMessageViewModel.cs

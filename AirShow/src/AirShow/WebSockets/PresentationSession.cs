@@ -15,19 +15,21 @@ namespace AirShow.WebSockets
         private int _presentationId;
         private string _sessionToken;
 
-        private static int MaximumIdleTimeInSeconds = 1800;
+        private static int MaximumIdleTimeInSeconds = 60 * 15;
 
         private object _viewLock = new object();
         private object _controlLock = new object();
-        private object _keepRunningLock = new object();
+        private object _excutedCleanupLock = new object();
         private object _dateTimeLock = new object();
+
+
 
         private WebSocket _viewSocket;
         private WebSocket _controlSocket;
-        private bool _inRunLoop;
+        private bool _executedCleanup;
         private DateTime _lastActivityTimestamp;
 
-        private Action _cleanupCallback;
+        private Action<PresentationSession> _cleanupCallback;
 
         private DateTime LastActivityTimestamp
         {
@@ -47,21 +49,21 @@ namespace AirShow.WebSockets
             }
         }
 
-        private bool InRunLoop
+        private bool ExecutedCleanup
         {
             get
             {
-                lock (_keepRunningLock)
+                lock (_excutedCleanupLock)
                 {
-                    return _inRunLoop;
+                    return _executedCleanup;
                 }
             }
 
             set
             {
-                lock (_keepRunningLock)
+                lock (_excutedCleanupLock)
                 {
-                    _inRunLoop = value;
+                    _executedCleanup = value;
                 }
             }
         }
@@ -103,6 +105,7 @@ namespace AirShow.WebSockets
         }
 
         private static object dismissMessage = new { kActionTypeCodeKey = 9};
+        private static object closeMessage = new { kActionTypeCodeKey = 10 };
 
         public int PresentationId
         {
@@ -115,7 +118,7 @@ namespace AirShow.WebSockets
 
 
 
-        public PresentationSession(int presentationId, string sessionToken, Action cleanupCallback)
+        public PresentationSession(int presentationId, string sessionToken, Action<PresentationSession> cleanupCallback)
         {
             _cleanupCallback = cleanupCallback;
             _sessionToken = sessionToken;
@@ -126,6 +129,10 @@ namespace AirShow.WebSockets
 
         public void ReplaceOrSetViewSocket(WebSocket viewSocket)
         {
+            if (this.ExecutedCleanup)
+            {
+                return;
+            }
             var socket = this.ViewSocket;
             if (socket != null && socket.State == WebSocketState.Open)
             {
@@ -134,12 +141,18 @@ namespace AirShow.WebSockets
             }
 
             this.ViewSocket = viewSocket;
+            BeginViewSocketRunloop();
         }
 
         public void ReplaceOrSetControlSocket(WebSocket controlSocket)
         {
+            if (this.ExecutedCleanup)
+            {
+                return;
+            }
             var socket = this.ControlSocket;
             this.ControlSocket = controlSocket;
+            this.LastActivityTimestamp = DateTime.Now;
 
             if (socket != null && socket.State == WebSocketState.Open)
             {
@@ -148,21 +161,29 @@ namespace AirShow.WebSockets
             }
         }
 
-        public async void SendControlMessageToView(string controlMessage)
+        public async Task SendControlMessageToView(string controlMessage)
         {
+            if (this.ExecutedCleanup)
+            {
+                return;
+            }
+
+            var cancellationToken = CancellationToken.None;
             var socket = this.ViewSocket;
-            var bytes = GetBytes(controlMessage);
+            var bytes = Encoding.UTF8.GetBytes(controlMessage);
             var ar = new ArraySegment<Byte>(bytes);
             if (socket.State == WebSocketState.Open)
             {
-                await socket.SendAsync(ar, WebSocketMessageType.Text, true, CancellationToken.None);
+                await socket.SendAsync(ar, WebSocketMessageType.Text, true, cancellationToken);
             }
+
+            this.LastActivityTimestamp = DateTime.Now;
         }
 
         public static void SendObjectToSocket(object obj, WebSocket socket)
         {
             var str = JsonConvert.SerializeObject(obj);
-            var bytes = GetBytes(str);
+            var bytes = Encoding.UTF8.GetBytes(str);
 
             var ar = new ArraySegment<Byte>(bytes);
             var cancellationToken = CancellationToken.None;
@@ -191,9 +212,14 @@ namespace AirShow.WebSockets
 
         private async void BeginSocketsLoop()
         {
-            this.InRunLoop = true;
+            if (this.ExecutedCleanup)
+            {
+                return;
+            }
 
-            while((DateTime.Now - this.LastActivityTimestamp).TotalSeconds <= MaximumIdleTimeInSeconds)
+            this.LastActivityTimestamp = DateTime.Now;
+
+            while(true)
             {
                 var viewSocket = this.ViewSocket;
                 var controlSocket = this.ControlSocket;
@@ -215,6 +241,11 @@ namespace AirShow.WebSockets
                         while (!result.EndOfMessage);
 
                         ms.Seek(0, SeekOrigin.Begin);
+
+                        if ((DateTime.Now - this.LastActivityTimestamp).TotalSeconds > MaximumIdleTimeInSeconds)
+                        {
+                            break;
+                        }
 
                         if (result.MessageType == WebSocketMessageType.Text)
                         {
@@ -248,17 +279,72 @@ namespace AirShow.WebSockets
 
             }
 
-            this.InRunLoop = false;
+            
             if ((DateTime.Now - this.LastActivityTimestamp).TotalSeconds > MaximumIdleTimeInSeconds)
             {
                 this.Cleanup();
             }
         }
 
+        private void BeginViewSocketRunloop()
+        {
+            if (this.ExecutedCleanup)
+            {
+                return;
+            }
+
+            var self = this;
+            new Thread(() =>
+            {
+                while (self.ViewSocket != null && self.ViewSocket.State == WebSocketState.Open)
+                {
+                    Thread.Sleep(10000);
+                }
+
+                if (self.ExecutedCleanup)
+                {
+                    return;
+                }
+
+                self.Cleanup();
+
+            }).Start();
+
+            
+        }
+
+        public void ForceStopAndCleanup()
+        {
+            if (this.ExecutedCleanup)
+            {
+                return;
+            }
+            this.Cleanup();
+            this.LastActivityTimestamp = DateTime.MinValue;
+        }
 
         private void Cleanup()
         {
+            if (this.ExecutedCleanup)
+            {
+                return;
+            }
 
+            this.ExecutedCleanup = true;
+
+            Console.WriteLine("Will begin cleaning session " + this.PresentationId);
+            if (this.ViewSocket != null)
+            {
+                SendObjectToSocket(closeMessage, this.ViewSocket);
+            }
+
+            if (this.ControlSocket != null)
+            {
+                SendObjectToSocket(closeMessage, this.ControlSocket);
+            }
+
+
+            _cleanupCallback?.Invoke(this);
         }
     }
 }

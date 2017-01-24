@@ -55,9 +55,9 @@ var ConnectControlPointerCanvasController = (function () {
             self.drawWithCurrentState();
         };
         var touchMoveHandler = function (ev) {
-            var touch = ev.targetTouches[0];
-            var x = touch.clientX;
-            var y = touch.clientY;
+            var rect = canvasParent.getBoundingClientRect();
+            var x = ev.targetTouches[0].pageX - rect.left;
+            var y = ev.targetTouches[0].pageY - rect.top;
             redrawWithCoordinates(x, y);
         };
         var pointerHandler = function (ev) {
@@ -166,9 +166,13 @@ var ConnectControlControlPresentationHelper = (function () {
     }
     ConnectControlControlPresentationHelper.prototype.run = function () {
         this.setupControls();
-        this.setupWebSocket();
+        this.loadingIndicatorDiv.style.height = "50px";
+        var self = this;
+        this.makeNewWSConnectionWithCallback(function () {
+            self.loadingIndicatorDiv.style.height = "0";
+        });
     };
-    ConnectControlControlPresentationHelper.prototype.setupWebSocket = function () {
+    ConnectControlControlPresentationHelper.prototype.makeNewWSConnectionWithCallback = function (cb) {
         this.ws = new WebSocket("ws://" + location.host);
         var self = this;
         this.ws.onopen = function (ev) {
@@ -176,24 +180,42 @@ var ConnectControlControlPresentationHelper = (function () {
             obj[RoomTokenKey] = self.roomToken;
             obj[SideKey] = ControlSide;
             self.sendRequestObject(obj);
+            self.lastActivityTimestamp = Date.now();
+            self.isInBatteryFriendlyMode = false;
+            self.intervalToken = setInterval(function () {
+                var elapsed = Date.now() - self.lastActivityTimestamp;
+                if (elapsed >= maxTimeOfInactivity) {
+                    alert('Will disconnect due to inactivity');
+                    self.ws.send(JSON.stringify({ kActionTypeCodeKey: 10 }));
+                    clearInterval(self.intervalToken);
+                }
+            }, maxTimeOfInactivity);
+            if (cb) {
+                cb();
+            }
         };
         this.ws.onmessage = function (ev) {
             self.ws.close();
-            alert('You have been disconnected by another party');
+            jQuery("#modalSocketDisconnect").modal("show");
         };
         this.ws.onerror = function (ev) {
-            alert('onerror');
+            jQuery("#modalError").modal("show");
         };
     };
     ConnectControlControlPresentationHelper.prototype.setupControls = function () {
         var previousButton = document.getElementById("previousButton");
         var nextButton = document.getElementById("nextButton");
+        var switchConnectionButton = document.getElementById("switchConnectionButton");
+        this.loadingIndicatorDiv = document.getElementById("loadingIndicatorDiv");
         var self = this;
         previousButton.onclick = function (ev) {
             self.previousButtonPressed();
         };
         nextButton.onclick = function (ev) {
             self.nextButtonPressed();
+        };
+        switchConnectionButton.onclick = function () {
+            self.toggleBatteryFriendlyMode(switchConnectionButton);
         };
     };
     ConnectControlControlPresentationHelper.prototype.nextButtonPressed = function () {
@@ -206,8 +228,7 @@ var ConnectControlControlPresentationHelper = (function () {
         var obj = {};
         obj[kActionTypeCodeKey] = ActionTypeCode.PageChangeAction;
         obj[kPageChangeActionTypeKey] = type;
-        var request = JSON.stringify(obj);
-        this.ws.send(request);
+        this.sendRequestObject(obj);
     };
     ConnectControlControlPresentationHelper.prototype.sendActionCode = function (code) {
         var obj = {};
@@ -216,7 +237,48 @@ var ConnectControlControlPresentationHelper = (function () {
     };
     ConnectControlControlPresentationHelper.prototype.sendRequestObject = function (obj) {
         var request = JSON.stringify(obj);
-        this.ws.send(request);
+        this.sendControlString(request);
+        this.lastActivityTimestamp = Date.now();
+    };
+    ConnectControlControlPresentationHelper.prototype.sendControlString = function (message) {
+        if (!this.isInBatteryFriendlyMode) {
+            this.ws.send(message);
+        }
+        else {
+            var xhr = new XMLHttpRequest();
+            var uriComponent = encodeURIComponent(message);
+            xhr.open("GET", "/Control/SendControlMessage?sessionToken=" + this.roomToken + "&message=" + uriComponent);
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    var response = JSON.parse(xhr.responseText);
+                    if (response["error"]) {
+                        alert(xhr.responseText);
+                    }
+                }
+            };
+            xhr.send();
+        }
+    };
+    ConnectControlControlPresentationHelper.prototype.toggleBatteryFriendlyMode = function (button) {
+        var toggleToolsButton = document.getElementById("toggleToolsButton");
+        var self = this;
+        this.isInBatteryFriendlyMode = !this.isInBatteryFriendlyMode;
+        if (this.isInBatteryFriendlyMode) {
+            jQuery("#modalAboutBatteryFriendly").modal("show");
+            this.ws.close();
+            button.innerHTML = "Battery friendly off";
+            toggleToolsButton.hidden = true;
+        }
+        else {
+            button.hidden = true;
+            this.loadingIndicatorDiv.style.height = "50px";
+            this.makeNewWSConnectionWithCallback(function () {
+                toggleToolsButton.hidden = false;
+                button.hidden = false;
+                button.innerHTML = "Battery friendly on";
+                self.loadingIndicatorDiv.style.height = "0";
+            });
+        }
     };
     return ConnectControlControlPresentationHelper;
 }());

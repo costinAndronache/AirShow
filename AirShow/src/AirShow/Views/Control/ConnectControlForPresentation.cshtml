@@ -1,4 +1,4 @@
-﻿@model string
+﻿@model ConnectControlForPresentationViewModel
 @{
     ViewData["Title"] = "Control Presentation";
     ViewData[ViewConstants.kNavbarIndexPairKey] =
@@ -13,6 +13,16 @@
     <link href="~/css/ControlPresentation.css" rel="stylesheet" />
 }
 
+@if (Model.ErrorMessage != null)
+{
+    <div class="row">
+        <div class="col-md-1" style="margin-left: 20px; margin-bottom: 10px;">
+            <p>@Model.ErrorMessage</p>
+        </div>
+    </div>
+}
+else
+{
 <div class="row">
 
     <!-- Modal -->
@@ -43,32 +53,87 @@
         </div>
     </div>
 
+    @Component.InvokeAsync(nameof(ModalMessageView), new
+{
+    model = new ModalMessageViewModel
+    {
+        Id = "modalAboutBatteryFriendly",
+        Title = "Battery friendly mode",
+        Message = "Battery friendly mode aims to preserve your device's battery while still maintaining the core functionality." +
+        " You can change pages, but the pointer will not be available"
+    }
+}).Result
+
+    @Component.InvokeAsync(nameof(ModalMessageView), new
+{
+    model = new ModalMessageViewModel
+    {
+        Id = "modalToolsUnavailable",
+        Title = "AirShow Pointer",
+        Message = "The AirShow Pointer is not available in battery friendly mode"
+    }
+}).Result
+
+
+    @Component.InvokeAsync(nameof(ModalMessageView), new
+{
+    model = new ModalMessageViewModel
+    {
+        Id = "modalError",
+        Title = "Error",
+        Message = "Something unexpected happened. Please reload the page or try again later"
+    }
+}).Result
+
+    @Component.InvokeAsync(nameof(ModalMessageView), new
+{
+    model = new ModalMessageViewModel
+    {
+        Id = "modalSocketDisconnect",
+        Title = "Disconnect",
+        Message = "You have been disconnected from this session either by another party or due to inactivity."
+    }
+}).Result
+
     <div id="pointerControlsContainer" class="">
     </div>
 
     <div class="row">
+        <div id="loadingIndicatorDiv" style="overflow:hidden;">
+            <p style="margin-left:40px;">Establishing connection <i class="fa fa-spinner fa-spin" style="font-size:24px"></i></p>
+        </div>
+    </div>
+    
 
+    <div class="row">
         <div class="col-md-1" style="margin-left: 20px; margin-bottom: 10px;">
             <button id="toggleToolsButton" class="btn btn-primary">Toggle Tools</button>
         </div>
     </div>
     <div class="row">
-
-        <div class="col-md-5" style="margin-left: 20px;">
+        <div class="col-md-5" style="margin-left: 20px; margin-bottom: 10px;">
             <button id="previousButton" class="btn btn-primary">Previous Page</button>
             <button id="nextButton" class="btn btn-primary">Next Page</button>
         </div>
-
     </div>
+
+    <div class="row">
+        <div class="col-md-5" style="margin-left: 20px;">
+            <button id="switchConnectionButton" class="btn btn-primary">Battery friendly</button>
+
+        </div>
+    </div>
+
 
 </div>
 
+}
 
 @section scripts {
-    @if (Model != null)
+    @if (Model.SessionToken != null)
     {
         <script>
-            window.presentationSessionToken = "@Model";
+            window.presentationSessionToken = "@Model.SessionToken";
         </script>
     }
     <script src="~/js/Common.js"></script>

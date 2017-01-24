@@ -10,6 +10,7 @@ using AirShow.Models.EF;
 using Newtonsoft.Json;
 using AirShow.Models.Interfaces;
 using AirShow.Models.ViewModels;
+using System.Net;
 
 // For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -57,21 +58,32 @@ namespace AirShow.Controllers
             return View("ActivePresentationsSessions", vm);
         }
 
-        public async Task<IActionResult> ControlPresentation(string name)
-        {
-            var vm = new ActivationMessage
-            {
-                PresentationName = name,
-                UserId = _userManager.GetUserId(User)
-            };
-            return View("ControlPresentation", JsonConvert.SerializeObject(vm));
-        }
-
 
         public async Task<IActionResult> ConnectControlForPresentation(int presentationId)
         {
-            var token = _gwss.GetTokenForPresentationId(presentationId);
-            return View("ConnectControlForPresentation", token);
+            var tokenResult= _gwss.GetTokenForPresentationId(presentationId);
+            return View("ConnectControlForPresentation", new ConnectControlForPresentationViewModel
+            { ErrorMessage = tokenResult.ErrorMessageIfAny, SessionToken = tokenResult.Value });
+        }
+
+
+        [HttpDelete]
+        public async Task<IActionResult> ForceStopSessionForPresentation(int presentationId)
+        {
+            var userId = _userManager.GetUserId(this.User);
+            if (! await _presentationsRepository.UserOwnsPresentation(userId, presentationId))
+            {
+                return StatusCode((int)HttpStatusCode.BadRequest);
+            }
+
+            var result = _gwss.ForceStopSessionForPresentation(presentationId);
+            if (result.ErrorMessageIfAny != null)
+            {
+                HttpContext.Response.StatusCode = (int)HttpStatusCode.NotFound;
+                return new JsonResult(new { error = result.ErrorMessageIfAny });
+            }
+
+            return new StatusCodeResult((int)HttpStatusCode.OK);
         }
 
         [HttpPost]
@@ -79,6 +91,12 @@ namespace AirShow.Controllers
         {
             
             var userId = _userManager.GetUserId(this.User);
+
+            if (!await _presentationsRepository.UserOwnsPresentation(userId, presentationId))
+            {
+                return StatusCode((int)HttpStatusCode.BadRequest);
+            }
+
             var presentationsResult = await _presentationsRepository.GetPresentationsWithIds(new List<int> { presentationId });
             if (presentationsResult.ErrorMessageIfAny != null || presentationsResult.Value.Count == 0)
             {
@@ -108,6 +126,20 @@ namespace AirShow.Controllers
             };
 
             return View(vm);
+        }
+
+
+        public async Task<IActionResult> SendControlMessage(string sessionToken, string message)
+        {
+            var userId = _userManager.GetUserId(this.User);
+            var result = await _gwss.SendControlMessage(userId, sessionToken, message);
+            if (result.ErrorMessageIfAny != null)
+            {
+                HttpContext.Response.StatusCode = (int)HttpStatusCode.NotFound;
+                return new JsonResult(new { error = result.ErrorMessageIfAny });
+            }
+
+            return StatusCode((int)HttpStatusCode.OK);
         }
 
     }

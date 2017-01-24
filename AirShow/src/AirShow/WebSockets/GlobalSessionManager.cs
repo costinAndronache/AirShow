@@ -22,7 +22,7 @@ namespace AirShow.WebSockets
         private const string ViewSide = "view";
         private const string ControlSide = "control";
 
-        private ConcurrentDictionary<string, ConcurrentBag<PresentationSession>> _sessionsPerUserId;
+        private ConcurrentDictionary<string, ConcurrentDictionary<int, PresentationSession>> _sessionsPerUserId;
         private ConcurrentDictionary<string, PresentationSession> _sessionPerToken;
         private ConcurrentDictionary<string, int> _presentationForReservedToken;
         private ConcurrentDictionary<int, string> _sessionTokenForPresentationId;
@@ -33,7 +33,7 @@ namespace AirShow.WebSockets
             _userIdForToken = new ConcurrentDictionary<string, string>();
             _sessionPerToken = new ConcurrentDictionary<string, PresentationSession>();
             _presentationForReservedToken = new ConcurrentDictionary<string, int>();
-            _sessionsPerUserId = new ConcurrentDictionary<string, ConcurrentBag<PresentationSession>>();
+            _sessionsPerUserId = new ConcurrentDictionary<string, ConcurrentDictionary<int, PresentationSession>>();
             _sessionTokenForPresentationId = new ConcurrentDictionary<int, string>();
 
         }
@@ -79,7 +79,8 @@ namespace AirShow.WebSockets
         {
             if (_sessionsPerUserId.ContainsKey(userId))
             {
-                return _sessionsPerUserId[userId].Select(ps => ps.PresentationId).ToList();
+                
+                return _sessionsPerUserId[userId].Values.Select(ps => ps.PresentationId).ToList();
             }
             return new List<int>();
         }
@@ -93,7 +94,7 @@ namespace AirShow.WebSockets
 
             if (!_sessionsPerUserId.ContainsKey(userId))
             {
-                _sessionsPerUserId[userId] = new ConcurrentBag<PresentationSession>();
+                _sessionsPerUserId[userId] = new ConcurrentDictionary<int, PresentationSession>();
             }
 
             return token;
@@ -115,11 +116,36 @@ namespace AirShow.WebSockets
                 return result;
             }
 
-            Action cleanup = () => { };
+            Action<PresentationSession> cleanup = (session) => 
+            {
+                var presentationId = session.PresentationId;
+                var cleanToken = _sessionTokenForPresentationId[presentationId];
+                var outString = "";
 
-            var newSession = new PresentationSession(_presentationForReservedToken[token], token, cleanup);
+                _sessionTokenForPresentationId.TryRemove(presentationId, out outString);
+                _presentationForReservedToken.TryRemove(cleanToken, out presentationId);
+
+                var userIdToClean = _userIdForToken[cleanToken];
+                _userIdForToken.TryRemove(token, out outString);
+
+                PresentationSession outS = null;
+                _sessionPerToken.TryRemove(cleanToken, out outS);
+
+                _sessionsPerUserId[userIdToClean].TryRemove(presentationId, out outS);
+                if (_sessionsPerUserId[userIdToClean].Count == 0)
+                {
+                    ConcurrentDictionary<int, PresentationSession> outPS = null;
+                    _sessionsPerUserId.TryRemove(userIdToClean, out outPS);
+
+                }
+                Console.WriteLine("\nDid clean up session for presentation " + presentationId);
+
+            };
+
+            var presId = _presentationForReservedToken[token];
+            var newSession = new PresentationSession(presId, token, cleanup);
             var userId = _userIdForToken[token];
-            _sessionsPerUserId[userId].Add(newSession);
+            _sessionsPerUserId[userId].TryAdd(presId, newSession);
 
 
             result.Value = newSession;
@@ -128,9 +154,58 @@ namespace AirShow.WebSockets
             return result;
         }
 
-        public string GetTokenForPresentationId(int presentationId)
+        public OperationResult<string> ForceStopSessionForPresentation(int presentationId)
         {
-            return _sessionTokenForPresentationId[presentationId];
+            var opResult = new OperationResult<string>();
+
+            if (!_sessionTokenForPresentationId.ContainsKey(presentationId))
+            {
+                opResult.ErrorMessageIfAny = "No session reserved for that presentation";
+                return opResult;
+            }
+
+            var token = _sessionTokenForPresentationId[presentationId];
+            if (!_sessionPerToken.ContainsKey(token))
+            {
+                opResult.ErrorMessageIfAny = "No session has been created for that presentation";
+                return opResult;
+            }
+
+            _sessionPerToken[token].ForceStopAndCleanup();
+
+            return opResult;
+        }
+
+        public OperationResult<string> GetTokenForPresentationId(int presentationId)
+        {
+            var opResult = new OperationResult<string>();
+            if (!_sessionTokenForPresentationId.ContainsKey(presentationId))
+            {
+                opResult.ErrorMessageIfAny = "No session reserved for that presentation";
+                return opResult;
+            }
+            opResult.Value = _sessionTokenForPresentationId[presentationId];
+            return opResult;
+        }
+
+        public async Task<OperationStatus> SendControlMessage(string userId, string sessionToken, string message)
+        {
+            var opResult = new OperationStatus();
+            if (!_userIdForToken.ContainsKey(sessionToken) || _userIdForToken[sessionToken] != userId)
+            {
+                opResult.ErrorMessageIfAny = "The userId specified does not have a session with that token";
+                return opResult;
+            }
+
+            if (!_sessionPerToken.ContainsKey(sessionToken))
+            {
+                opResult.ErrorMessageIfAny = "No session has been started with that token";
+                return opResult;
+            }
+
+            await _sessionPerToken[sessionToken].SendControlMessageToView(message);
+
+            return opResult;
         }
 
         public void KeepPresentationSocketAlive(WebSocket webSocket)

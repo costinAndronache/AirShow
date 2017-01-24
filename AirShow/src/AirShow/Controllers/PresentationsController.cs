@@ -32,23 +32,7 @@ namespace AirShow.Controllers
 
         }
         // GET: /<controller>/
-        
-        public async Task<IActionResult> ViewPresentation(string name)
-        {
-            var activationRequest = new ActivationMessage
-            {
-                UserId = _userManager.GetUserId(User),
-                PresentationName = name
-            };
-
-            var vm = new ViewPresentationViewModel()
-            {
-                PresentationURL = "/Presentations" + "/" + nameof(PresentationsController.DownloadPresentation) + "?name=" + name,
-                ActivationRequestString = JsonConvert.SerializeObject(activationRequest)
-            };
-
-            return View(vm);
-        }
+       
 
         public async Task<IActionResult> DownloadPresentation(string name)
         {

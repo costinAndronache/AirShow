@@ -9,12 +9,14 @@ var ActionTypeCode;
     ActionTypeCode[ActionTypeCode["HidePointerAction"] = 7] = "HidePointerAction";
     ActionTypeCode[ActionTypeCode["ResetPointerPositionAction"] = 8] = "ResetPointerPositionAction";
     ActionTypeCode[ActionTypeCode["CloseDueToBeingReplacedAction"] = 9] = "CloseDueToBeingReplacedAction";
+    ActionTypeCode[ActionTypeCode["CloseDueToBeingInactive"] = 10] = "CloseDueToBeingInactive";
 })(ActionTypeCode || (ActionTypeCode = {}));
 var PageChangeActionType;
 (function (PageChangeActionType) {
     PageChangeActionType[PageChangeActionType["MoveNext"] = 1] = "MoveNext";
     PageChangeActionType[PageChangeActionType["MovePrevious"] = 2] = "MovePrevious";
 })(PageChangeActionType || (PageChangeActionType = {}));
+var maxTimeOfInactivity = 1000 * 60 * 15;
 var kActionTypeCodeKey = "kActionTypeCodeKey";
 var kPageChangeActionTypeKey = "kPageChangeActionTypeKey";
 var kPointerCenterXKey = "kPointerCenterXKey";

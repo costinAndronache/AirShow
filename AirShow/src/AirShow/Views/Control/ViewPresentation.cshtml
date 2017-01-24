@@ -33,6 +33,15 @@
         @Component.InvokeAsync(nameof(ModalMessageView), new { model = new ModalMessageViewModel { Title = title, Message = message, Id = id } }).Result
     }
 
+    @Component.InvokeAsync(nameof(ModalMessageView), new
+   {
+       model = new ModalMessageViewModel
+       {
+           Id = "modalSocketDisconnect",
+           Title = "Disconnect",
+           Message = "You have been disconnected from this session either by another party or due to inactivity."
+       }
+   }).Result
     
 
 </div>
