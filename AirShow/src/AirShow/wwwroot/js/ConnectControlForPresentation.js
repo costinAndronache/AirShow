@@ -137,6 +137,10 @@ var ConnectControlControlPresentationHelper = (function () {
     function ConnectControlControlPresentationHelper(roomToken, pointerController) {
         this.roomToken = roomToken;
         this.pointerController = pointerController;
+        this.defaultSocketErrorHandler = function () {
+            jQuery("#modalError").modal("show");
+            self.toggleBatteryFriendlyModeTo(true);
+        };
         var self = this;
         this.pointerController.callbackOnChangeXY = function (x, y) {
             var obj = {};
@@ -195,17 +199,16 @@ var ConnectControlControlPresentationHelper = (function () {
             }
         };
         this.ws.onmessage = function (ev) {
-            self.ws.close();
+            self.ws.onerror = function () { };
             jQuery("#modalSocketDisconnect").modal("show");
+            self.ws.close();
         };
-        this.ws.onerror = function (ev) {
-            jQuery("#modalError").modal("show");
-        };
+        this.ws.onerror = self.defaultSocketErrorHandler;
     };
     ConnectControlControlPresentationHelper.prototype.setupControls = function () {
         var previousButton = document.getElementById("previousButton");
         var nextButton = document.getElementById("nextButton");
-        var switchConnectionButton = document.getElementById("switchConnectionButton");
+        this.switchConnectionButton = document.getElementById("switchConnectionButton");
         this.loadingIndicatorDiv = document.getElementById("loadingIndicatorDiv");
         var self = this;
         previousButton.onclick = function (ev) {
@@ -214,8 +217,12 @@ var ConnectControlControlPresentationHelper = (function () {
         nextButton.onclick = function (ev) {
             self.nextButtonPressed();
         };
-        switchConnectionButton.onclick = function () {
-            self.toggleBatteryFriendlyMode(switchConnectionButton);
+        this.switchConnectionButton.onclick = function () {
+            var value = !self.isInBatteryFriendlyMode;
+            self.toggleBatteryFriendlyModeTo(value);
+            if (value) {
+                jQuery("#modalAboutBatteryFriendly").modal("show");
+            }
         };
     };
     ConnectControlControlPresentationHelper.prototype.nextButtonPressed = function () {
@@ -250,32 +257,34 @@ var ConnectControlControlPresentationHelper = (function () {
             xhr.open("GET", "/Control/SendControlMessage?sessionToken=" + this.roomToken + "&message=" + uriComponent);
             xhr.onreadystatechange = function () {
                 if (xhr.readyState === XMLHttpRequest.DONE) {
-                    var response = JSON.parse(xhr.responseText);
-                    if (response["error"]) {
-                        alert(xhr.responseText);
+                    if (xhr.responseText) {
+                        var response = JSON.parse(xhr.responseText);
+                        if (response["error"]) {
+                            alert(xhr.responseText);
+                        }
                     }
                 }
             };
             xhr.send();
         }
     };
-    ConnectControlControlPresentationHelper.prototype.toggleBatteryFriendlyMode = function (button) {
+    ConnectControlControlPresentationHelper.prototype.toggleBatteryFriendlyModeTo = function (value) {
         var toggleToolsButton = document.getElementById("toggleToolsButton");
         var self = this;
-        this.isInBatteryFriendlyMode = !this.isInBatteryFriendlyMode;
+        this.isInBatteryFriendlyMode = value;
         if (this.isInBatteryFriendlyMode) {
-            jQuery("#modalAboutBatteryFriendly").modal("show");
             this.ws.close();
-            button.innerHTML = "Battery friendly off";
+            this.ws.onerror = function () { };
+            self.switchConnectionButton.innerHTML = "Reconnect";
             toggleToolsButton.hidden = true;
         }
         else {
-            button.hidden = true;
+            self.switchConnectionButton.hidden = true;
             this.loadingIndicatorDiv.style.height = "50px";
             this.makeNewWSConnectionWithCallback(function () {
                 toggleToolsButton.hidden = false;
-                button.hidden = false;
-                button.innerHTML = "Battery friendly on";
+                self.switchConnectionButton.hidden = false;
+                self.switchConnectionButton.innerHTML = "Battery friendly ";
                 self.loadingIndicatorDiv.style.height = "0";
             });
         }
