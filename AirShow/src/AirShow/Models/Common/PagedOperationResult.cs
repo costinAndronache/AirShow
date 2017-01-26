@@ -7,7 +7,6 @@ namespace AirShow.Models.Common
 {
     public class PagedOperationResult<T>: OperationResult<T>
     {
-        public int PagesLeft { get; set; }
         public int ItemsPerPage { get; set; }
         public int TotalPages { get; set; }
     }

@@ -16,19 +16,20 @@
     @RenderSection("style", false)
 </head>
 <body>
-    <div class="">
-        @Component.InvokeAsync(nameof(SearchNavbarView)).Result
-    </div>
-    <div class="mainBodyDiv row">
-        <div class="navbarDiv col-md-3">
-              @Component.InvokeAsync(nameof(LeftNavbar), 
-             new { indexPair = ViewData[ViewConstants.kNavbarIndexPairKey]}).Result
+    <div class="mainBodyDiv">
+        <div class="row">
+            @Component.InvokeAsync(nameof(SearchNavbarView)).Result
         </div>
-        <div class="col-md-9">
-            @RenderBody()
-            <hr />
+        <div class="row">
+            <div class="navbarDiv col-md-3">
+                @Component.InvokeAsync(nameof(LeftNavbar),
+             new { indexPair = ViewData[ViewConstants.kNavbarIndexPairKey] }).Result
+            </div>
+            <div class="col-md-9">
+                @RenderBody()
+                <hr />
+            </div>
         </div>
-
     </div>
     
     <script src="~/lib/jquery/dist/jquery.js"></script>

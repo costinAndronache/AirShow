@@ -14,6 +14,5 @@ namespace AirShow.Models.Common
         public const string kInvalidFileNameOrAlreadyExists = "A file with the same name already exists or the filename contains invalid characters";
 
         public string ErrorMessageIfAny { get; set; }
-        public int? ErrorCodeIfAny { get; set; }
     }
 }
