@@ -58,12 +58,14 @@ var ConnectControlPointerCanvasController = (function () {
             self.drawWithCurrentState();
         };
         var touchMoveHandler = function (ev) {
+            ev.preventDefault();
             var rect = canvasParent.getBoundingClientRect();
             var x = ev.targetTouches[0].pageX - rect.left;
             var y = ev.targetTouches[0].pageY - rect.top;
             redrawWithCoordinates(x, y);
         };
         var pointerHandler = function (ev) {
+            ev.preventDefault();
             redrawWithCoordinates(ev.offsetX, ev.offsetY);
         };
         var eventType = "";

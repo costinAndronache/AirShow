@@ -98,7 +98,8 @@ class ConnectControlPointerCanvasController {
         }
 
         var touchMoveHandler = function (ev: TouchEvent) {
-            
+            ev.preventDefault();
+
             var rect = canvasParent.getBoundingClientRect();
             var x = ev.targetTouches[0].pageX - rect.left;
             var y = ev.targetTouches[0].pageY - rect.top;
@@ -107,6 +108,8 @@ class ConnectControlPointerCanvasController {
         }
 
         var pointerHandler = function (ev: PointerEvent) {
+            ev.preventDefault();
+
             redrawWithCoordinates(ev.offsetX, ev.offsetY);
         }
 
