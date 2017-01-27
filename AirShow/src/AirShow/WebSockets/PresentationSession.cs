@@ -233,13 +233,18 @@ namespace AirShow.WebSockets
                     using (var ms = new MemoryStream())
                     {
                         WebSocketReceiveResult result;
-                        do
+                        try
                         {
-                            result = controlSocket.ReceiveAsync(buffer, CancellationToken.None).Result;
-                            ms.Write(buffer.Array, buffer.Offset, result.Count);
+                            do
+                            {
+                                result = controlSocket.ReceiveAsync(buffer, CancellationToken.None).Result;
+                                ms.Write(buffer.Array, buffer.Offset, result.Count);
+                            }
+                            while (!result.EndOfMessage);
+                        }catch(Exception e)
+                        {
+                            break;
                         }
-                        while (!result.EndOfMessage);
-
                         ms.Seek(0, SeekOrigin.Begin);
 
                         if ((DateTime.Now - this.LastActivityTimestamp).TotalSeconds > MaximumIdleTimeInSeconds)

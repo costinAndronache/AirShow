@@ -15,10 +15,12 @@ var ConnectControlPointerCanvasController = (function () {
         this.isShown = true;
         jQuery("#modalContainer").modal("show");
         this.callbackOnShow();
+        document.body.addEventListener("touchmove", this.preventDefaultTouchBehaviour, false);
     };
     ConnectControlPointerCanvasController.prototype.contract = function () {
         this.isShown = false;
         jQuery("#modalContainer").modal("hide");
+        document.body.removeEventListener("touchmove", this.preventDefaultTouchBehaviour);
         this.callbackOnHide();
     };
     ConnectControlPointerCanvasController.prototype.resizeCanvasAfterParent = function () {
@@ -39,11 +41,12 @@ var ConnectControlPointerCanvasController = (function () {
     ConnectControlPointerCanvasController.prototype.setupControls = function () {
         var self = this;
         var canvasParent = this.canvas.parentElement;
-        document.body.addEventListener("touchmove", function (ev) {
+        this.preventDefaultTouchBehaviour = function (ev) {
             if (ev.target == canvasParent) {
                 ev.preventDefault();
             }
-        }, false);
+            return false;
+        };
         window.addEventListener("resize", function (ev) {
             self.resizeCanvasAfterParent();
             self.drawWithCurrentState();
@@ -63,7 +66,7 @@ var ConnectControlPointerCanvasController = (function () {
         var pointerHandler = function (ev) {
             redrawWithCoordinates(ev.offsetX, ev.offsetY);
         };
-        var eventType;
+        var eventType = "";
         if (window.navigator.pointerEnabled) {
             eventType = "pointermove";
             canvasParent.addEventListener(eventType, pointerHandler, false);
@@ -76,11 +79,14 @@ var ConnectControlPointerCanvasController = (function () {
             eventType = "touchmove";
             canvasParent.addEventListener(eventType, touchMoveHandler, false);
         }
+        console.log(eventType);
+        //if (eventType.length == 0) {
         canvasParent.addEventListener("mousemove", function (ev) {
             if (ev.buttons == 1) {
                 redrawWithCoordinates(ev.offsetX, ev.offsetY);
             }
         });
+        //}
         jQuery("#modalContainer").on("hidden.bs.modal", function () {
             self.isShown = false;
             jQuery("#modalContainer").modal("hide");
@@ -243,6 +249,12 @@ var ConnectControlControlPresentationHelper = (function () {
         this.sendRequestObject(obj);
     };
     ConnectControlControlPresentationHelper.prototype.sendRequestObject = function (obj) {
+        var fps = 1000 / 25;
+        var timeElapsed = Date.now() - this.lastActivityTimestamp;
+        if (timeElapsed < fps) {
+            console.log(timeElapsed);
+            return;
+        }
         var request = JSON.stringify(obj);
         this.sendControlString(request);
         this.lastActivityTimestamp = Date.now();
