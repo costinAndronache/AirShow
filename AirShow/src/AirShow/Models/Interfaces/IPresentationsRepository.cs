@@ -28,11 +28,13 @@ namespace AirShow.Models.Interfaces
 
     public interface IPresentationsRepository
     {
-
-
         Task<PagedOperationResult<List<Presentation>>> GetPresentationsForUser(string userId, PagingOptions options);
-        Task<PagedOperationResult<List<Presentation>>> GetUserPresentationsFromCategory(string categoryName, string userId, PagingOptions options);
-        Task<PagedOperationResult<List<Presentation>>> GetUserPresentationsFromTag(string tag, string userId, PagingOptions options);
+
+        Task<PagedOperationResult<List<Presentation>>> GetUserPresentationsFromCategory(string categoryName, 
+                                                                            string userId, PagingOptions options);
+
+        Task<PagedOperationResult<List<Presentation>>> GetUserPresentationsFromTag(string tag, string userId, 
+                                                                                    PagingOptions options);
 
         Task<PagedOperationResult<List<Presentation>>> SearchUserPresentations(List<string> keywords, string userId, PagingOptions options,
                                                                                PresentationSearchType searchType);

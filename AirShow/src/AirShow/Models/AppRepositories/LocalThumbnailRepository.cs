@@ -14,6 +14,7 @@ namespace AirShow.Models.AppRepositories
     {
         public async Task<OperationStatus> AddThumbnailFor(Presentation p, Stream fileStream)
         {
+            var opStatus = new OperationStatus();
 
             AirshowUtils.ConfirmDirectoryExistsOrCreate(ImagesDirectory);
             fileStream.Seek(0, SeekOrigin.Begin);
@@ -28,14 +29,19 @@ namespace AirShow.Models.AppRepositories
 
             System.Diagnostics.Process clientProcess = new Process();
             clientProcess.StartInfo.FileName = "java";
-            clientProcess.StartInfo.Arguments = @"-jar " + JarPath + " " + $"program {pdfInput} {jpegOutput}";
+            clientProcess.StartInfo.Arguments = @"-jar " + JarPath + " " + $"PDFThumbGenerator {pdfInput} {jpegOutput}";
             clientProcess.Start();
             clientProcess.WaitForExit();
-            int code = (clientProcess.ExitCode);
-
             File.Delete(pdfInput);
 
-            return new OperationStatus();
+            int code = clientProcess.ExitCode;
+            if (code != 0)
+            {
+                opStatus.ErrorMessageIfAny = "An error ocurred during the generation of the image";
+            }
+
+
+            return opStatus;
         }
 
         public async Task<OperationResult<string>> GetThumbnailURLFor(Presentation p)

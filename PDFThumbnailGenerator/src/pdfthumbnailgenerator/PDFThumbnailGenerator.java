@@ -22,31 +22,19 @@ public class PDFThumbnailGenerator {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-         //Loading an existing PDF document
-      
         if (args.length < 3) {
-            System.out.println("Usage: program pdfPath jpegOutputPath");
+            System.out.println("Usage: pdfPath jpegOutputPath");
             System.exit(-1);
         }
       
       File file = new File(args[1]);
       try {
-          
-      
-            //Instantiating the PDFRenderer class
             try (PDDocument document = PDDocument.load(file)) {
-                //Instantiating the PDFRenderer class
-                PDFRenderer renderer = new PDFRenderer(document);
-                
-                //Rendering an image from the PDF document
+                PDFRenderer renderer = new PDFRenderer(document);                
                 BufferedImage image = renderer.renderImage(0);
-                
-                //Writing the image to a file
                 ImageIO.write(image, "JPEG", new File(args[2]));
-                
+                document.close();
                 System.exit(0);
-                
-                //Closing the document
             }
       } catch(Exception ex) 
         {

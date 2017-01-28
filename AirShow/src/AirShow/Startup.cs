@@ -57,7 +57,6 @@ namespace AirShow
             services.AddSingleton<GlobalSessionManager>();
 
             services.AddSingleton<IPresentationFilesRepository, BasicFileRepository>();
-            services.AddSingleton<GlobalWebSocketServer>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

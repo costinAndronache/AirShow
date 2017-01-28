@@ -85,7 +85,8 @@ namespace AirShow.Controllers
 
             vm.Presentations = await base.CreateCardsModel(userPresentationsResult.Value);
             vm.PaginationModel = PaginationViewModel.BuildModelWith(userPresentationsResult.TotalPages,
-                pagingOptions, index => "/Home/MyPresentations?page=" + index + "&itemsPerPage=" + pagingOptions.ItemsPerPage);
+                pagingOptions, index => $"/{nameof(HomeController).WithoutControllerPart()}/" +
+                $"{nameof(HomeController.MyPresentations)}?page=" + index + "&itemsPerPage=" + pagingOptions.ItemsPerPage);
 
             vm.TopMessage = "My presentations";
             vm.ButtonsToolbarModel = ButtonsToolbarModel.UserModelwithHighlightedIndex(0);

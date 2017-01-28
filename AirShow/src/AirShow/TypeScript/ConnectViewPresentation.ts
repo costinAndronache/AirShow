@@ -2,8 +2,8 @@
 ///<reference path="Definitions/PDFJS.d.ts"/>
 
 interface Document {
-    //mozFullScreen: boolean
-    //msFullscreenElement: boolean
+    mozFullScreen: boolean
+    msFullscreenElement: boolean
 }
 
 
