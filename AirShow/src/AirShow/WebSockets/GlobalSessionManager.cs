@@ -87,6 +87,8 @@ namespace AirShow.WebSockets
 
         public string ReserveNewSessionTokenFor(string userId, Presentation p)
         {
+            var pId = p.Id;
+
             var token = p.UploadedDate.Ticks + "" + p.Id;
             _presentationForReservedToken[token] = p.Id;
             _userIdForToken[token] = userId;
@@ -96,6 +98,21 @@ namespace AirShow.WebSockets
             {
                 _sessionsPerUserId[userId] = new ConcurrentDictionary<int, PresentationSession>();
             }
+
+            Timer timer = null;
+            timer = new Timer((obj) =>
+            {
+                timer.Dispose();
+                if (!_sessionPerToken.ContainsKey(token))
+                {
+                    var outString = "";
+                    var outInt = "";
+                    _presentationForReservedToken.TryRemove(token, out outInt);
+                    _userIdForToken.TryRemove(token, out outString);
+                    _sessionTokenForPresentationId.TryRemove(pId, out outString);
+                }
+
+            }, null, 5000, System.Threading.Timeout.Infinite);
 
             return token;
         }
