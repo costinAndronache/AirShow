@@ -11,22 +11,16 @@ enum ActionTypeCode {
     CloseDueToBeingReplacedAction = 9,
     CloseDueToBeingInactive = 10
 }
-
 enum PageChangeActionType {
     MoveNext = 1,
     MovePrevious = 2
 }
 
 const maxTimeOfInactivity = 1000 * 60 * 15;
-
-
 const kActionTypeCodeKey: string = "kActionTypeCodeKey";
 const kPageChangeActionTypeKey: string = "kPageChangeActionTypeKey";
-
 const kPointerCenterXKey = "kPointerCenterXKey";
 const kPointerCenterYKey = "kPointerCenterYKey";
-
-
 const  RoomTokenKey = "kRoomTokenKey";
 const  SideKey = "kSideKey";
 const  ViewSide = "view";

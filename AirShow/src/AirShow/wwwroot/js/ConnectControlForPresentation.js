@@ -82,13 +82,11 @@ var ConnectControlPointerCanvasController = (function () {
             canvasParent.addEventListener(eventType, touchMoveHandler, false);
         }
         console.log(eventType);
-        //if (eventType.length == 0) {
         canvasParent.addEventListener("mousemove", function (ev) {
             if (ev.buttons == 1) {
                 redrawWithCoordinates(ev.offsetX, ev.offsetY);
             }
         });
-        //}
         jQuery("#modalContainer").on("hidden.bs.modal", function () {
             self.isShown = false;
             jQuery("#modalContainer").modal("hide");

@@ -195,12 +195,6 @@ namespace AirShow.WebSockets
             }
         }
 
-        static byte[] GetBytes(string str)
-        {
-            byte[] bytes = new byte[str.Length * sizeof(char)];
-            System.Buffer.BlockCopy(str.ToCharArray(), 0, bytes, 0, bytes.Length);
-            return bytes;
-        }
 
         public void BeginRunLoopIfNecessary()
         {
@@ -299,21 +293,19 @@ namespace AirShow.WebSockets
             }
 
             var self = this;
-            new Thread(() =>
+
+            var maxTimeOfInactivityMiliseconds = 10000;
+            Timer timer = null;
+            timer = new Timer((obj) =>
             {
-                while (self.ViewSocket != null && self.ViewSocket.State == WebSocketState.Open)
+                if (self.ViewSocket == null || self.ViewSocket.State != WebSocketState.Open)
                 {
-                    Thread.Sleep(10000);
+                    self.Cleanup();
+                    timer.Dispose();
                 }
+            }, null, maxTimeOfInactivityMiliseconds, maxTimeOfInactivityMiliseconds);
 
-                if (self.ExecutedCleanup)
-                {
-                    return;
-                }
 
-                self.Cleanup();
-
-            }).Start();
 
             
         }

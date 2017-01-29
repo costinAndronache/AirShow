@@ -97,19 +97,18 @@ class ConnectControlPointerCanvasController {
             self.drawWithCurrentState();
         }
 
+
+
         var touchMoveHandler = function (ev: TouchEvent) {
             ev.preventDefault();
-
             var rect = canvasParent.getBoundingClientRect();
             var x = ev.targetTouches[0].pageX - rect.left;
             var y = ev.targetTouches[0].pageY - rect.top;
-
             redrawWithCoordinates(x, y);
         }
 
         var pointerHandler = function (ev: PointerEvent) {
             ev.preventDefault();
-
             redrawWithCoordinates(ev.offsetX, ev.offsetY);
         }
 
@@ -126,15 +125,14 @@ class ConnectControlPointerCanvasController {
         }
 
         console.log(eventType);
-        //if (eventType.length == 0) {
             canvasParent.addEventListener("mousemove", function (ev: MouseEvent) {
                 if (ev.buttons == 1) {
                     redrawWithCoordinates(ev.offsetX, ev.offsetY);
                 }
             });
-        //}
         
-
+        
+ 
         jQuery("#modalContainer").on("hidden.bs.modal", function () {
             self.isShown = false;
             jQuery("#modalContainer").modal("hide");

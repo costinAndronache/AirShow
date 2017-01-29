@@ -73,9 +73,7 @@ class ConnectViewPresentationHelper {
             if (self.isShowingPointer) {
                 drawCircleInCanvas(self.pointerCenterX, self.pointerCenterY, self.radius, self.canvas);
             }
-
         });
-
     }
 
     private drawDataUri(callback: () => void ) {

@@ -38,7 +38,7 @@ namespace AirShow.WebSockets
 
         }
 
-        public async void HandleWebSocketV2(WebSocket webSocket)
+        public async void HandleWebSocketV(WebSocket webSocket)
         {
             var token = CancellationToken.None;
             var buffer = new ArraySegment<Byte>(new Byte[4096]);
@@ -56,21 +56,21 @@ namespace AirShow.WebSockets
                 var roomToken = am[RoomTokenKey];
                 var side = am[SideKey];
 
-                var session = GetOrCreateSessionForToken(roomToken);
-                if (session.ErrorMessageIfAny != null)
+                var sessionResult = GetOrCreateSessionForToken(roomToken);
+                if (sessionResult.ErrorMessageIfAny != null)
                 {
-                    Console.WriteLine(session.ErrorMessageIfAny);
+                    Console.WriteLine(sessionResult.ErrorMessageIfAny);
                     return;
                 }
 
                 if (side == ViewSide)
                 {
-                    session.Value.ReplaceOrSetViewSocket(webSocket);
+                    sessionResult.Value.ReplaceOrSetViewSocket(webSocket);
                     KeepPresentationSocketAlive(webSocket);
                 } else
                 {
-                    session.Value.ReplaceOrSetControlSocket(webSocket);
-                    session.Value.BeginRunLoopIfNecessary();
+                    sessionResult.Value.ReplaceOrSetControlSocket(webSocket);
+                    sessionResult.Value.BeginRunLoopIfNecessary();
                 }
             }
         }
@@ -106,7 +106,7 @@ namespace AirShow.WebSockets
                 if (!_sessionPerToken.ContainsKey(token))
                 {
                     var outString = "";
-                    var outInt = "";
+                    var outInt = 0;
                     _presentationForReservedToken.TryRemove(token, out outInt);
                     _userIdForToken.TryRemove(token, out outString);
                     _sessionTokenForPresentationId.TryRemove(pId, out outString);

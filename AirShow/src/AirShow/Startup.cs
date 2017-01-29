@@ -97,7 +97,7 @@ namespace AirShow
                 {
                     var webSocket = await http.WebSockets.AcceptWebSocketAsync();
                     var gwss = app.ApplicationServices.GetService<GlobalSessionManager>();
-                    gwss.HandleWebSocketV2(webSocket);
+                    gwss.HandleWebSocketV(webSocket);
                 }
                 else
                 {

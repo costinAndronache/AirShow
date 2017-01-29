@@ -27,7 +27,7 @@ namespace AirShow.Models.Seeders
         private void PopulateCategories()
         {
             // to-do -- must use a config file
-            string[] categoriesNames = new string[] {"Education", "Software", "Sport", "Home & Gardening" };
+            string[] categoriesNames = new string[] {"Education", "Software", "Sport"};
             foreach (var item in categoriesNames)
             {
                 Category category = new Category
