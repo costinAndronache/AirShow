@@ -1,5 +1,5 @@
 ﻿@model PresentationCardModel
-    <div class="card col-md-5 cardFixed">
+    <div class="card col-md-5 col-sm-6 cardFixed">
         @{
             var src = "~/images/pdfIcon.png";
             if (Model.ThumbnailURL != null)
@@ -14,7 +14,10 @@
             <span>
             @if (Model.Category != null)
             {
-                <h6 style="display:inline"><a href="#">@Model.Category.Name</a></h6>
+                <h6 style="display:inline"><a 
+               asp-controller="@nameof(HomeController).WithoutControllerPart()"
+               asp-action="@nameof(HomeController.MyPresentationsByCategory)"
+               asp-route-categoryName="@Model.Category.Name">@Model.Category.Name</a></h6>
             }
                 @if (Model.Presentation.IsPublic)
                 {
