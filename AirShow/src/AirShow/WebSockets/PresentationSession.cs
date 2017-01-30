@@ -174,7 +174,14 @@ namespace AirShow.WebSockets
             var ar = new ArraySegment<Byte>(bytes);
             if (socket.State == WebSocketState.Open)
             {
-                await socket.SendAsync(ar, WebSocketMessageType.Text, true, cancellationToken);
+                try
+                {
+                    await socket.SendAsync(ar, WebSocketMessageType.Text, true, cancellationToken);
+                } catch(Exception e)
+                {
+                    this.Cleanup();
+                }
+
             }
 
             this.LastActivityTimestamp = DateTime.Now;
@@ -191,7 +198,13 @@ namespace AirShow.WebSockets
 
             if (socket.State == WebSocketState.Open)
             {
-                socket.SendAsync(ar, WebSocketMessageType.Text, true, cancellationToken);
+                try
+                {
+                    socket.SendAsync(ar, WebSocketMessageType.Text, true, cancellationToken);
+                } catch(Exception e)
+                {
+
+                }
             }
         }
 
@@ -248,14 +261,20 @@ namespace AirShow.WebSockets
 
                         if (result.MessageType == WebSocketMessageType.Text)
                         {
-                            using (var reader = new StreamReader(ms, Encoding.UTF8))
+                            try
                             {
-                                var request = reader.ReadToEnd();
-                                var type = WebSocketMessageType.Text;
-                                var data = Encoding.UTF8.GetBytes(request);
-                                buffer = new ArraySegment<Byte>(data);
-                                await viewSocket.SendAsync(buffer, type, true, token);
-                                this.LastActivityTimestamp = DateTime.Now;
+                                using (var reader = new StreamReader(ms, Encoding.UTF8))
+                                {
+                                    var request = reader.ReadToEnd();
+                                    var type = WebSocketMessageType.Text;
+                                    var data = Encoding.UTF8.GetBytes(request);
+                                    buffer = new ArraySegment<Byte>(data);
+                                    await viewSocket.SendAsync(buffer, type, true, token);
+                                    this.LastActivityTimestamp = DateTime.Now;
+                                }
+                            } catch(Exception e)
+                            {
+                                this.Cleanup();
                             }
                         }
                     }
@@ -294,7 +313,7 @@ namespace AirShow.WebSockets
 
             var self = this;
 
-            var maxTimeOfInactivityMiliseconds = 10000;
+            var maxTimeOfInactivityMiliseconds = 30000;
             Timer timer = null;
             timer = new Timer((obj) =>
             {

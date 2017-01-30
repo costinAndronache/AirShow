@@ -227,10 +227,18 @@ namespace AirShow.WebSockets
 
         public void KeepPresentationSocketAlive(WebSocket webSocket)
         {
-            Console.Write(Thread.CurrentThread);
-            var token = CancellationToken.None;
-            var buffer = new ArraySegment<Byte>(new Byte[4096]);
-            var received = webSocket.ReceiveAsync(buffer, token).Result;
+            try
+            {
+
+
+                Console.Write(Thread.CurrentThread);
+                var token = CancellationToken.None;
+                var buffer = new ArraySegment<Byte>(new Byte[4096]);
+                var received = webSocket.ReceiveAsync(buffer, token).Result;
+            } catch(Exception e)
+            {
+
+            }
         }
     }
 }

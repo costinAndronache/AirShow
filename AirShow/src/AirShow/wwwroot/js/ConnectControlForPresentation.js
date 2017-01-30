@@ -209,6 +209,9 @@ var ConnectControlControlPresentationHelper = (function () {
             jQuery("#modalSocketDisconnect").modal("show");
             self.ws.close();
         };
+        this.ws.onclose = function () {
+            self.toggleBatteryFriendlyModeTo(true);
+        };
         this.ws.onerror = self.defaultSocketErrorHandler;
     };
     ConnectControlControlPresentationHelper.prototype.setupControls = function () {

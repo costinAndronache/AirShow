@@ -299,6 +299,9 @@ class ConnectControlControlPresentationHelper {
             self.ws.close();
         }
 
+        this.ws.onclose = function () {
+            self.toggleBatteryFriendlyModeTo(true);
+        }
 
         this.ws.onerror = self.defaultSocketErrorHandler;
     }
