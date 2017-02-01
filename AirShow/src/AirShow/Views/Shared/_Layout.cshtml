@@ -21,11 +21,11 @@
             @Component.InvokeAsync(nameof(SearchNavbarView)).Result
         </div>
         <div class="row">
-            <div class="navbarDiv col-md-3">
+            <div class="navbarDiv col-sm-4 col-md-4 col-lg-3">
                 @Component.InvokeAsync(nameof(LeftNavbar),
              new { indexPair = ViewData[ViewConstants.kNavbarIndexPairKey] }).Result
             </div>
-            <div class="col-md-9">
+            <div class="col-sm-8 col-md-8 col-lg-9">
                 @RenderBody()
                 <hr />
             </div>

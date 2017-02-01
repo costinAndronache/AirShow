@@ -35,9 +35,10 @@ namespace AirShow.Models.ViewModels
         {
             return new NavbarModel
             {
-                URLList = new List<NavbarURL> { NavbarURL.ExplorePublicPresentations,
+                URLList = new List<NavbarURL> { 
                                                 NavbarURL.AccountLogin,
-                                                NavbarURL.AccountRegister},
+                                                NavbarURL.AccountRegister,
+                                                NavbarURL.ExplorePublicPresentations},
                 DisabledIndexes =  new int[0],
                 HighlightedIndex = activeItemIndex
             };
