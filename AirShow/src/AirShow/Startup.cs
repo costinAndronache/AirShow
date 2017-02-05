@@ -55,8 +55,8 @@ namespace AirShow
             services.AddScoped<ITagsRepository, EFTagsRepository>();
             services.AddScoped<IUsersRepository, EFUsersRepository>();
             services.AddSingleton<GlobalSessionManager>();
-
             services.AddSingleton<IPresentationFilesRepository, BasicFileRepository>();
+            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

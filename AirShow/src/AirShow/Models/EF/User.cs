@@ -12,6 +12,12 @@ namespace AirShow.Models.EF
         [Required, MaxLength(120)]
         public string Name { get; set; }
 
+        [Required, MaxLength(120)]
+        public string ActivationToken { get; set; }
+
+        [Required]
+        public DateTime CreationDate { get; set; }
+
         public ICollection<UserPresentation> UserPresentations { get; set; }
     }
 }

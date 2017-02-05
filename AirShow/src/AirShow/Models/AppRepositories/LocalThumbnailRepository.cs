@@ -12,15 +12,32 @@ namespace AirShow.Models.AppRepositories
 {
     public class LocalThumbnailRepository : IPresentationThumbnailRepository
     {
-        public async Task<OperationStatus> AddThumbnailFor(Presentation p, Stream fileStream)
+
+        public async Task<OperationStatus> RemoveThumbnailFor(string fileID)
+        {
+            var opStatus = new OperationStatus();
+            try
+            {
+                var path = GenerateThumbnailPath(fileID);
+                File.Delete(path);
+            } catch(Exception e)
+            {
+                opStatus.ErrorMessageIfAny = "File not found";
+            }
+
+            return opStatus;
+        }
+
+
+        public async Task<OperationStatus> AddThumbnailFor(string fileID, Stream fileStream)
         {
             var opStatus = new OperationStatus();
 
             AirshowUtils.ConfirmDirectoryExistsOrCreate(ImagesDirectory);
             fileStream.Seek(0, SeekOrigin.Begin);
 
-            var pdfInput = GeneratePathForPresentationWithExtension(p, "pdf");
-            var jpegOutput = GeneratePathForPresentationWithExtension(p, "jpeg");
+            var pdfInput = GeneratePathForFileIdWithExtension(fileID, "pdf");
+            var jpegOutput = GeneratePathForFileIdWithExtension(fileID, "jpeg");
 
             using (var phyisicalFileStream = File.Create(pdfInput))
             {
@@ -44,29 +61,24 @@ namespace AirShow.Models.AppRepositories
             return opStatus;
         }
 
-        public async Task<OperationResult<string>> GetThumbnailURLFor(Presentation p)
+        public async Task<OperationResult<string>> GetThumbnailURLFor(string fileID)
         {
             return new OperationResult<string>
             {
-                Value = GenerateThumbnailPath(p)
+                Value = GenerateThumbnailPath(fileID)
             };
         }
 
-        public static string GenerateNameFor(Presentation p)
+
+        public static string GeneratePathForFileIdWithExtension(string fileID, string extension)
         {
-            return p.UploadedDate.Ticks + "" + p.Id;
+            
+            return $"{ImagesDirectory}{Path.DirectorySeparatorChar}{fileID}.{extension}";
         }
 
-        public static string GeneratePathForPresentationWithExtension(Presentation p, string extension)
+        public static string GenerateThumbnailPath(string fileID)
         {
-            var name = GenerateNameFor(p);
-            return $"{ImagesDirectory}{Path.DirectorySeparatorChar}{name}.{extension}";
-        }
-
-        public static string GenerateThumbnailPath(Presentation p)
-        {
-            var name = GenerateNameFor(p);
-            return $"/images/{name}.jpeg";
+            return $"/images/{fileID}.jpeg";
         }
 
         public static string ImagesDirectory

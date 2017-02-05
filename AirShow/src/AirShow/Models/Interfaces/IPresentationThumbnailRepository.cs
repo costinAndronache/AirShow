@@ -10,7 +10,8 @@ namespace AirShow.Models.Interfaces
 {
     public interface IPresentationThumbnailRepository
     {
-        Task<OperationStatus> AddThumbnailFor(Presentation p, Stream fileStream);
-        Task<OperationResult<string>> GetThumbnailURLFor(Presentation p);
+        Task<OperationStatus> AddThumbnailFor(string fileID, Stream fileStream);
+        Task<OperationStatus> RemoveThumbnailFor(string fileID);
+        Task<OperationResult<string>> GetThumbnailURLFor(string fileID);
     }
 }

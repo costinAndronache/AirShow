@@ -59,7 +59,7 @@ namespace AirShow.Models.AppRepositories
                     _context.PresentationTags.RemoveRange(presentationTags);
                     _context.SaveChanges();
 
-                    return await _filesRepository.DeleteFileWithId(presentation.FileId);
+                    return await _filesRepository.DeleteFileWithId(presentation.FileID);
                 } 
 
 
@@ -111,7 +111,7 @@ namespace AirShow.Models.AppRepositories
                 };
             }
 
-            return await _filesRepository.GetFileForId(upList.First().Presentation.FileId, inStream);
+            return await _filesRepository.GetFileForId(upList.First().Presentation.FileID, inStream);
         }
 
 
@@ -153,7 +153,7 @@ namespace AirShow.Models.AppRepositories
             {
                 return saveResult;
             }
-            currentPresentation.FileId = saveResult.Value;
+            currentPresentation.FileID = saveResult.Value;
 
             await _context.Presentations.AddAsync(currentPresentation);
 
@@ -182,12 +182,6 @@ namespace AirShow.Models.AppRepositories
             int rows = await _context.SaveChangesAsync();
             if (rows > 0)
             {
-                var thumbnailResult = await _thumbnailRepository.AddThumbnailFor(currentPresentation, model.SourceStream);
-                if (thumbnailResult.ErrorMessageIfAny != null)
-                {
-                    return thumbnailResult;
-                }
-
                 return new OperationStatus();
             }
 

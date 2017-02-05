@@ -2252,6 +2252,20 @@
           }
         }
       },
+      "SendGridClient/2.0.0-preview2": {
+        "type": "package",
+        "dependencies": {
+          "NETStandard.Library": "1.6.0",
+          "Newtonsoft.Json": "9.0.1",
+          "System.Net.Http": "4.1.0"
+        },
+        "compile": {
+          "lib/netstandard1.5/SendGridClient.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard1.5/SendGridClient.dll": {}
+        }
+      },
       "SQLite/3.13.0": {
         "type": "package",
         "compile": {
@@ -6096,6 +6110,16 @@
         "runtime.ubuntu.16.10-x64.runtime.native.System.Security.Cryptography.OpenSsl.4.3.0.nupkg.sha512",
         "runtime.ubuntu.16.10-x64.runtime.native.System.Security.Cryptography.OpenSsl.nuspec",
         "runtimes/ubuntu.16.10-x64/native/System.Security.Cryptography.Native.OpenSsl.so"
+      ]
+    },
+    "SendGridClient/2.0.0-preview2": {
+      "sha512": "RXBeyDXMlqdt6qeCWsqXLz4cezzWDW7hZQrTJIhoGw8o9vDjDdV+RwN6Zn0RrC0u6+KNaQvAz91zcBiuB8ue9w==",
+      "type": "package",
+      "path": "SendGridClient/2.0.0-preview2",
+      "files": [
+        "SendGridClient.2.0.0-preview2.nupkg.sha512",
+        "SendGridClient.nuspec",
+        "lib/netstandard1.5/SendGridClient.dll"
       ]
     },
     "SQLite/3.13.0": {
@@ -10760,6 +10784,7 @@
       "Microsoft.Extensions.Options.ConfigurationExtensions >= 1.0.0",
       "Microsoft.NETCore.App >= 1.1.0",
       "Microsoft.VisualStudio.Web.BrowserLink.Loader >= 14.0.0",
+      "SendGridClient >= 2.0.0-preview2",
       "System.Collections.Concurrent >= 4.3.0"
     ],
     ".NETCoreApp,Version=v1.0": []

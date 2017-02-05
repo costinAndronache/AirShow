@@ -21,7 +21,7 @@ namespace AirShow.Models.EF
         public bool IsPublic { get; set; }
 
         [Required, MaxLength(255)]
-        public int FileId { get; set; }
+        public string FileID { get; set; }
         
         public DateTime UploadedDate { get; set; }
 

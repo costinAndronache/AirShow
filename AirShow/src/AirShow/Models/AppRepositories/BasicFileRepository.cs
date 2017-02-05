@@ -20,9 +20,13 @@ namespace AirShow.Models.FileRepositories
         private IHostingEnvironment _env;
         private static MD5 md5 = MD5.Create();
         private AirShowContext _context;
+        private IPresentationThumbnailRepository _thumbnailsRepo;
 
-        public BasicFileRepository(IHostingEnvironment env, AirShowContext context)
+        public BasicFileRepository(IHostingEnvironment env, 
+                                   IPresentationThumbnailRepository thumbnailsRepo, 
+                                   AirShowContext context)
         {
+            _thumbnailsRepo = thumbnailsRepo;
             _context = context;
             _env = env;
         }
@@ -68,7 +72,7 @@ namespace AirShow.Models.FileRepositories
         }
 
 
-        public async Task<OperationStatus> GetFileForId(int id, Stream inStream)
+        public async Task<OperationStatus> GetFileForId(string id, Stream inStream)
         {
             var pathResult = CreatePathFor(id + "");
             if (pathResult.ErrorMessageIfAny != null)
@@ -92,20 +96,33 @@ namespace AirShow.Models.FileRepositories
             return new OperationStatus();
         }
 
-        public async Task<OperationResult<int>> SaveFile(Stream fileStream)
+        public async Task<OperationResult<string>> SaveFile(Stream fileStream)
         {
-            var newFile = new PresentationFile();
+            var fileId = Guid.NewGuid().ToString("N");
+            fileStream.Seek(0, SeekOrigin.Begin);
+            var thumbResult = await _thumbnailsRepo.AddThumbnailFor(fileId, fileStream);
 
+            if (thumbResult.ErrorMessageIfAny != null)
+            {
+                return new OperationResult<string>
+                {
+                    ErrorMessageIfAny = thumbResult.ErrorMessageIfAny
+                };
+            }
+
+
+            var newFile = new PresentationFile();
+            newFile.FileID = fileId;
             await _context.PresentationFiles.AddAsync(newFile);
             await _context.SaveChangesAsync();
 
 
-            var fileId = newFile.Id + "";
+
             var filePathResult = CreatePathFor(fileId);
 
             if (filePathResult.ErrorMessageIfAny != null)
             {
-                return new OperationResult<int>
+                return new OperationResult<string>
                 {
                     ErrorMessageIfAny = filePathResult.ErrorMessageIfAny
                 };
@@ -114,25 +131,27 @@ namespace AirShow.Models.FileRepositories
             var fs = AirshowUtils.CreateFileToWriteAtPath(filePathResult.Value);
             if (fs == null)
             {
-                return new OperationResult<int>
+                return new OperationResult<string>
                 {
                     ErrorMessageIfAny = OperationStatus.kInvalidFileNameOrAlreadyExists
                 };
             }
             fileStream.Seek(0, SeekOrigin.Begin);
             await fileStream.CopyToAsync(fs);
+
+
             fs.Dispose();
-            return new OperationResult<int>
+
+            return new OperationResult<string>
             {
-                Value = newFile.Id
+                Value = newFile.FileID
             };
         }
 
-        public async Task<OperationStatus> DeleteFileWithId(int id)
+        public async Task<OperationStatus> DeleteFileWithId(string id)
         {
-            int intId;
 
-            var fileFoundList = await _context.PresentationFiles.Where(pf => pf.Id == id).ToListAsync();
+            var fileFoundList = await _context.PresentationFiles.Where(pf => pf.FileID == id).ToListAsync();
             if (fileFoundList.Count != 1)
             {
                 return new OperationStatus
@@ -146,11 +165,11 @@ namespace AirShow.Models.FileRepositories
 
             var res = new OperationStatus();
 
-            if (!_context.Presentations.Any(p => p.FileId == id))
+            if (!_context.Presentations.Any(p => p.FileID == id))
             {
                 _context.PresentationFiles.Remove(file);
                 
-                var pathResult = CreatePathFor(id + "");
+                var pathResult = CreatePathFor(id);
                 if (pathResult.ErrorMessageIfAny != null)
                 {
                     return pathResult;
@@ -163,15 +182,14 @@ namespace AirShow.Models.FileRepositories
                 else
                 {
                     File.Delete(pathResult.Value);
+                    await _thumbnailsRepo.RemoveThumbnailFor(id);
+                    var rows = await _context.SaveChangesAsync();
+                    if (rows == 0)
+                    {
+                        res.ErrorMessageIfAny = "An error ocurred while trying to update the database";
+                    }
                 }
             }
-
-            var rows = await _context.SaveChangesAsync();
-            if (rows == 0)
-            {
-                res.ErrorMessageIfAny = "An error ocurred while trying to update the database";
-            }
-
             return res;
         }
     }

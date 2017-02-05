@@ -1,0 +1,18 @@
+﻿@model ActivationViewModel
+
+@if (Model.Message != null)
+{
+    <div class="col-lg-6 col-md-8 col-sm-12">
+
+        @if (Model.MessageHref != null)
+        {
+            <a href="@Model.MessageHref">@Model.Message</a>
+        }
+        else
+        {
+            <h4>@Model.Message</h4>
+
+        }
+
+    </div>
+}

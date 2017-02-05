@@ -54,7 +54,7 @@ namespace AirShow.Controllers
                     $"?userId={u.Id}&page=1&itemsPerPage=10"}).ToList();
                 }
 
-                var thumbnail = await _thumbnailRepository.GetThumbnailURLFor(item);
+                var thumbnail = await _thumbnailRepository.GetThumbnailURLFor(item.FileID);
                 presentations.Add(new PresentationCardModel()
                 {
                     UserInfos = usersList,

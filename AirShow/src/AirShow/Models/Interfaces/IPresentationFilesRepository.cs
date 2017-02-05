@@ -10,9 +10,9 @@ namespace AirShow.Models.Interfaces
 {
     public interface IPresentationFilesRepository
     {
-        Task<OperationStatus> GetFileForId(int fileID, Stream inStream);
-        Task<OperationResult<int>> SaveFile(Stream fileStream);
-        Task<OperationStatus> DeleteFileWithId(int fileID);
+        Task<OperationStatus> GetFileForId(string fileID, Stream inStream);
+        Task<OperationResult<string>> SaveFile(Stream fileStream);
+        Task<OperationStatus> DeleteFileWithId(string fileID);
     }
 
 

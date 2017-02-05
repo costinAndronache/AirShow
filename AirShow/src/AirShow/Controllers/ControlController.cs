@@ -11,6 +11,7 @@ using Newtonsoft.Json;
 using AirShow.Models.Interfaces;
 using AirShow.Models.ViewModels;
 using System.Net;
+using Microsoft.Extensions.Configuration;
 
 // For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -23,6 +24,7 @@ namespace AirShow.Controllers
         private UserManager<User> _userManager;
         private IPresentationsRepository _presentationsRepository;
         private IPresentationThumbnailRepository _thumbnailRepository;
+        
 
         public ControlController(GlobalSessionManager gwss, UserManager<User> userManager, 
                                 IPresentationsRepository presentationsRepository,
@@ -32,12 +34,11 @@ namespace AirShow.Controllers
             _userManager = userManager;
             _gwss = gwss;
             _thumbnailRepository = thumbnailRepository;
+            
         }
        
         public async Task<IActionResult> MyActivePresentations()
         {
-            //var items = await _gwss.ActivePresentationsFor(_userManager.GetUserId(User));
-            //return View(items);
 
             var vm = new List<ActivePresentationModel>();
 
@@ -47,7 +48,7 @@ namespace AirShow.Controllers
 
             foreach (var item in presentations.Value)
             {
-                var thumbnailResult = await _thumbnailRepository.GetThumbnailURLFor(item);
+                var thumbnailResult = await _thumbnailRepository.GetThumbnailURLFor(item.FileID);
                 vm.Add(new ActivePresentationModel
                 {
                     Presentation = item,
