@@ -30,10 +30,13 @@ namespace AirShow.Models.ViewModels
             [Required]
             public bool IsPublic { get; set; }
 
+            [Required]
             public string TagsList { get; set; }
         }
 
         public Input ViewInput { get; set; }
         public Output ViewOutput { get; set; }
+
+        public string NameBeforeUpdate { get; set; }
     }
 }

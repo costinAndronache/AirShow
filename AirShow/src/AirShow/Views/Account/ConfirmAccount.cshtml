@@ -1,5 +1,12 @@
 ﻿@model ActivationViewModel
 
+@{
+    ViewData["Title"] = "Registration";
+    ViewData[ViewConstants.kNavbarIndexPairKey] =
+        new LeftNavbar.IndexPair
+        { IndexWhenUserAnonymus = NavbarModel.NonAuthorizableItemsIndex.Register };
+}
+
 @if (Model.Message != null)
 {
     <div class="col-lg-6 col-md-8 col-sm-12">

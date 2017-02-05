@@ -1,0 +1,69 @@
+﻿@model UpdatePresentationModel
+@{
+    ViewData["Title"] = "Upload";
+    ViewData[ViewConstants.kNavbarIndexPairKey] = new LeftNavbar.IndexPair { IndexWhenUserAuthorized = NavbarModel.AuthorizableItemsIndex.HomeUploadPresentation };
+}
+
+@section scripts {
+    <script src="~/lib/bootstrap-tagsinput-latest/dist/bootstrap-tagsinput.min.js"></script>
+}
+
+@section style {
+    <link href="~/lib/bootstrap-tagsinput-latest/dist/bootstrap-tagsinput.css" rel="stylesheet" />
+    <link href="~/css/UploadPresentation.css" rel="stylesheet" />
+}
+
+<div>
+    <div class="formContainer col-md-6">
+        <h3 class="card-title">Upload a new presentation</h3>
+        @if (Model.ViewInput.ErrorMessageIfAny != null)
+        {
+            <span class="text-danger">@Model.ViewInput.ErrorMessageIfAny</span>
+        }
+
+        <form enctype="multipart/form-data" method="post">
+
+            <div class="form-group">
+                <label asp-for="ViewOutput.Name"></label>
+                <input asp-for="ViewOutput.Name" class="form-control" />
+                <span asp-validation-for="ViewOutput.Name"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="ViewOutput.Description"></label>
+                <textarea asp-for="ViewOutput.Description" class="form-control"></textarea>
+                <span asp-validation-for="ViewOutput.Description"></span>
+            </div>
+
+            <div class="form-group">
+                <label>Tags, separated by comma:</label>
+                <input asp-for="ViewOutput.TagsList" class="form-control bootstrap-tagsinput" id="tagsInput" data-role="tagsinput" />
+            </div>
+
+            <div class="form-group">
+                <label>Category</label>
+                <select asp-for="ViewOutput.CategoryId" class="form-control" asp-items="@(new SelectList(Model.ViewInput.Categories, "Id", "Name"))"></select>
+                <span asp-validation-for="ViewOutput.CategoryId"></span>
+            </div>
+
+            <div class="form-group">
+                <label>Public (Others can see it <i class="fa fa-eye"></i>)  <input asp-for="ViewOutput.IsPublic" class="checkbox" /></label>
+            </div>
+
+            <div class="form-group">
+                <label>File:</label>
+                <input asp-for="ViewOutput.File" class="form-control" accept="application/pdf" />
+            </div>
+
+            <div class="form-group" style="height:0; overflow:hidden">
+                <input asp-for="NameBeforeUpdate" style="visibility:hidden; height: 0;" />
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="Submit" />
+            </div>
+
+        </form>
+    </div>
+</div>
+

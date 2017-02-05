@@ -1,7 +1,7 @@
 {
   "runtimeTarget": {
     "name": ".NETCoreApp,Version=v1.0/",
-    "signature": "320a0462da8e382a7c4dbfddea5258c9d4d15b76"
+    "signature": "580a8627981038a46ab2e557bfc185169a7c1819"
   },
   "compilationOptions": {
     "defines": [
@@ -39,7 +39,8 @@
           "Microsoft.VisualStudio.Web.BrowserLink.Loader": "14.0.0",
           "System.Collections.Concurrent": "4.3.0",
           "Microsoft.Extensions.Configuration.CommandLine": "1.0.0",
-          "Microsoft.AspNetCore.Mvc.Core": "1.0.1"
+          "Microsoft.AspNetCore.Mvc.Core": "1.0.1",
+          "SendGridClient": "2.0.0-preview2"
         },
         "compile": {
           "AirShow.dll": {}
@@ -1405,6 +1406,16 @@
       "runtime.ubuntu.14.04-x64.runtime.native.System.Security.Cryptography.OpenSsl/4.3.0": {},
       "runtime.ubuntu.16.04-x64.runtime.native.System.Security.Cryptography.OpenSsl/4.3.0": {},
       "runtime.ubuntu.16.10-x64.runtime.native.System.Security.Cryptography.OpenSsl/4.3.0": {},
+      "SendGridClient/2.0.0-preview2": {
+        "dependencies": {
+          "NETStandard.Library": "1.6.1",
+          "Newtonsoft.Json": "9.0.1",
+          "System.Net.Http": "4.3.0"
+        },
+        "compile": {
+          "lib/netstandard1.5/SendGridClient.dll": {}
+        }
+      },
       "SQLite/3.13.0": {},
       "System.AppContext/4.3.0": {
         "dependencies": {
@@ -2797,7 +2808,8 @@
           "Microsoft.VisualStudio.Web.BrowserLink.Loader": "14.0.0",
           "System.Collections.Concurrent": "4.3.0",
           "Microsoft.Extensions.Configuration.CommandLine": "1.0.0",
-          "Microsoft.AspNetCore.Mvc.Core": "1.0.1"
+          "Microsoft.AspNetCore.Mvc.Core": "1.0.1",
+          "SendGridClient": "2.0.0-preview2"
         },
         "runtime": {
           "AirShow.dll": {}
@@ -4160,6 +4172,16 @@
       "runtime.ubuntu.14.04-x64.runtime.native.System.Security.Cryptography.OpenSsl/4.3.0": {},
       "runtime.ubuntu.16.04-x64.runtime.native.System.Security.Cryptography.OpenSsl/4.3.0": {},
       "runtime.ubuntu.16.10-x64.runtime.native.System.Security.Cryptography.OpenSsl/4.3.0": {},
+      "SendGridClient/2.0.0-preview2": {
+        "dependencies": {
+          "NETStandard.Library": "1.6.1",
+          "Newtonsoft.Json": "9.0.1",
+          "System.Net.Http": "4.3.0"
+        },
+        "runtime": {
+          "lib/netstandard1.5/SendGridClient.dll": {}
+        }
+      },
       "SQLite/3.13.0": {},
       "System.AppContext/4.3.0": {
         "dependencies": {
@@ -6068,6 +6090,11 @@
       "type": "package",
       "serviceable": true,
       "sha512": "sha512-VB5cn/7OzUfzdnC8tqAIMQciVLiq2epm2NrAm1E9OjNRyG4lVhfR61SMcLizejzQP8R8Uf/0l5qOIbUEi+RdEg=="
+    },
+    "SendGridClient/2.0.0-preview2": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-RXBeyDXMlqdt6qeCWsqXLz4cezzWDW7hZQrTJIhoGw8o9vDjDdV+RwN6Zn0RrC0u6+KNaQvAz91zcBiuB8ue9w=="
     },
     "SQLite/3.13.0": {
       "type": "package",

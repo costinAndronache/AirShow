@@ -21,6 +21,8 @@ using System.Text;
 using System.Threading;
 using System.Collections.Concurrent;
 using AirShow.Models.AppRepositories;
+using AirShow.Models.Services;
+using AirShow.Models.Cleaners;
 
 namespace AirShow
 {
@@ -56,7 +58,9 @@ namespace AirShow
             services.AddScoped<IUsersRepository, EFUsersRepository>();
             services.AddSingleton<GlobalSessionManager>();
             services.AddSingleton<IPresentationFilesRepository, BasicFileRepository>();
-            
+            services.AddSingleton<IMailService, SendGridMailService>();
+            services.AddSingleton<IConfigurationRoot>(Configuration);
+            services.AddSingleton<UnconfirmedAccountsCleaner>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -69,6 +73,9 @@ namespace AirShow
 
             var seeder = app.ApplicationServices.GetService<BasicDBSeeder>();
             seeder.Run();
+
+            var cleaner = app.ApplicationServices.GetService<UnconfirmedAccountsCleaner>();
+            cleaner.Run();
 
             if (env.IsDevelopment())
             {

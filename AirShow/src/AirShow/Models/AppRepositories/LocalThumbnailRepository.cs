@@ -18,7 +18,7 @@ namespace AirShow.Models.AppRepositories
             var opStatus = new OperationStatus();
             try
             {
-                var path = GenerateThumbnailPath(fileID);
+                var path = GeneratePhysicalPath(fileID);
                 File.Delete(path);
             } catch(Exception e)
             {
@@ -79,6 +79,13 @@ namespace AirShow.Models.AppRepositories
         public static string GenerateThumbnailPath(string fileID)
         {
             return $"/images/{fileID}.jpeg";
+        }
+
+        public static string GeneratePhysicalPath(string fileID)
+        {
+            var path = Directory.GetCurrentDirectory() + Path.DirectorySeparatorChar + "wwwroot" + 
+                Path.DirectorySeparatorChar + "images" + Path.DirectorySeparatorChar + fileID + ".jpeg";
+            return path;
         }
 
         public static string ImagesDirectory

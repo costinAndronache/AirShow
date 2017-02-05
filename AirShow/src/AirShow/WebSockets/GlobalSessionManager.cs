@@ -229,8 +229,6 @@ namespace AirShow.WebSockets
         {
             try
             {
-
-
                 Console.Write(Thread.CurrentThread);
                 var token = CancellationToken.None;
                 var buffer = new ArraySegment<Byte>(new Byte[4096]);

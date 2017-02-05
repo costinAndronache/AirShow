@@ -12,9 +12,9 @@ namespace AirShow.Models.Services
 {
     public class SendGridMailService : IMailService
     {
-        private IConfiguration _config;
+        private IConfigurationRoot _config;
 
-        public SendGridMailService(IConfiguration config)
+        public SendGridMailService(IConfigurationRoot config)
         {
             _config = config;
         }
@@ -46,6 +46,8 @@ namespace AirShow.Models.Services
             fromPers.To = new List<EmailDetail> { toDetail };
 
             email.Personalizations = new List<Personalization> { fromPers};
+            email.From = fromDetail;
+            email.Content = new List<Content> { content };
 
             await client.MailClient.SendAsync(email);
             return new OperationStatus();

@@ -44,6 +44,8 @@ namespace AirShow.Models.Interfaces
                                                                        PresentationSearchType searchType, string excludeFromUserId);
 
         Task<OperationStatus> UploadPresentationForUser(string userId, UploadPresentationModel model);
+        Task<OperationStatus> UpdatePresentationForUser(string userId, string presentationName, UploadPresentationModel updateModel);
+
         Task<OperationStatus> DownloadPresentation(string name, string userId, Stream inStream);
         Task<OperationStatus> DeletePresentation(string presentationName, string userId);
 

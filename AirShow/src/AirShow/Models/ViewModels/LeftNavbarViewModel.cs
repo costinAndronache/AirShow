@@ -26,9 +26,9 @@ namespace AirShow.Models.ViewModels
         public enum NonAuthorizableItemsIndex
         {
             Undefined = -1,
-            Explore = 0,
-            Login = 1,
-            Register = 2
+            Explore = 2,
+            Login = 0,
+            Register = 1
         }
 
         public static NavbarModel NonAuthorizableItems(int activeItemIndex = 0)

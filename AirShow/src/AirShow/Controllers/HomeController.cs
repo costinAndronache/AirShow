@@ -181,6 +181,106 @@ namespace AirShow.Controllers
             return new RedirectToActionResult("Index", "Home", new { });
         }
 
+
+        public async Task<IActionResult> ModifyPresentation(string presentationName)
+        {
+
+            var id = _userManager.GetUserId(this.User);
+
+            var vm = new UpdatePresentationModel();
+            vm.NameBeforeUpdate = presentationName;
+            vm.ViewInput = new UpdatePresentationModel.Input();
+            vm.ViewOutput = new UpdatePresentationModel.Output();
+
+            var presResult = await _presentationsRepository.GetPresentationForUser(id, presentationName);
+            if (presResult.ErrorMessageIfAny != null)
+            {
+                vm.ViewInput.ErrorMessageIfAny = presResult.ErrorMessageIfAny;
+                return View(vm);
+            }
+            var categoriesResult = await _categoriesRepository.GetCurrentCategories();
+            if (categoriesResult.ErrorMessageIfAny != null)
+            {
+                vm.ViewInput.ErrorMessageIfAny = categoriesResult.ErrorMessageIfAny;
+                return View(vm);
+            }
+
+            vm.ViewInput.Categories = categoriesResult.Value;
+
+            var p = presResult.Value;
+            vm.ViewOutput.CategoryId = p.CategoryId;
+            vm.ViewOutput.Name = p.Name;
+            vm.ViewOutput.IsPublic = p.IsPublic;
+            vm.ViewOutput.Description = p.Description;
+            vm.ViewOutput.TagsList = "";
+
+            var tagsResult = await _tagsRepository.GetTagsForPresentation(p);
+            if (tagsResult.Value != null)
+            {
+                foreach (var item in tagsResult.Value)
+                {
+                    vm.ViewOutput.TagsList += item.Name + ",";        
+                }
+            }
+
+            return View(vm);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ModifyPresentation(UpdatePresentationModel vm)
+        {
+            var id = _userManager.GetUserId(this.User);
+            vm.ViewInput = new UpdatePresentationModel.Input();
+            var categoriesResult = await _categoriesRepository.GetCurrentCategories();
+            if (categoriesResult.ErrorMessageIfAny != null)
+            {
+                vm.ViewInput.ErrorMessageIfAny = categoriesResult.ErrorMessageIfAny;
+                return View(vm);
+            }
+
+            vm.ViewInput.Categories = categoriesResult.Value;
+
+            if (vm.NameBeforeUpdate == null)
+            {
+                vm.ViewInput.ErrorMessageIfAny = "Error. The name before update is missing";
+                return View(vm);
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return View(vm);
+            }
+
+            var tags = vm.ViewOutput.TagsList != null ? vm.ViewOutput.TagsList.Split(new char[] { ',', ' ' }) : new string[] { };
+            var tagsList = new List<string>(tags);
+
+            var updateModel = new UploadPresentationModel
+            {
+                Name = vm.ViewOutput.Name,
+                Description = vm.ViewOutput.Description,
+                CategoryId = vm.ViewOutput.CategoryId,
+                Tags = tagsList,
+                IsPublic = vm.ViewOutput.IsPublic
+            };
+
+            if (vm.ViewOutput.File != null)
+            {
+                updateModel.SourceStream = vm.ViewOutput.File.OpenReadStream();
+            }
+
+            var updateResult = await _presentationsRepository.UpdatePresentationForUser(id,
+                vm.NameBeforeUpdate, updateModel);
+
+            if (updateResult.ErrorMessageIfAny != null)
+            {
+                vm.ViewInput.ErrorMessageIfAny = updateResult.ErrorMessageIfAny;
+                return View(vm);
+            }
+
+            return RedirectToAction(nameof(HomeController.MyPresentations));
+        }
+
+
         public IActionResult Error()
         {
             return View();

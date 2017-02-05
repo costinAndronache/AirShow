@@ -51,7 +51,7 @@ namespace AirShow.Controllers
         {
             if (ModelState.IsValid)
             {
-                var userList = _userManager.Users.Where(u => u.Email == model.Email).ToList();
+                var userList = _userManager.Users.Where(u => u.UserName == model.Email).ToList();
                 if (userList.Count() != 1)
                 {
                     ModelState.AddModelError("", "No such email");
@@ -67,9 +67,7 @@ namespace AirShow.Controllers
 
                 if (loginResult.Succeeded)
                 {
-
-                        return RedirectToAction("Index", "Home");
-                    
+                    return RedirectToAction("Index", "Home");
                 }
             }
 
@@ -88,13 +86,14 @@ namespace AirShow.Controllers
             if (ModelState.IsValid)
             {
                 var activationToken = GenerateActivationToken();
-                var user = new User { UserName = model.Email, Name = model.Name };
+                var user = new User { UserName = model.Email, Name = model.Name, ActivationToken = activationToken,
+                CreationDate = DateTime.Now};
+
                 var created = await _userManager.CreateAsync(user, model.Password);
                 if (created.Succeeded)
                 {
                     var userId = user.Id;
-                    var token = GenerateActivationToken();
-                    var message = GenerateMessageForActivationToken(token, userId);
+                    var message = GenerateMessageForActivationToken(activationToken, userId);
                     var mailStatus = await _mailService.SendMessageToAddress(message, model.Email);
                     if (mailStatus.ErrorMessageIfAny != null)
                     {
@@ -133,9 +132,9 @@ namespace AirShow.Controllers
                 } else
                 {
                     user.EmailConfirmed = true;
-                    await _userManager.UpdateAsync(user);
-                    var result = await _context.SaveChangesAsync();
-                    if (result == 0)
+                    var result =  await _userManager.UpdateAsync(user);
+                     
+                    if (!result.Succeeded)
                     {
                         vm.Message = "An error ocurred. Please try again later or make a new account";
                     } else
@@ -185,8 +184,8 @@ namespace AirShow.Controllers
             var href = $"{host}/{nameof(AccountController).WithoutControllerPart()}/ConfirmAccount?" +
                 $"userId={userId}&activationToken={activationToken}";
 
-            var anchorPart = $"<a href=\"{href}\"In order to activate your account within AirShow, please click this link</a>";
-            var orPart = $"<p>Or copy and paste the following url into your browser's navigation bar\n{href}</p>";
+            var anchorPart = $"<a href=\"{href}\">In order to activate your account within AirShow, please click this link</a>";
+            var orPart = $"<p>Or copy and paste the following url into your browser's navigation bar: <br>{href}</p>";
             var html = $"<html><head/><body>{anchorPart}\n{orPart}</body>";
             return html;
         }

@@ -558,9 +558,181 @@ namespace AirShow.Models.AppRepositories
             return result;
         }
 
+
+        public async Task<OperationStatus> UpdatePresentationForUser(string userId, string presentationName, UploadPresentationModel updateModel)
+        {
+            var opStatus = new OperationStatus();
+
+            var foundPresentationResult = await GetPresentationForUser(userId, presentationName);
+            if (foundPresentationResult.ErrorMessageIfAny != null)
+            {
+                return foundPresentationResult;
+            }
+
+            var presentation = foundPresentationResult.Value;
+            if (!await IsUpdateNecessary(presentation, updateModel))
+            {
+                opStatus.ErrorMessageIfAny = "No modification required";
+                return opStatus;
+            }
+
+            if (! NoOtherPresentationWithSameName(userId, presentation, updateModel))
+            {
+                opStatus.ErrorMessageIfAny = "Another presentation has the same name.";
+                return opStatus;
+            }
+
+            if (!_context.Categories.Any(c => c.Id == updateModel.CategoryId))
+            {
+                return new OperationStatus { ErrorMessageIfAny = OperationStatus.kNoSuchCategoryWithId };
+            }
+
+            if (!presentation.IsPublic || _context.UserPresentations.Count(up => up.PresentationId == presentation.Id) == 1)
+            {
+                return await ModifyPresentationInPlace(userId, presentation, updateModel);
+            }
+
+            return await ModifyPresentationByCopying(userId, presentation, updateModel);
+        }
+
+
+
+        private async Task<OperationStatus> ModifyPresentationInPlace(string userId, Presentation p, UploadPresentationModel updateModel)
+        {
+
+            p.Name = updateModel.Name;
+            p.Description = updateModel.Description;
+            p.CategoryId = updateModel.CategoryId;
+            p.IsPublic = updateModel.IsPublic;
+            p.PresentationTags = new List<PresentationTag>();
+
+            var associatedPTs = await _context.PresentationTags.Where(pt => pt.PresentationId == p.Id).ToListAsync();
+            _context.PresentationTags.RemoveRange(associatedPTs);
+
+            var newTagsResult = await _tagsRepository.CreateOrGetTags(updateModel.Tags);
+            if (newTagsResult.ErrorMessageIfAny != null)
+            {
+                return newTagsResult;
+            }
+
+            foreach (var tag in newTagsResult.Value)
+            {
+                var pt = new PresentationTag
+                {
+                    Tag = tag,
+                    Presentation = p
+                };
+
+                tag.PresentationTags.Add(pt);
+                p.PresentationTags.Add(pt);
+
+            }
+
+            if (updateModel.SourceStream != null)
+            {
+                await _filesRepository.DeleteFileWithId(p.FileID);
+                var createResult = await _filesRepository.SaveFile(updateModel.SourceStream);
+                if (createResult.ErrorMessageIfAny != null)
+                {
+                    return createResult;
+                }
+
+                p.FileID = createResult.Value;
+            }
+
+            _context.Presentations.Update(p);
+            var rows = await _context.SaveChangesAsync();
+            if (rows == 0)
+            {
+                return new OperationStatus
+                {
+                    ErrorMessageIfAny = "An error ocurred while trying to update the database"
+                };
+            }
+
+            return new OperationStatus();
+        }
+
+        private async Task<OperationStatus> ModifyPresentationByCopying(string userId, Presentation p, UploadPresentationModel updateModel)
+        {
+            var newPresentation = new Presentation
+            {
+                CategoryId = p.CategoryId,
+                Name = p.Name,
+                Description = p.Description,
+                UploadedDate = p.UploadedDate,
+                IsPublic = p.IsPublic,
+                FileID = p.FileID,
+                PresentationTags = new List<PresentationTag>()
+            };
+
+            var list = await _context.UserPresentations.Where(u => u.UserId == userId && u.PresentationId == p.Id).ToListAsync();
+            _context.UserPresentations.Remove(list.First());
+
+            _context.Presentations.Add(newPresentation);
+            var rows = await _context.SaveChangesAsync();
+            if (rows == 0)
+            {
+                return new OperationStatus
+                {
+                    ErrorMessageIfAny = "Error while trying to update the database"
+                };
+            }
+
+            var newUP = new UserPresentation
+            {
+                UserId = userId,
+                PresentationId = newPresentation.Id
+            };
+
+            _context.UserPresentations.Add(newUP);
+
+            return await ModifyPresentationInPlace(userId, newPresentation, updateModel);
+        }
+
         public async Task<bool> UserOwnsPresentation(string userId, int presentationId)
         {
             return _context.UserPresentations.Any(u => u.UserId == userId && u.PresentationId == presentationId);
+        }
+
+
+        private bool NoOtherPresentationWithSameName(string userId, Presentation p, UploadPresentationModel updateModel)
+        {
+            var numOfSameNamePresentations = _context.UserPresentations.Where(u => u.UserId == userId && u.PresentationId != p.Id)
+                .Include(u => u.Presentation).Count(u => u.Presentation.Name == updateModel.Name);
+
+            return numOfSameNamePresentations == 0;
+        }
+
+        private async Task<bool> IsUpdateNecessary(Presentation p, UploadPresentationModel updateModel)
+        {
+            if (updateModel.SourceStream != null)
+            {
+                return true;
+            }
+
+            if (updateModel.Name != p.Name || updateModel.Description != p.Description || updateModel.IsPublic != p.IsPublic)
+            {
+                return true;
+            }
+
+            if (updateModel.Tags != null)
+            {
+                var pTags = await _context.PresentationTags.Where(pt => pt.PresentationId == p.Id).Include(pt => pt.Tag)
+                    .Select(pt => pt.Tag.Name).ToListAsync();
+
+                if (pTags.Count() != updateModel.Tags.Count())
+                {
+                    return true;
+                }
+
+                if (updateModel.Tags.Any(t => !pTags.Contains(t)))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 

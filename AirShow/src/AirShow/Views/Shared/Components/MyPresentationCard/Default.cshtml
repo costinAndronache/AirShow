@@ -73,10 +73,18 @@
                    asp-action="@nameof(AirShow.Controllers.PresentationsController.DownloadPresentation)"
                    asp-route-name="@Model.Presentation.Name"
                    class="btn btn-primary" role="button">Download</a>
+            </li>
+
+            <li class="list-group-item">
+
+                <a asp-controller="@nameof(AirShow.Controllers.HomeController).WithoutControllerPart()"
+                   asp-action="@nameof(AirShow.Controllers.HomeController.ModifyPresentation)"
+                   asp-route-presentationName="@Model.Presentation.Name"
+                   class="btn btn-primary" role="button">Modify</a>
 
                 <button data-name="@Model.Presentation.Name" class="deletePresentationButton btn btn-primary">Delete</button>
-
             </li>
+
         </ul>
     </div>
 
