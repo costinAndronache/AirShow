@@ -49,8 +49,6 @@ namespace AirShow.Migrations
                         .IsRequired()
                         .HasMaxLength(80);
 
-                    b.Property<DateTime>("UploadedDate");
-
                     b.HasKey("Id");
 
                     b.HasIndex("CategoryId");
@@ -60,12 +58,11 @@ namespace AirShow.Migrations
 
             modelBuilder.Entity("AirShow.Models.EF.PresentationFile", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
+                    b.Property<string>("FileID")
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(255);
 
-                    b.Property<string>("FileID");
-
-                    b.HasKey("Id");
+                    b.HasKey("FileID");
 
                     b.ToTable("PresentationFiles");
                 });

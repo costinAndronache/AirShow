@@ -8,9 +8,7 @@ namespace AirShow.Models.EF
 {
     public class PresentationFile
     {
-        [Key]
-        public int Id { get; set; }
-
+        [Key, MaxLength(255)]
         public string FileID { get; set; }
     }
 }

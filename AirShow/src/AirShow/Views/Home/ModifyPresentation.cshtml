@@ -1,6 +1,6 @@
 ﻿@model UpdatePresentationModel
 @{
-    ViewData["Title"] = "Upload";
+    ViewData["Title"] = "Update Presentation";
     ViewData[ViewConstants.kNavbarIndexPairKey] = new LeftNavbar.IndexPair { IndexWhenUserAuthorized = NavbarModel.AuthorizableItemsIndex.HomeUploadPresentation };
 }
 
@@ -15,7 +15,7 @@
 
 <div>
     <div class="formContainer col-md-6">
-        <h3 class="card-title">Upload a new presentation</h3>
+        <h3 class="card-title">Update your presentation</h3>
         @if (Model.ViewInput.ErrorMessageIfAny != null)
         {
             <span class="text-danger">@Model.ViewInput.ErrorMessageIfAny</span>

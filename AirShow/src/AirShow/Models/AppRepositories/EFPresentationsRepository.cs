@@ -144,7 +144,6 @@ namespace AirShow.Models.AppRepositories
                 UserPresentations = new List<UserPresentation>(),
                 CategoryId = model.CategoryId,
                 PresentationTags = new List<PresentationTag>(),
-                UploadedDate = DateTime.Now,
                 IsPublic = model.IsPublic
             };
 
@@ -660,7 +659,6 @@ namespace AirShow.Models.AppRepositories
                 CategoryId = p.CategoryId,
                 Name = p.Name,
                 Description = p.Description,
-                UploadedDate = p.UploadedDate,
                 IsPublic = p.IsPublic,
                 FileID = p.FileID,
                 PresentationTags = new List<PresentationTag>()

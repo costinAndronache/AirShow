@@ -89,7 +89,7 @@ namespace AirShow.WebSockets
         {
             var pId = p.Id;
 
-            var token = p.UploadedDate.Ticks + "" + p.Id;
+            var token = Guid.NewGuid().ToString("N");
             _presentationForReservedToken[token] = p.Id;
             _userIdForToken[token] = userId;
             _sessionTokenForPresentationId[p.Id] = token;
