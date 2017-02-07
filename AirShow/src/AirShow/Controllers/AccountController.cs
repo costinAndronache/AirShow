@@ -178,7 +178,7 @@ namespace AirShow.Controllers
             }
             else
             {
-                host = _configuration["Hosts:staging"];
+                host = _configuration["Hosts:production"];
             }
 
             var href = $"{host}/{nameof(AccountController).WithoutControllerPart()}/ConfirmAccount?" +

@@ -23,7 +23,6 @@ namespace AirShow.Models.EF
         [Required, MaxLength(255)]
         public string FileID { get; set; }
         
-
         public int CategoryId { get; set; }
         public Category Category { get; set; }
 
